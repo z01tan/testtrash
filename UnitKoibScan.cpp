@@ -1224,9 +1224,9 @@ int FindNumYchTop(int* PrSt)
 	 // угла наклона листа
 	 dx=float(nstr-nstrStampStartL)*TanAlfaPage;
 	 colStampL=colStampLo-dx;
-	 colStampL=RsXo-dxStampArea+int(1.5*float(NumDotX));
+	 colStampL=RsXo-dxStampArea+int(2.5*float(NumDotX));
 	 colStampR=colStampRo-dx;
-	 colStampR=RsXo-int(1.5*float(NumDotX));
+	 colStampR=RsXo-int(2.5*float(NumDotX));
 	 dxStFindL=int(0.4*float(dxStampArea)); // количество точек для  поиска границ штампа
 	 dxStFindR=dxStFindL;
 
@@ -1360,7 +1360,12 @@ int FindNumYchTop(int* PrSt)
 			// проверка на то, что граница штампа слева сливается с рамкой бюллетеня
 			if(colStampR<=XoR)
 			{ cout << " Right side  Error nstr =  "<<nstr<<"XoR=  "<<XoR<< "colStampR =  "<< colStampR<< endl;
-			  		if(nbXoMax>0)   { PrShR=1; XoShR=XoShR1;  YoShR=YoShR1;}     PrShR=-1; goto finShR;	}
+			  		if(nbXoMax>0)
+			  		{
+			  			PrShR=1; XoShR1=XoMax;  YoShR1=nstr-nbXoMax; XoShR=XoShR1;  YoShR1=nstr-nbXoMax/*YoShR1*/;
+
+			  		}   else  PrShR=-1; goto finShR;
+			}
 			//dxStFindR=colStampR-XoR - 2*NumDotX;
 		  if(PrFirstR==0)
 		  { // запоминание  начальной  точки  поиска угла штампа
@@ -1460,7 +1465,7 @@ int FindNumYchTop(int* PrSt)
 			//if((PrAlfaShR==1)||(PrNaklShR==0))
 		//	 {
 			     nbXoMax=nbXoMax+1;
-			   if (nbXoMax > 4*LineWy)
+			   if (nbXoMax > LineWy)
 			   { PrShR=1; XoShR1=XoMax;  YoShR1=nstr-nbXoMax; XoShR=XoShR1;  YoShR1=nstr-nbXoMax/*YoShR1*/; }
 			// }
 		  }
@@ -1480,7 +1485,10 @@ int FindNumYchTop(int* PrSt)
 	}
 
 	if((PrShL==-1)||(PrShR==-1))
-	{  Err=41; goto fin; }
+	{  Err=41; goto fin;
+	    cout << "Stamp borders wrong" << endl;
+
+	}
 
 	if((PrShL==1)&&(PrShR==1))
 	{ 	// найдены координаты обоих точек, определение
@@ -1500,7 +1508,10 @@ int FindNumYchTop(int* PrSt)
 		if (((XoR-NumDotX) > PgXoR)||((XoL+NumDotX) < PgXoR-dxStampArea)||
 		   ((YoR-NumDotY) < PgYoR+dyVoteType + 2*LineWy)||
 		   ((YoL-NumDotY) < PgYoR+dyVoteType + 2*LineWy))
-		   { Err=41; goto finPrSh;}
+		   { Err=41;
+
+                        cout << " Dimention of Stamp is wrong "<< endl;
+                        goto finPrSh;}
 		// формирование признака наличия штампа
 		*PrSt=1;
 		finPrSh:;
@@ -1534,7 +1545,7 @@ int FindNumYchBot(int* PrSt)
 	 // угла наклона листа
 	 dx=float(nstr-nstrStampStartL)*TanAlfaPage;
 	 colStampL=colStampLo-int(dx)+1;
-	 colStampL=LsXo+int(1.5*float(NumDotX));
+	 colStampL=LsXo+int(2.5*float(NumDotX));
 	 dynstr=nstr-nstrStampStartL;
 	 if((AlfaPage > 0)&&(fabs(AlfaPage) > 0.005)&&(dynstr < 8))
 	 { // уточнение длины зоны захвата с  учетом наклона
@@ -2203,6 +2214,7 @@ int ScanBulString(void)
 			DeltaX= RsXo-LsXo;
 			nstrLsEnd= ShArYo+DeltaY;//nstrVoteType[0]-int(1.2*float(TMarSize));
 			nstrRsEnd= nstrLsEnd + int(DeltaX*SinAlfaPage);
+			cout << " nstr !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  Found Stamp area" << endl;
 			}
 		}
 		if (ErrScan >0) goto FinEvRow;
