@@ -1,0 +1,73 @@
+0
+Btn Yes - Work;Btn Menu -Service Menu
+Enter Code
+Error ! Wrong Code!
+Adm. Yes - next item
+Tech. Specialist. Yes - Continue
+Operator. Yes Continue
+Calibrate
+PZS Calibration
+Recognition
+Control
+Print Repeat
+Param. Reset
+ID Reset
+Date/Time
+Produced
+Volume
+Log-files & Images
+Scan INFO
+TESTS
+Save Scan
+Access Codes
+Exit
+Remove Paper & Push Btn Yes
+Optrons: No Paper
+Insert 1 Sheet & Push Btn Yes
+Optrons: Waiting for One Sheet
+Insert 2 Sheets & Push Btn Yes
+Optrons: Waiting for Two Sheets
+Remove Paper & Push Btn Yes
+Scan Black Sheet
+Insert 1 Sheet & Push Btn Yes
+Scan White Sheet
+Scanning is over
+Calibration is over
+Initial Black Level
+Initial White Level
+Initial Shtamp Black Level
+Initial Shtamp White Level
+Maximum Light
+Save - ? Yes/No
+Max. Blank Angle
+Stamp Rec. Check
+Border Rec. Check
+Mark Bad Bulletens
+Data reseting
+Delete ID (Yes/No)
+ID Reseting
+ID has been reseted
+Change Date/Time (Yes/No)
+Day   (Yes-Enter/No-Next Item)
+Month (Yes-Enter/No-Next Item)
+Year  (Yes-Enter/No-Next Item)
+Hours (Yes-Enter/No-Next Item)
+Minuts(Yes-Enter/No-Next Item)
+Save Date/Time (Yes/No)
+Date/Time are not saved (Yes - Next Item)
+Date/Time are saved (Yes - Next Item)
+Change Plants's Data (Yes/No)
+Enter Serial Number (Yes/No)
+Enter IP Main  (Yes/No)
+Enter IP Slave (Yes/No)
+Volume (Yes - Up; No - Down)
+Print Log-files (Yes/No)
+Save Log-files on Flash (Yes/No)
+Save Image on Flash (Yes/No)
+Exit (Yes/No)
+Scaner : Main  (Yes/No)
+Scaner : Slave (Yes/No)
+Scaner Work Time (Yes/No)
+Scaner Test (Yes/No)
+Buttons Test  (Yes/No)
+Flash Test (Yes/No)

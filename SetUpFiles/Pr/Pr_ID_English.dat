@@ -1,0 +1,34 @@
+Initial data for the PEC N
+PECs:
+The mode of election:
+Scanner N:
+The date of the vote:
+Data are for PEC N:
+Rooms of superior commissions:
+The number of types of ballots:
+The sequence of regime change :
+Time of the beginning of a stationary mode:
+Time to start portable mode:
+BULLETINS
+Bulletin N:
+Name:
+The ID of the elections:
+Elections:
+A template of the final Protocol:
+Template of the Protocol on the distribution of votes:
+ELECTIONS
+Elections N
+The superior Commission:
+Modes of voting:
+Number of seats:
+For the "against all":
+The number of positions:
+POSITION:
+training
+voting
+no
+there are
+PROTOCOLS
+Name Protocol:
+Lines of the Protocol:
+Control ratios:
