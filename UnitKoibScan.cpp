@@ -368,6 +368,7 @@ void FormIdScan(void)
 		PagePar[nVoteType][3]=int(float(Votes.Blank[i].ShAreaHeight)/10)-dySh; //  высота  зоны  печати в  мм
 		PagePar[nVoteType][4]=Votes.Blank[i].Width;
         PagePar[nVoteType][5]=Votes.Blank[i].LH[1].y/10;
+        PagePar[nVoteType][6]=Votes.Blank[i].LH[2].y/10;
 		PrVoteTypeId[nVoteType]=1;
 		for(j=1;j <= Votes.Blank[i].NVopr;j++)
 		if(Votes.Blank[i].Vopr[j].ID!="0")
@@ -1225,7 +1226,7 @@ int FindNumYchTop(int* PrSt)
 	 colStampL=colStampLo-dx;
 	 colStampL=RsXo-dxStampArea+int(1.5*float(NumDotX));
 	 colStampR=colStampRo-dx;
-	 colStampR=RsXo-int(3.5*float(NumDotX));
+	 colStampR=RsXo-int(1.5*float(NumDotX));
 	 dxStFindL=int(0.4*float(dxStampArea)); // количество точек для  поиска границ штампа
 	 dxStFindR=dxStFindL;
 
@@ -1241,7 +1242,7 @@ int FindNumYchTop(int* PrSt)
 		{  XoLSh=XoL;
 			if(colStampL>=XoL) // граница штампа слева сливается с рамкой бюллетеня
 			{   cout << " Left side  Error nstr =  "<<nstr<<endl;
-			     PrShL=-1; goto finShL; }
+			     if(nbyShL>0) { PrShL=1; XoShL=XoSh1;  YoShL=YoSh1;} else   PrShL=-1; goto finShL; }
 			//dxStFindL=XoL-colStampL+2*NumDotX;
 
 			if(PrFirstL==0)
@@ -1330,8 +1331,8 @@ int FindNumYchTop(int* PrSt)
 		  { // PrL==0
 			  if (nstr > (nstrStampStartR + dyStampNum))
 			  { if(PrFirstL==0) {  Err=4; goto fin; }
-				if(PrAlfaSh==1)
-			   {
+			//	if(PrAlfaSh==1)
+		//	   {
 				  nbyShL=nbyShL+1;
 				  if(nbyShL > LineWy /*LineWy*/)
 				  { PrShL=1;
@@ -1341,7 +1342,7 @@ int FindNumYchTop(int* PrSt)
 					YoShL=YoSh1;
 					*/
 				  }
-			   }
+			//   }
 			  }
 		  } // PrL
 			finShL:;
@@ -1359,7 +1360,7 @@ int FindNumYchTop(int* PrSt)
 			// проверка на то, что граница штампа слева сливается с рамкой бюллетеня
 			if(colStampR<=XoR)
 			{ cout << " Right side  Error nstr =  "<<nstr<<"XoR=  "<<XoR<< "colStampR =  "<< colStampR<< endl;
-			    PrShR=-1; goto finShR;	}
+			  		if(nbXoMax>0)   { PrShR=1; XoShR=XoShR1;  YoShR=YoShR1;}     PrShR=-1; goto finShR;	}
 			//dxStFindR=colStampR-XoR - 2*NumDotX;
 		  if(PrFirstR==0)
 		  { // запоминание  начальной  точки  поиска угла штампа
@@ -1457,10 +1458,11 @@ int FindNumYchTop(int* PrSt)
 		  {  if(PrFirstR==0) {  Err=4; goto fin; }
 
 			//if((PrAlfaShR==1)||(PrNaklShR==0))
-			 { nbXoMax=nbXoMax+1;
+		//	 {
+			     nbXoMax=nbXoMax+1;
 			   if (nbXoMax > 4*LineWy)
 			   { PrShR=1; XoShR1=XoMax;  YoShR1=nstr-nbXoMax; XoShR=XoShR1;  YoShR1=nstr-nbXoMax/*YoShR1*/; }
-			 }
+			// }
 		  }
 		} // PrR
 		finShR: ;
