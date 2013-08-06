@@ -397,6 +397,8 @@ void  SaveKoeffSens(void)
   NO_PAPER=NO_PAPER-20;
   for(int i=1;i<NumSensors;i++)  if(ONE_PAPER  < MasSenValue[i][2]) ONE_PAPER=MasSenValue[i][2];
   ONE_PAPER=ONE_PAPER+20;
+  for(int i=0;i<NumSensors;i++) NO_PAPERO[i]=MasSenValue[i][0]-20;
+  for(int i=0;i<NumSensors;i++) ONE_PAPERO[i]=MasSenValue[i][2]+20;
 } // SaveKoeffSens
 
 int  ReadKoeffSens(void)
@@ -534,7 +536,7 @@ void GetPzsScan(int ur)
       frontLED(5,0);// включение красной лампочкиидет процесс сканирования и обработки
       Page_scan();
       get_Optrons_Imm();
-      while (Optron[0] >  NO_PAPER)  get_Optrons_Wait();
+      while (Optron[0] >  NO_PAPERO[0])  get_Optrons_Wait();
       Page_stop();
       Page_back();
       cout << " The Last Optron Has been reached. Stop. Back " << endl;
@@ -560,7 +562,7 @@ void GetSensorsValue(int n)
         //cout << " After Sheet Inserted" << endl;
         //frontLED(5,1);// включение красной лампочкиидет процесс сканирования и обработки
         Page_scan();
-        while (Optron[0] >  NO_PAPER) get_Optrons_Wait();
+        while (Optron[0] >  NO_PAPERO[0]) get_Optrons_Wait();
         //cout << " Лист дошел до последнего оптрона. Останов двигателя. Считывание датчиков оптронов" << endl;
         Page_stop();
         get_Optrons_Imm();
@@ -911,11 +913,11 @@ int ServMenu()
 				  // сохранить  коэффициенты  в файл
 				  SaveKoeffPzs();
 
-			      //alteraRegCalibr_write(); // чтобы  это сделать, нужно отключать нити, иначе
+			      //alteraRegCalibr_write(); // чтобы  это сделать, возможно, нужно отключать нити, иначе
 			      // портятся  данные и  идет  дальше  ерунда
 				  // сохранение уровней  датчиков  бумаги
 				  SaveKoeffSens();
-				  ItemMenu1=8; //strcpy(InfS,"Калибровка завершена, нажмите кн. ДА");
+				  ItemMenu1=8; //Калибровка завершена, нажмите кн. ДА
 				  InfSTablo1=34; SendInfToTablo1();
                   InfSTablo2=0; SendInfToTablo2();
                   BtnPushed=-1;
@@ -936,7 +938,7 @@ int ServMenu()
                    MasNumPoints[i]=0;
                 }
 				// начальные знеачения по уровню белого и черного
-				alfa=0.001; beta=0.5; surw=5; surbl=5;	 urw=170; urbl=40;
+				//alfa=0.001; beta=0.5; surw=5; surbl=5;	 urw=170; urbl=40;
 				BtnPushed=-1;
               }
 			  switch (ItemMenu1)

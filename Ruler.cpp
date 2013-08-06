@@ -21,6 +21,7 @@
 #include "usb.h"
 using namespace std;
 
+
 //--------------------------------------Переменные------------------------------
 std::string Nst[256]; //числовые сообщения
 std::string Nvc[256]; //пути звуковых файлов
@@ -199,7 +200,7 @@ void VoteScan()
      clock_t  t1,t2;
      t1= clock();
 //************************************************************************
-   SayVotes(1);  // здравствуйте
+   //SayVotes(1);  // здравствуйте
    //get_Optrons_Imm();
    //if((Optron[1] < NO_PAPER) &&(Optron[2] < NO_PAPER) )
  //  {
@@ -720,7 +721,7 @@ int WaitRR(void)
                     pr1=5;
                 } break;
             }
-        }
+        } else pr1=1;
     }
    return pr1;
 }
@@ -742,17 +743,15 @@ int KoibMain(void)
 // 1-КОИБ главный 2-КОИБ подчиненный 3-КОИБ один
 { // определение является ли данный сканер главным ( подключен принтер)
     int KM=0;
-    if(CheckPrinter()!=-1)
+    if(CheckPrinter())
     {   KM=1;// Принтер найден
-        printf("Printer on board\n");
-        cout<< "  Printer  found. Scaner is main" <<endl;
-
+         cout<< "  Printer  found. Scaner is main" <<endl;
     }  else
     {   KM=2; // нет принтера
         printf("there is no printer\n");
         if( PrConnectOK==0) KM=3; // сканер единственный ( в  автономном  режиме)
     }
-   //KM=1;
+   KM=1;
   return KM;
 }
 //------------------------Наличие файла аварийного выключения-------------------
@@ -3137,6 +3136,7 @@ void ObrTestBull(void)
 {  // формирование выдачи данных при обработке тестовых бюллетеней
         std::string st1="";         std::string st2="";         std::string st3="";
         Ind(Out.Main[127]," "); // Сканирование...
+        SayVotes(1);  // здравствуйте
         Golosovanie();  // прием и распознавание бюллетеня
         st1=IntToStr(NumBullAll)+" : "+IntToStr(MasScan.MasRecOut[2]); // количество принятых бюллетеней// номер УИК
         Golos="";    Golos=OutV.VotesPath[11]+" "+CisloToStringOrVoice(NumBullAll,false) ; //количество принятых бюллетеней
@@ -3317,7 +3317,7 @@ void Sos_39(void)
 	  Ind(st,Out.Main[104]); // клавиатура подключена
 	  //  сделать Speak
 	  Golos="";
-	Golos=OutV.MainPath[52]+" "+CisloToStringOrVoice(XVote,false) ; //Номер УИК
+	 Golos=OutV.MainPath[52]+" "+CisloToStringOrVoice(XVote,false) ; //Номер УИК
     SayN(Golos);
 	 // Say(52); //Зачитать_результаты_по_выборам ?!?!
 }
@@ -3339,6 +3339,9 @@ void Sos_41(void)
       st1=Out.Main[73];
       st2=Out.Main[75]+" "+IntToStr(XVote)+". ";
       Ind(st1,st2);
+      Golos="";
+	  Golos=OutV.MainPath[54]+" "+CisloToStringOrVoice(XVote,false); //ввод дополнительных сведений по  выборам №
+      SayN(Golos);
       //Say(55); // Ввод дополнительных сведений по выборам ?!?!
       //Say(56); // Для продолжения работы нажмите ДА
 }
@@ -3409,18 +3412,15 @@ int Golosovanie(void)
 	if (Koib[1].Opros)
     {    // начало сканирования
 		GashBeforeScan();
-        frontLED(5,0);   // включение красной лампочки идет процесс сканирования и обработки
+        frontLED(2,0);   // включение красной лампочки идет процесс сканирования и обработки
         ScanReady=true;
         VoteScan();
         ScanReady=false;
         pr_rr=WaitRR();
         if ((pr_rr==1)||(pr_rr==2)) //НУФ
         {  //Бюллетень неустановленной формы!
-                //Page_stop();// Останов ШД
-                //usleep(100000);
-                Page_back(); // Включаем ШД назад
-
-                printf(" Defected Bulleten \n");      // бюллетень неустановленной  формы
+           Page_back(); // Включаем ШД назад
+           printf(" Defected Bulleten \n");      // бюллетень неустановленной  формы
         }
         if((pr_rr > 2)&&(pr_rr < 6))
         {  // бюллетень установленной  формы
@@ -3453,14 +3453,10 @@ int Golosovanie(void)
             }
              Koib[1].Rezult[0].All=NumBullAll;
         }
-
-
         if(Koib[1].VS==50)  Sos_50();
         if((Koib[1].VS==60)||(Koib[1].VS==32))  Sos_60();
         if(Koib[1].VS==70)  Sos_70();
-        //usleep(100000);
-
-        frontLED(0,5);   // включение зеленой лампочки идет процесс сканирования и обработки
+        frontLED(0,2);   // включение зеленой лампочки идет процесс сканирования и обработки
     }
     return 0;
 }
@@ -3638,7 +3634,10 @@ int Sostoanie(void)
                 Koib[1].VS = 8;
                 PrVoteTimeStart=0;     PrVoteTimeEnd=0;
 			}
+			cout << "  Umount before    !!!!!!!" <<  endl;
             UMount("/mnt/usb");
+            			cout << "  !!!!!!!!!!!!!!!!!!!!!1  Umount after function   " <<  endl;
+
 		  } else
             {  // выдача  сообщения "Подготовка" для  подчиненного  сканера
                  //st1=Out.Main[114];    Ind(st1,"");
@@ -3676,7 +3675,7 @@ int Sostoanie(void)
 			if(pr_btn==1) //Yes
 			{   //  распечатка исходных  данных
 			    // проверка наличия  принтера
-			    if(CheckPrinter()!=-1)
+			    if(CheckPrinter())
 			    {	    Ind(Out.Main[114]," "); //  Подготовка
                         Print(1);
                         Ind(Out.Main[123],Out.Main[124]); //  Отправлено на  печать // Ждите
@@ -3706,7 +3705,7 @@ int Sostoanie(void)
 			if(PrModeChange==1)  {     Sos_10();  PrModeChange=0; 	}
 			if(pr_btn==1) //Yes
 			{  // проверка наличия  принтера
-			    if(CheckPrinter()!=-1)
+			    if(CheckPrinter())
 			    {	    Ind(Out.Main[114]," "); //  Подготовка
                         Print(1);
                         Ind(Out.Main[123],Out.Main[124]); //  Отправлено на  печать // Ждите
@@ -3982,7 +3981,7 @@ int Sostoanie(void)
                if(pr_btn==1) //Yes
                { // печать и переход дальше
 
-                   if(CheckPrinter()!=-1)
+                   if(CheckPrinter())
 			    {	    Ind(Out.Main[114]," "); //  Подготовка
                        // Print(1);
                         Ind(Out.Main[123],Out.Main[124]); //  Отправлено на  печать // Ждите
@@ -4086,6 +4085,7 @@ int Sostoanie(void)
             if(PrModeChange==1 ) {     Sos_23();   PrModeChange=0;   }
 			Koib[1].VS = 50; // Тест-?
 			PrApprove=0;
+            frontLED(0,2);   // включение зеленой лампочки идет процесс сканирования и обработки
 			//st1=Out.Main[47]+" 0"; //Тест:...
            // Ind(Out.Main[102],st1); //Выход из режима тестирования - НЕТ
 
@@ -4112,12 +4112,14 @@ int Sostoanie(void)
                     }
                     if(pr_opt==100)
                     {   //-------------Бюллетень подан, бюллетень двойной
-                       //Page_back();    SayVotes(6); // вводите по одному бюллетеню
+                       SayVotes(6); // вводите по одному бюллетеню
+                       for(int i=0;i<4;i++) Optron[i]=0;
                     }
                     if((pr_opt>1)&&(pr_opt < 6))
                     {       //Ind(Out.Votes[7],""); //Вставьте  правильно  бюллетень
                         // голосовое сообщение
                         SayVotes(7); // вставьте бюллетень ровно текстом вниз!
+                        for(int i=0;i<4;i++) Optron[i]=0;
                         //sleep(1);
                     }
                 } else
@@ -4129,14 +4131,15 @@ int Sostoanie(void)
                     }
                     if(pr_opt==100)
                     {   //-------------Бюллетень подан, бюллетень двойной
-                       //Page_back();    SayVotes(6); // вводите по одному бюллетеню
-
+                        SayVotes(6); // вводите по одному бюллетеню
+                        for(int i=0;i<4;i++) Optron[i]=0;
 
                     }
                     if((pr_opt>1)&&(pr_opt < 6))
                     {       //Ind(Out.Votes[7],""); //Вставьте  правильно  бюллетень
                         // голосовое сообщение
                         SayVotes(7); // вставьте бюллетень ровно текстом вниз!
+                        for(int i=0;i<4;i++) Optron[i]=0;
                         //sleep(1);
                     }
                 }
@@ -4282,6 +4285,7 @@ int Sostoanie(void)
 			KoibZero();
 			NumBullAll=Koib[1].Rezult[0].All; // обнуление счетчика бюллетеней 30_07_2013
 			Koib[1].VS = 60;
+            frontLED(0,2);   // включение зеленой лампочки идет процесс сканирования и обработки
 		}break;
 	case 60: //--------------------------------------------------------------------Ход стационарного голосования
 		{
@@ -4347,7 +4351,7 @@ int Sostoanie(void)
 				  if(pr_opt==6)
 				  {  // бюллетень вставлен правильно
                         //SayVotes(1);
-
+                        SayVotes(1);  // здравствуйте
                         Golosovanie();
 
                         // голосовое  собщение " До свидания!"
@@ -4359,12 +4363,14 @@ int Sostoanie(void)
                   if(pr_opt==100)
                   {   //-------------Бюллетень подан, бюллетень двойной
                         SayVotes(2);
-                        Page_back();
+                        //Page_back();
+                        for(int i=0;i<4;i++) Optron[i]=0;
                                              // if(pr_rr==6)
                         //Ind(Out.Votes[2],""); //Бюллетень неустановленной формы! 2 2 листа
                   }
                   if((pr_opt>1)&&(pr_opt < 6))
-                  {  // Ind(Out.Votes[7],""); //Вставьте  правильно  бюллетень
+                  {   Ind(Out.Votes[7],""); //Вставьте  правильно  бюллетень
+                        for(int i=0;i<4;i++) Optron[i]=0;
                       //usleep(200000);
                   }
                 }
@@ -4384,7 +4390,7 @@ int Sostoanie(void)
                 { PrApprove=1 ; } else
                 {  // прием бюллетеня
                     PrApprove=0;
-                   //SayVotes(1); // Здравствуйте
+                   SayVotes(1); // Здравствуйте
   	               Golosovanie();
                    SayVotes(8);// Спасибо
                    //usleep(200000);
@@ -4396,12 +4402,14 @@ int Sostoanie(void)
   	         if(pr_opt==100)
              {   //-------------Бюллетень подан, бюллетень двойной
                  SayVotes(2);
-                 Page_back();
+                 for(int i=0;i<4;i++) Optron[i]=0;
+                 //Page_back();
                  //Ind(Out.Votes[2],""); //Бюллетень неустановленной формы! 2 2 листа
                 // SayVotes(2);
               }
               if((pr_opt>1)&&(pr_opt < 6))
-              {   //Ind(Out.Votes[7],""); //Вставьте  правильно  бюллетень
+              {   Ind(Out.Votes[7],""); //Вставьте  правильно  бюллетень
+                    for(int i=0;i<4;i++) Optron[i]=0;
                   //usleep(200000);
                }
                 if (pr_btn==2) //No
@@ -4458,18 +4466,20 @@ int Sostoanie(void)
   	           Sos_35();
  	        } else
             {   if(pr_opt==6) //Yes
-                {
+                {      SayVotes(1);  // здравствуйте
                     Golosovanie();
                     SayVotes(8);// Спасибо
                 }
                 if(pr_opt==100)
                 {   //-------------Бюллетень подан, бюллетень двойной
-                    Page_back();
+                    //Page_back();
                      //Ind(Out.Votes[2],""); //Бюллетень неустановленной формы! 2 2 листа
                      SayVotes(2);
+                     for(int i=0;i<4;i++) Optron[i]=0;
                 }
                 if((pr_opt>1)&&(pr_opt < 6))
-                {   //Ind(Out.Votes[7],""); //Вставьте  правильно  бюллетень
+                {   Ind(Out.Votes[7],""); //Вставьте  правильно  бюллетень
+                    for(int i=0;i<4;i++) Optron[i]=0;
                     //usleep(200000);
                  }
              }
@@ -4780,7 +4790,7 @@ int Sostoanie(void)
                 Koib[1].VS = 48;
                 st=Out.Main[93]+" "+IntToStr(XVote+1)+" "+Out.Main[94];
 			    //Для_подведения_итогов_по_выборам_N_XVote+1_нажмите_ДА
-			    st1="";
+			    st1=" ";
 			    Ind(st,st1);
 			}
 	      } else {
@@ -4816,20 +4826,16 @@ int Sostoanie(void)
           if ((Koib[1].Main)||(Koib[1].Avto))
 		  { // запись результатов и переход к новым выборам
             if(pr_btn==1) //Yes
-			{  // переход к подведению итогов
-			    Koib[1].VS = 35;
-			   // Ind(Out.Main[66],Out.Main[67]);
-                //Для перехода к подведению итогов голосования нажмите ДА, Для возврата к голосованию нажмите НЕТ
-			    PrNoBtnWait=1; PrModeChange=1;
+			{  // переход к подведению итогов голосования
+			    Koib[1].VS = 35;    PrNoBtnWait=1; PrModeChange=1;
 			}
   	    	if(pr_btn==0) //No
   	        {  // сохранение результатов текущих выборов
   	            //if (SaveIG(XVote)) { Ind(Out.Main[92],""); }//Результаты_записаны_на_Flash
   	            // переход к  новому  циклу  выборов
   	            Koib[1].VS = 51;
-                st1=Out.Main[109]; // удалить клавиатуру и флэш
-  	            st2=Out.Main[107] + ".  "+Out.Main[108]; // новый цикл - ДА, возврат к подведению итогов - НЕТ
-			    Ind(st1, st2); //Вставьте Flash, нажмите ДА
+                st1=Out.Main[109];        Ind(st1," ");   sleep(1);     // удалить клавиатуру и флэш
+  	            st2=Out.Main[107] ; st2=Out.Main[108]; Ind(st1, st2); // новый цикл - ДА, возврат к подведению итогов - НЕТ
  	        }
  	        pr_btn=-1;
 	      } else {

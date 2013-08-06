@@ -16,7 +16,9 @@
 
 using std::cout;
 using std::endl;
-
+//  массивы границ  для  каждого  оптрона
+int NO_PAPERO[NumSensors];
+int ONE_PAPERO[NumSensors];
 //-----------------данные  по  странице из исходных данных---------------------
    int PrKoef;
    int NstrFrControl; //  счетчик строк при прореживании контроля границ
@@ -295,6 +297,10 @@ int ReadSetUpFiles(void)
   //MaxLightR=160; MaxLightG=160;  MaxLightB=160;
   altera_backlight(MaxLightR,MaxLightG,MaxLightB);
 
+
+for(i=0;i<NumSensors;i++) NO_PAPERO[i]=MasSenValue[i][0]-20;
+for(i=0;i<NumSensors;i++) ONE_PAPERO[i]=MasSenValue[i][2]+20;
+
  NO_PAPER  =MasSenValue[0][0];
  ONE_PAPER=MasSenValue[0][2];
    for(i=1;i<NumSensors;i++)  if(NO_PAPER > MasSenValue[i][0]) NO_PAPER=MasSenValue[i][0];
@@ -367,8 +373,8 @@ void FormIdScan(void)
 		PagePar[nVoteType][2]=40;  //  ширина  зоны  печати в  мм
 		PagePar[nVoteType][3]=int(float(Votes.Blank[i].ShAreaHeight)/10)-dySh; //  высота  зоны  печати в  мм
 		PagePar[nVoteType][4]=Votes.Blank[i].Width;
-        PagePar[nVoteType][5]=Votes.Blank[i].LH[1].y/10;
-        PagePar[nVoteType][6]=Votes.Blank[i].LH[2].y/10;
+        PagePar[nVoteType][5]=Votes.Blank[i].LH[1].y/10;// расстояние до первой линии
+        PagePar[nVoteType][6]=Votes.Blank[i].LH[2].y/10; // расстояние до второй линии
 		PrVoteTypeId[nVoteType]=1;
 		for(j=1;j <= Votes.Blank[i].NVopr;j++)
 		if(Votes.Blank[i].Vopr[j].ID!="0")
@@ -511,11 +517,10 @@ int FormRezScanBull(void)
 
 void GashBeforeScan(void)
 {
-  KoefY=0.985; KoefX=1.0;   PrKoefY=0;
+  KoefY=0.985; KoefX=1.0;   PrKoefY=0;  PrKoef=0;
   NstrFrControl=NumDotY+1;
-  PrKoef=0;
+  dyLine1=0; dyLine1M=0;
   NumDotKoefY=0;  // счетчик  числа  расчетов коэффициента сжатия
-
   for(j=0;j < 4 ;j++) MasScan.MasRecOut[j]=0;
   for(j=0;j <= NumVoprMax;j++)
   { MasScan.MasVoprOut[j][0]=0; MasScan.MasVoprOut[j][1]=0;
@@ -650,11 +655,7 @@ void EvChangeColCol(int BlWt,int nstr,int step,int ncT,int dxT,int* nbT,int* yo,
 	 {  // поиск слева направо
 		for(i=ncT;i > ncT+dxT;i=i+step)
 		{ // определение  среднего значения интенсивности сигнала по стробу строки (dxT)
-//---------------Обращение  к  массиву точек-----------------------------------
-
 		  urw_ch=GetXYValue(nstr,i);
-
-//---------------------------------------------------
 		  dd=dd+urw_ch;
 		 }
 		 dd=dd/dxT; // среднее значение  уровня  сигнала
@@ -720,11 +721,7 @@ void EvChangeColRow(int BlWt,int nstr,int step,int ncL,int dxL,int* nbL,int* xo,
 	 {  //  поиск справа налево
 		for(i=ncL;i > ncL+ii;i=i+step)
 		{
-//---------------Обращение  к  массиву точек-----------------------------------
-
 			urw_ch=GetXYValue(nstr,i);
-
-//---------------------------------------------------
 			dd=urw_ch;
 			// обращение  к функции  принятия решения о наличии  черного  в  точке
 			g0=RecBlack(alfa,beta,urw,surw,urbl,surbl,dd,&p00,&p11);
@@ -768,28 +765,16 @@ void EvChangeColRowSh(int BlWt,int nstr,int step,int ncL,int dxL,int* nbL,int* x
 	 if((step) > (int(0)))ii=dxL; else ii=-dxL;
 	 if(step>0)
 	 {  // поиск слева направо
-		//ur1w=0; ur1bl=0; nbl=0; nw=0;
+
 		for(i=ncL;i < ncL+ii;i=i+step)
 	   {//---------------Обращение  к  массиву точек---------
-
 			urw_ch=GetXYValue(nstr,i);
-
-		//---------------------------------------------------
 			dd=urw_ch;
 			// обращение  к функции  принятия решения о наличии  черного  в  точке
 			g0=RecBlack(alfa,beta,urw,surw,urbl,surbl,dd,&p00,&p11);
 
 			if(BlWt==0) { if(g0==0) *nbL=*nbL+1; else *nbL=*nbL-1;}
 			if(BlWt==1) { if(g0==1) *nbL=*nbL+1; else *nbL=*nbL-1;}
-		  /*	if (i>ncL)
-			{ if(g0==1)
-				{ ur1bl=ur1bl+dd; nbl=nbl+1; urbl=ur1bl/nbl;
-				} else
-				{ ur1w=ur1w+dd; nw=nw+1; urw=ur1w/nw;
-
-                }
-			}
-		  */
 			if(*nbL <0) *nbL=0;
 			if(*nbL > 2)
 			{ // уже третья подряд точка строки  является  белой (черной), тогда принимается
@@ -802,11 +787,7 @@ void EvChangeColRowSh(int BlWt,int nstr,int step,int ncL,int dxL,int* nbL,int* x
 	 {  //  поиск справа налево
 		for(i=ncL;i > ncL+ii;i=i+step)
 		{
-//---------------Обращение  к  массиву точек-----------------------------------
-
 			urw_ch=GetXYValue(nstr,i);
-
-//---------------------------------------------------
 			dd=urw_ch;
 			// обращение  к функции  принятия решения о наличии  черного  в  точке
 			g0=RecBlack(alfa,beta,urw,surw,urbl,surbl,dd,&p00,&p11);
@@ -823,7 +804,6 @@ void EvChangeColRowSh(int BlWt,int nstr,int step,int ncL,int dxL,int* nbL,int* x
 		}
 	 }
 	 fin1:;
-	 //urbl=ur2bl; urw=ur2w;
   }// конец поиска левого края листа
 } // ColRowSh
 
@@ -834,12 +814,11 @@ int FindPageStart(int* PrPage)
 	 PrErr=1;
 	 if(PrTopL==0)
 	 {  //определение верхней границы слева
-		//Step=int(1);
 		EvChangeColCol(0,nstr,1,ncTL,dxT,&nbTL,&PgYoL,&PrTopL);
 		if (PrTopL==1)
 		{   // nr1 - номер  строки  для уочнения  уровня  черного
 			// nr2 - номер  строки  для  уточнения  уровня белого
-			nstrL=PgYoL+5;//+20;
+			nstrL=PgYoL+5;
 			nr1=0;  nr2=nstrL;
 			if(PgYoL > 10) nr1=5; else nr1=0; nr2=nstrL;
 			if(PgYoL > 10)
@@ -848,11 +827,7 @@ int FindPageStart(int* PrPage)
 				for (j = nr1; j <= nr1+3; j++)
 				{  for (i = nc1; i <= nc2; i++)
 				  {
-//-------------------здесь нужно обратиться  к  массиву  точек строки-------
-
 					urw_ch=GetXYValue(nr1,i);
-
-   //---------------------------------------------------
 					 // определение  среднего уровня черного
 					 BLev(nn,urw_ch,&urbl,&surbl);
 					 // переход к  следующей  точке
@@ -920,8 +895,8 @@ int FindPageStart(int* PrPage)
 		 // формиование данных для начала поиска рамки бюллетеня
 		 ncL=PgXoL+int(0.5*float(LMarSize)); // номер столбца для  поиска левой границы рамки в  строке
 		 ncR=PgXoR-int(0.5*float(LMarSize)); // начальная точка строки для поиска правой границы рамки
-		 ncTL=PgXoL+int(1.5*float(LMarSize)); // номер столбца для поиска верха листа слева
-		 ncTR=PgXoR-int(1.5*float(LMarSize));// номер столбца для поиска правой верхней части листа
+		 ncTL=PgXoL+int(2.5*float(LMarSize)); // номер столбца для поиска верха листа слева
+		 ncTR=PgXoR-int(2.5*float(LMarSize));// номер столбца для поиска правой верхней части листа
 		 nstrL=PgYoL +int(0.5*float(TMarSize));
 		 nstrR=PgYoR +int(0.5*float(TMarSize));
 
@@ -932,7 +907,6 @@ int FindPageStart(int* PrPage)
 		 // признака типа бюллетеня  с  учетом угла наклона листа
 		 for(i=0;i < NumVoteType+1; i++)
 		 {
-			//nstrVoteType[i]=PgYoL+nstrVoteType[i]-2*NumDotY/*LineWy*/ +int(AlfaPage*float(ncVoteType[i]));
 			nstrVoteType[i]=PgYoL+nstrVoteType[i]+int(AlfaPage*float(ncVoteType[i]));
 			PrVoteTypeStart[i]=0;
 			ncVoteType[i]=ncVoteType[i]+PgXoL;
@@ -1007,10 +981,8 @@ int FrameControl(void)
 			LsNs=LsNs+1;
 		} else
 		{ LsNs=0;
-		  LsCol=LsXo-2*NumDotX; //EndXoL=LsXo;
+		  LsCol=LsXo-2*NumDotX;
 		  if(PrEndXoL==0){ EndXoL=LsXo; PrEndXoL=1;}
-		  //if(fabs(EndXoL-LsXo) < LineWy)EndXoL=LsXo;
-		  //if ((LsXo-EndXoL) > LineWy) PrErr=11;
 		  EndXoL=LsXo;
 		  Lsdx=5*NumDotX;
 		  // поиск первой линии для расчета коэффициента сжатия при прямом ходе
@@ -1041,9 +1013,7 @@ int FrameControl(void)
 			RsNs=RsNs+1;
 		} else
 		{ RsNs=0;  RsCol=RsXo+2*NumDotX;
-		  //if ((RsXo-EndXoR) > LineWy) PrErr=12;
-		  EndXoR=RsXo;
-		  Rsdx=5*NumDotX;
+		  EndXoR=RsXo;	  Rsdx=5*NumDotX;
 		}
 		if (RsNs>=2*NumDotY)
 		{ if(PrErr!=0) PrErr=10; else PrErr=12;
@@ -1053,17 +1023,14 @@ int FrameControl(void)
 	 { // уточнение коэффициента сжатия по оси ОХ
 	   //if(nstr > dyStampArea)
 	   //{
-	   dyALfa=nstr-PgYoL; dxALfa=LsXo-PgXoL;
+/*	   dyALfa=nstr-PgYoL; dxALfa=LsXo-PgXoL;
 	   AlfaPage=-float(dxALfa)/float(dyALfa);
 	   SinAlfaPage=sin(AlfaPage); CosAlfaPage=cos(AlfaPage);
 	   TanAlfaPage=SinAlfaPage/CosAlfaPage;
+	   */
        //}
 	 }
-  /*	 if((LsNs>=2*NumDotY)||(RsNs>=2*NumDotY))
-	 { if((LsNs>=2*NumDotY)&&(RsNs>=2*NumDotY))PrErr=10;
-		else { if(LsNs>=2*NumDotY) PrErr=11;else PrErr=12;  }
-	 } else  PrErr=0;
-  */
+
 	return PrErr;
 } //FrameControl
 
@@ -1086,9 +1053,9 @@ int FindShAreaStart(void)
 			SinAlfaPage=sin(AlfaPage); CosAlfaPage=cos(AlfaPage);
 			TanAlfaPage=SinAlfaPage/CosAlfaPage;
 			// формирование точек начала поиска штампа
-			colStampLo=ShArXo+int(1.5/*1.3*/*float(NumDotX/*LineWx*/));
-			nstrStampStartL=ShArYo+int(2.0/*1.8*/*float(NumDotX/*LineWy*/));
-			dx=int(float(dxStampArea-int(0.5/*0.3*/*float(NumDotX)))*CosAlfaPage);
+			colStampLo=ShArXo+int(1.5*float(NumDotX));
+			nstrStampStartL=ShArYo+int(1.5*float(NumDotX));
+			dx=int(float(dxStampArea-int(0.5*float(NumDotX)))*CosAlfaPage);
 			colStampRo=ShArXo+dx;
 			dy=dxStampArea*SinAlfaPage;
 			nstrStampStartR=nstrStampStartL+dy;
@@ -1103,7 +1070,7 @@ int FindVoteTypeTop(int *PrPg)
   if(nstr > nstrBegVoteType)
   {  dxT=30;
 	 for(i=0;i < NumVoteType+1; i++)
-	 {  if((nstr > nstrVoteType[i])&&(nstr < nstrVoteType[i]+TMarSize))//dyVoteType+48))
+	 {  if((nstr > nstrVoteType[i])&&(nstr < nstrVoteType[i]+TMarSize))
 		{  if (PrVoteTypeStart[i]==0)
 		   { EvChangeColCol(1,nstr,1,ncVoteType[i],dxT,&nbVoteT[i],&ii,&PrVoteTypeStart[i]);
 			 if (PrVoteTypeStart[i]==1)
@@ -1134,8 +1101,6 @@ int FindVoteTypeTop(int *PrPg)
 			{ *PrPg=2; 	if(PrVoteTypeTop[0]==1) BulHead=0; else BulHead=1; }
 		 }
 	  }
-	  //finVote:;
-	  //return Err;
   } //nstr > nstrBegVoteType
   return Err;
 }   // FindVoteTypeTop
@@ -1150,18 +1115,15 @@ int FindVoteTypeBot(int *PrPg)
 	 { // поиск начала рамки снизу вверх
 		jj=0;
 		for(i=0;i < NumVoteType+1; i++)
-		{  //if((nstr > nstrVoteType[i])&&(nstr < nstrVoteType[i]+dyVoteType+48))
+		{
 		   {  if (PrVoteTypeStart[i]==0)
 			  {
 				EvChangeColCol(1,j,1,ncVoteType[i],dxT,&nbVoteT[i],&ii,&PrVoteTypeStart[i]);
 				if (PrVoteTypeStart[i]==1)
-				{ //dy=nstrVoteType[i]-j;
-				  nstrVoteType[i]=j+LineWy;
-				  nbVoteT[i]=0;
-				}
+				{   nstrVoteType[i]=j+LineWy;	  nbVoteT[i]=0;		}
 			  }
 			}
-			if((j < nstrVoteType[i])&&(j > nstrVoteType[i]-dyVoteType/*- int(0.5*float(NumDotY))*/))
+			if((j < nstrVoteType[i])&&(j > nstrVoteType[i]-dyVoteType))
 			{ if ((PrVoteTypeStart[i]==1)&&(PrVoteType[i]==0))
 			  {
 				EvChangeColCol(0,j,1,ncVoteType[i],dxT,&nbVoteT[i],&ii,&PrVoteType[i]);
@@ -1242,26 +1204,23 @@ int FindNumYchTop(int* PrSt)
 		{  XoLSh=XoL;
 			if(colStampL>=XoL) // граница штампа слева сливается с рамкой бюллетеня
 			{   cout << " Left side  Error nstr =  "<<nstr<<endl;
-			     if(nbyShL>0) { PrShL=1; XoShL=XoSh1;  YoShL=YoSh1;} else   PrShL=-1; goto finShL; }
-			//dxStFindL=XoL-colStampL+2*NumDotX;
-
+			     PrShL=-1; goto finShL;
+            }
 			if(PrFirstL==0)
 			{ // запоминание  начальной  точки  поиска угла штампа
 			  // и угла  его  наклона
 			  if (masXoL[0]<5)
 			  { masXoL[0]=masXoL[0]+1; ii= masXoL[0]; masXoL[ii]=XoL; }
 				else
-				{ 	xmin= masXoL[1]; xmax= masXoL[1]; //imin=0; imax=0;
-					//nsXoL1=nstr;
+				{ 	xmin= masXoL[1]; xmax= masXoL[1];
 					for(j=1;j<6;j++)
-					{ if(masXoL[j] < xmin){ xmin=masXoL[j];}//nsXoL1=nstr-5+i; }
-					  if(masXoL[j] > xmax){ xmax=masXoL[j];}//nsXoL1=nstr-5+i; }
+					{ if(masXoL[j] < xmin){ xmin=masXoL[j];}
+					  if(masXoL[j] > xmax){ xmax=masXoL[j];}
 					}
 					dx=(float(xmax)-float(xmin))/2-0.1;
 					ij=0; sumx=0;
-					for(j=1;j<6;j++) if(fabs(masXoL[j]-xmin) < dx /*LineWx */ )
+					for(j=1;j<6;j++) if(fabs(masXoL[j]-xmin) < dx )
 					{ ij=ij+1; sumx=sumx+masXoL[j];  }
-					//if (ij>2) XoL1=xmin; else XoL1=xmax;
 					XoL=xmin;
 					for(j=0;j < 6;j++)masXoL[j]=0;
 					PrFirstL=1;
@@ -1277,24 +1236,19 @@ int FindNumYchTop(int* PrSt)
 				   { if(PrAlfaSh==0)
 					 { // определение угла наклона
 					   xmin= masXoL[1]; xmax= masXoL[1]; //imin=0; imax=0;
-					   //nsXoL1=nstr;
 					   for(j=1;j<6;j++)
-					   { if(masXoL[j] < xmin){ xmin=masXoL[j];}//nsXoL1=nstr-5+i; }
-						 if(masXoL[j] > xmax){ xmax=masXoL[j];}//nsXoL1=nstr-5+i; }
+					   { if(masXoL[j] < xmin){ xmin=masXoL[j];}
+						 if(masXoL[j] > xmax){ xmax=masXoL[j];}
 					   }
 					   dx=(float(xmax)-float(xmin))/2-0.1;
 					   ij=0; sumx=0;
-					   for(j=1;j<6;j++) if(fabs(masXoL[j]-xmin) < dx /*LineWx */ )
+					   for(j=1;j<6;j++) if(fabs(masXoL[j]-xmin) < dx  )
 					   { ij=ij+1; sumx=sumx+masXoL[j];  }
-					   //if (ij>2) XoL1=xmin; else XoL1=xmax;
 					   for(j=0;j < 6;j++) masXoL[j]=0;
-					   XoL=xmin;
-					   PrAlfaSh=1;
-					   dx=nstr-YoSh1;
+					   XoL=xmin; 	   PrAlfaSh=1; 	   dx=nstr-YoSh1;
 					   AlfaSh=float(float(XoL-XoSh1)/dx);
 					   PrNaklShL=0;
-					   if (AlfaSh < -0.01)  PrNaklShL=-1;
-					   if (AlfaSh > 0.01) PrNaklShL=1;
+					   if (AlfaSh < -0.01)  PrNaklShL=-1;    if (AlfaSh > 0.01) PrNaklShL=1;
 					   nbXoMin=0;
 					 }
 				   }
@@ -1302,11 +1256,6 @@ int FindNumYchTop(int* PrSt)
 				   { // угол наклона определен, начало поиска угла штампа
 					 if (PrNaklShL==1)   // наклон вправо
 					 {  XoSh1=XoL;    YoSh1=nstr;
-					   /* if(nbXoMin==0)
-						{ XoSh1=XoL;    YoSh1=nstr; nbXoMin=1;}
-						if((fabs(XoL-XoSh1) <= LineWx)&&(nbXoMin==1))
-						{ XoSh1=XoL;    YoSh1=nstr;}
-						*/
 					 }
 					 if (PrNaklShL==-1)  // наклон влево
 					 { // наклон влево
@@ -1331,17 +1280,9 @@ int FindNumYchTop(int* PrSt)
 		  { // PrL==0
 			  if (nstr > (nstrStampStartR + dyStampNum))
 			  { if(PrFirstL==0) {  Err=4; goto fin; }
-			//	if(PrAlfaSh==1)
-		//	   {
 				  nbyShL=nbyShL+1;
-				  if(nbyShL > LineWy /*LineWy*/)
-				  { PrShL=1;
-					/*XoShL=XoSh1;
-					//if(PrNaklShL!=-1)
-					YoSh1=nstr-nbyShL;
-					YoShL=YoSh1;
-					*/
-				  }
+				  if(nbyShL > LineWy)
+				  { PrShL=1;XoShL=XoSh1;  YoShL=YoSh1; }
 			//   }
 			  }
 		  } // PrL
@@ -1352,7 +1293,6 @@ int FindNumYchTop(int* PrSt)
 	 { 	// определение координат правой стороны штампа
 		if(PrFirstR!=0)
 		{ dx=colStampR-XoRSh; dxStFindR=dx+3*NumDotX;  }
-
 		EvChangeColRowSh(1,nstr,-1,colStampR,dxStFindR,&nbShR,&XoR,&PrR);
 		PrXoRSh=PrR;
 		if(PrR==1)
@@ -1360,31 +1300,23 @@ int FindNumYchTop(int* PrSt)
 			// проверка на то, что граница штампа слева сливается с рамкой бюллетеня
 			if(colStampR<=XoR)
 			{ cout << " Right side  Error nstr =  "<<nstr<<"XoR=  "<<XoR<< "colStampR =  "<< colStampR<< endl;
-			  		if(nbXoMax>0)
-			  		{
-			  			PrShR=1; XoShR1=XoMax;  YoShR1=nstr-nbXoMax; XoShR=XoShR1;  YoShR1=nstr-nbXoMax/*YoShR1*/;
-
-			  		}   else  PrShR=-1; goto finShR;
+              PrShR=-1; goto finShR;
 			}
-			//dxStFindR=colStampR-XoR - 2*NumDotX;
 		  if(PrFirstR==0)
 		  { // запоминание  начальной  точки  поиска угла штампа
 			// и угла  его  наклона
 			if (masXoR[0]<5)
 			{ masXoR[0]=masXoR[0]+1; ii= masXoR[0]; masXoR[ii]=XoR; }
 			else
-			{ 	xmin= masXoR[1]; xmax= masXoR[1]; //imin=0; imax=0;
-				//nsXoR1=nstr;
+			{ 	xmin= masXoR[1]; xmax= masXoR[1];
 				for(j=1;j<6;j++)
-				{ if(masXoR[j] < xmin){ xmin=masXoR[j];}//nsXoR1=nstr-5+i; };
-				  if(masXoR[j] > xmax){ xmax=masXoR[j];}//nsXoR1=nstr-5+i; };
+				{ if(masXoR[j] < xmin){ xmin=masXoR[j];}
+				  if(masXoR[j] > xmax){ xmax=masXoR[j];}
 				}
 				dx=(float(xmax)-float(xmin))/2-0.1;
 				ij=0; sumx=0;
-				for(j=1;j<6;j++) if(fabs(masXoR[j]-xmin) < dx /*LineWx */ )
+				for(j=1;j<6;j++) if(fabs(masXoR[j]-xmin) < dx  )
 				{ ij=ij+1; sumx=sumx+masXoR[j];  }
-				//if (ij>2) XoR1=xmin; else XoR1=xmax;
-
 				PrShR=0; PrNaklShR=0;  nbyShR=0;
 				XoMax=XoR;  XoShR1=XoR;  YoShR1=nstr;
 				PrFirstR=1;
@@ -1400,17 +1332,15 @@ int FindNumYchTop(int* PrSt)
 			   {    // исключение ошибок, пропусков линий штампа
 					if (PrAlfaShR==0)
 					{
-						xmin= masXoR[1]; xmax= masXoR[1]; //imin=0; imax=0;
-						//nsXoR1=nstr;
+						xmin= masXoR[1]; xmax= masXoR[1];
 						for(j=1;j<6;j++)
-						{ if(masXoR[j] < xmin){ xmin=masXoR[j];}//nsXoR1=nstr-5+i; };
-						  if(masXoR[j] > xmax){ xmax=masXoR[j];}//nsXoR1=nstr-5+i; };
+						{ if(masXoR[j] < xmin){ xmin=masXoR[j];}
+						  if(masXoR[j] > xmax){ xmax=masXoR[j];}
 						}
 						dx=(float(xmax)-float(xmin))/2-0.1;
 						ij=0; sumx=0;
-						for(j=1;j<6;j++) if(fabs(masXoR[j]-xmin) < dx /*LineWx*/ )
+						for(j=1;j<6;j++) if(fabs(masXoR[j]-xmin) < dx  )
 						{ ij=ij+1; sumx=sumx+masXoR[j];  }
-						//if (ij>2) XoR1=xmin; else XoR1=xmax;
 						for(j=0;j < 6;j++) masXoR[j]=0;
 						PrAlfaShR=1; PrNaklShR=0;
 						dx=nstr-YoShR1;
@@ -1425,8 +1355,7 @@ int FindNumYchTop(int* PrSt)
 					if (PrNaklShR==1)
 					{ // наклон вправо
 					  if(XoR >=  XoMax)
-					  { //XoShR1=XoR;
-						YoShR1=nstr; XoMax=XoR;XoShR1=XoMax; nbXoMax=0;
+					  { 	YoShR1=nstr; XoMax=XoR;XoShR1=XoMax; nbXoMax=0;
 					  }	else
 					  { if((XoMax-XoR)>3) nbXoMax=nbXoMax+1;	}
 					  if (nbXoMax > LineWy)
@@ -1434,16 +1363,7 @@ int FindNumYchTop(int* PrSt)
 					}
 					if (PrNaklShR==-1)
 					{ // наклон влево  или ровно
-
-					  XoMax=XoR; XoShR1=XoR; YoShR1=nstr; //XoShR1=XoR;
-					/*  if(nbXoMax==0)
-					  { XoMax=XoR; XoShR1=XoR; YoShR1=nstr; nbXoMax=1;
-					   //XoShR1=XoR;
-					  }
-					  if((fabs(XoR-XoShR1)<=LineWx)&&(nbXoMax==1))
-					  { XoMax=XoR; XoShR1=XoR; YoShR1=nstr; //XoShR1=XoR;
-					  }
-					  */
+					  XoMax=XoR; XoShR1=XoR; YoShR1=nstr;
 					}
 					if (PrNaklShR==0)
 					{  if(fabs(XoR-XoShR1)>3) nbXoMax=nbXoMax+1;
@@ -1452,22 +1372,17 @@ int FindNumYchTop(int* PrSt)
 					   if (nbXoMax > 6)
 					   { PrShR=1; XoShR=XoShR1;  YoShR=YoShR1;}
 					}
-					//}
 				} //   if(PrAlfaSh==1)
 			}
 		  } // PrFirstR
 		  nbyShR=0;
 		} else
 		{ // PrL==0
-		  if (nstr > (nstrStampStartR + dyStampNum))
-		  {  if(PrFirstR==0) {  Err=4; goto fin; }
-
-			//if((PrAlfaShR==1)||(PrNaklShR==0))
-		//	 {
-			     nbXoMax=nbXoMax+1;
-			   if (nbXoMax > LineWy)
-			   { PrShR=1; XoShR1=XoMax;  YoShR1=nstr-nbXoMax; XoShR=XoShR1;  YoShR1=nstr-nbXoMax/*YoShR1*/; }
-			// }
+            if (nstr > (nstrStampStartR + dyStampNum))
+            {  if(PrFirstR==0) {  Err=4; goto fin; }
+            nbXoMax=nbXoMax+1;
+			if (nbXoMax > LineWy)
+			{ PrShR=1; XoShR1=XoMax;  YoShR1=nstr-nbXoMax; XoShR=XoShR1;  YoShR1=nstr-nbXoMax/*YoShR1*/; }
 		  }
 		} // PrR
 		finShR: ;
@@ -1483,11 +1398,13 @@ int FindNumYchTop(int* PrSt)
 		PrFirstR=XoShR1; PrFirstL=XoSh1; PrFirstRy=YoShR1; PrFirstLy=YoSh1;
 	  }
 	}
-
+    if((PrL==0)&&(PrR==0)&&(PrFirstR>0)&&(PrFirstL>0)&&(nbXoMax >1)&&(nbyShL>1))
+	{ // штамп найден, дошли до границы зоны штампа в период контроля целостности границ штампа
+		PrShL=1; XoShL=XoSh1;  YoShL=YoSh1;  PrShR=1; XoShR=XoShR1; YoShR=YoShR1;
+	}
 	if((PrShL==-1)||(PrShR==-1))
 	{  Err=41; goto fin;
 	    cout << "Stamp borders wrong" << endl;
-
 	}
 
 	if((PrShL==1)&&(PrShR==1))
@@ -1509,9 +1426,8 @@ int FindNumYchTop(int* PrSt)
 		   ((YoR-NumDotY) < PgYoR+dyVoteType + 2*LineWy)||
 		   ((YoL-NumDotY) < PgYoR+dyVoteType + 2*LineWy))
 		   { Err=41;
-
                         cout << " Dimention of Stamp is wrong "<< endl;
-                        goto finPrSh;}
+                goto finPrSh;}
 		// формирование признака наличия штампа
 		*PrSt=1;
 		finPrSh:;
@@ -1545,16 +1461,15 @@ int FindNumYchBot(int* PrSt)
 	 // угла наклона листа
 	 dx=float(nstr-nstrStampStartL)*TanAlfaPage;
 	 colStampL=colStampLo-int(dx)+1;
-	 colStampL=LsXo+int(2.5*float(NumDotX));
+	 colStampL=LsXo+int(1.5*float(NumDotX));
 	 dynstr=nstr-nstrStampStartL;
 	 if((AlfaPage > 0)&&(fabs(AlfaPage) > 0.005)&&(dynstr < 8))
 	 { // уточнение длины зоны захвата с  учетом наклона
 	   dx=2*dynstr/sin(2*fabs(AlfaPage));
 	 } else dx= int(float(dxStampArea)/2);
 	 if(dx < float(dxStampArea)/2)dxStFindL=dx; else dxStFindL=int(float(dxStampArea)/2);
-	 if(PrShL==0)  //nbShL >=0)// изначально  задается 1
+	 if(PrShL==0)  // изначально  задается 1
 	 {  // определение координат левой стороны штампа
-		//EvChangeColRow(1,nstr,1,colStampL,dxStFindL,&nbShL,&XoL,&PrL);
 		EvChangeColRowSh(1,nstr,1,colStampL,dxStFindL,&nbShL,&XoL,&PrL);
 		if(PrL==1) // есть черная линия
 		{ if(colStampL>=XoL) // граница штампа слева сливается с рамкой бюллетеня
@@ -1563,19 +1478,12 @@ int FindNumYchBot(int* PrSt)
 		  if(PrFirstL==0)
 		  { // запоминание  начальной  точки  поиска угла штампа
 			// и угла  его  наклона
-			if((nstr-1)==nstrStampStartL) { Err=41; goto fin;}
+			//if((nstr-1)==nstrStampStartL) { Err=41; goto fin;}
 			PrFirstL=nstr; // первая точка найдена
 			PrXMin=0; PrXMax=0;
 			PrShL=0; nbyShL=0; XoMin=XoL; YoMin=nstr;
 			XoSh1=XoL;  YoSh1=nstr; AlfaSh=0; nbyShL=0;  nbXoMin=0;
 			if(PrNaklShR!=0) PrNaklShL=PrNaklShR;else PrNaklShL=0;
-		/*	if(PrNaklShR!=0)
-			{ if(fabs(YoSh1-YoShR1)/fabs(XoShR1-XoSh1) < 0.01)
-			  {	PrNaklShL=2; PrNaklShR=2;
-			  } else PrNaklShL=PrNaklShR;
-			}else PrNaklShL=0;
-
-		 */
 			goto finR;
 		  }  else
 		  { // поиск минимума   впроверяемых  слева строках
@@ -1589,8 +1497,7 @@ int FindNumYchBot(int* PrSt)
 				if (nbXoMin > 3)
 				{ if (PrXMin==1)
 				   { //левая точка найдена
-					 PrShL=1;
-					PrXMin=2;  XoSh1=XoMin;  YoSh1=YoMin;
+					 PrShL=1;		PrXMin=2;  XoSh1=XoMin;  YoSh1=YoMin;
 				   }
 				}
 			  }
@@ -1600,11 +1507,9 @@ int FindNumYchBot(int* PrSt)
 			   if (nbXoMin > 0)
 			  { //левая точка найдена
 				PrShL=1; PrXMin=2;
-				XoSh1=XoL; //int(float(XoL+XoSh1)/2);
-				YoSh1=nstr;//int(float(nstr+YoSh1)/2);
+				XoSh1=XoL; 		YoSh1=nstr;
 			  }
 			}
-
 			if (PrNaklShL==2)
 			{  nbXoMin=nbXoMin+1;
 			   if((XoSh1-XoL) > NumDotY) YoSh1=nstr; XoSh1=XoL;
@@ -1631,7 +1536,7 @@ int FindNumYchBot(int* PrSt)
 	if(nstr > nstrStampStartR)
    {  dx=float(nstr-nstrStampStartL)*TanAlfaPage;
 	  colStampR=colStampRo-int(dx)-1;
-	  colStampR=LsXo+int((dxStampArea-int(2.5*float(NumDotX)))*CosAlfaPage);       /// 09_04
+	  colStampR=LsXo+int((dxStampArea-int(1.5*float(NumDotX)))*CosAlfaPage);       /// 09_04
 	  dynstr=nstr-nstrStampStartR;
 	  if((AlfaPage < 0)&&(fabs(AlfaPage) > 0.005)&&(dynstr < 8))
 	  { // уточнение длины зоны захвата с  учетом наклона
@@ -1651,28 +1556,19 @@ int FindNumYchBot(int* PrSt)
 		  if(PrFirstR==0)
 		  { // запоминание  начальной  точки  поиска угла штампа
 			// и угла  его  наклона
-			if((nstr-1)==nstrStampStartR) { Err=41; goto fin;}
+			//if((nstr-1)==nstrStampStartR) { Err=41; goto fin;}
 			PrFirstR=nstr; // первая точка найдена
 			PrXMax=0;
 			PrShR=0;  nbyShR=0; XoMax=XoR;  YoMax=nstr;
 			if(PrNaklShL!=0) PrNaklShR=PrNaklShL;else PrNaklShR=0;
-		 /*	if(PrNaklShL!=0)
-			{ if(fabs(YoSh1-YoShR1)/fabs(XoShR1-XoSh1) < 0.01)
-			  {	PrNaklShL=2; PrNaklShR=2;
-			  } else PrNaklShR=PrNaklShL;
-			}else PrNaklShR=0;
-        */
-
 			nbXoMax=0;
 			XoShR1=XoR;  YoShR1=nstr; AlfaShR=0; nbyShR=0; goto fin;
 		  }  else
 		  { // поиск максимума   впроверяемых  справа строках
 			if(PrNaklShR ==1)
 			{ if(XoR > XoMax)
-			  { if(( XoR - XoMax)>3) {/*YoMax=nstr;*/  XoMax=XoR;};YoMax=nstr; PrXMax=1;
-
+			  { if(( XoR - XoMax)>3) { XoMax=XoR;}; YoMax=nstr; PrXMax=1;
 				XoMax=XoR; YoMax=nstr; PrXMax=1;
-
 			  }
 			  else
 			  {  nbXoMax=nbXoMax+1;
@@ -1687,9 +1583,7 @@ int FindNumYchBot(int* PrSt)
 			{  nbXoMax=nbXoMax+1;
 			   if (nbXoMax > 0)
 			  { //правая точка найдена
-				PrShR=1; PrXMax=2;  XoShR1=XoR;//int(float(XoR+XoShR1)/2);
-				YoShR1=nstr;//int(float(YoShR1+nstr)/2);
-
+				PrShR=1; PrXMax=2;  XoShR1=XoR; YoShR1=nstr;
 			  }
 			}
 			if (PrNaklShR==2)
@@ -1792,9 +1686,7 @@ void FindVoteMarks(void)
 			      NumDotKoefY=NumDotKoefY+1;
 			      cout<<" Koefficient on Marks = "<<KoefY<< endl;
               }
-
 			  // уточнение столбца, с которого  начинается  поиск левой стороны
-			  // SearchSQ[j][1]=SearchSQ[j][1]-Napr*SearchSQ[j][3];
 			  SearchSQ[j][1]=SearchSQ[j][1]+SearchSQ[j][3];
 			  SearchSQ[j][2]=YTop+NumDotY+int(0.5*float(NumDotY)); // запоминание номера строки начала верхней линии
 			  goto finNumSQ;
@@ -1834,19 +1726,11 @@ void FindVoteMarks(void)
 			{  // подсчет точек для текущей  строки
 			   for (i=nc1; i <= nc2; i++)
 			   { // подсчет числа точек
-				 //=====================================
-				 //Color=Form1->Image2->Picture->Bitmap->Canvas->Pixels[i][nstr];
-				 //urw_ch=(GetRValue(Color)*0.3+ GetGValue(Color)*0.59+ GetBValue(Color)*0.11);
-                // urw_ch=GetXYValue(i,nstr);
-                 urw_ch=GetXYValue(nstr,i);
-				 //if(urw_ch > 170)urw_ch=170;
-				 //=====================================
-				 dd=urw_ch;
-				 // обращение  к функции  принятия решения о наличии  черного  в  точке
-				 //g0=0;
-				 g0=RecBlack(alfa,beta,urw,surw,urbl,surbl,dd,&p00,&p11);
-						   //	if(dd > 85) g0=0;/
-				 if(g0==1) NumBlP[nVoteType][j]=NumBlP[nVoteType][j]+1;
+                    urw_ch=GetXYValue(nstr,i);
+                    dd=urw_ch;
+                    // обращение  к функции  принятия решения о наличии  черного  в  точке
+                    g0=RecBlack(alfa,beta,urw,surw,urbl,surbl,dd,&p00,&p11);
+                    if(g0==1) NumBlP[nVoteType][j]=NumBlP[nVoteType][j]+1;
 			   }
 			} else
 			{  // определение признака наличия отметки
@@ -1883,25 +1767,17 @@ int ScanBulString(void)
    { if (nstr==nstrUrWhite)  //  уточнение уровня  белого по всей  строке
 	 { nn=1;  urw=0;
 	   for (i = PgXoL+100; i <= PgXoR-100; i++)
-	   {  // определение  уровня  интенсивности пикселя
-		  //-----------------------здесь нужно обратиться  к  массиву  точек строки-------
-		  //Color=Form1->Image2->Picture->Bitmap->Canvas->Pixels[i][nstr];
-		  //urw_ch=(GetRValue(Color)*0.3+ GetGValue(Color)*0.59+ GetBValue(Color)*0.11);
-		  //urw_ch=GetXYValue(i,nstr);
-		  urw_ch=GetXYValue(nstr,i);
-		  //---------------------------------------------------
-		  // определение  среднего уровня белого
+	   {    // определение  уровня  интенсивности пикселя
+            urw_ch=GetXYValue(nstr,i);
+            // определение  среднего уровня белого
 			BLev(nn,urw_ch,&urw,&surw);
 			//	 переход к  следующей  точке
 			nn=nn+1;
 	   }
-		  if(surw <15) surw=15;
-		  if(urw>190)urw=190;
+		  if(surw <15) surw=15; 	  if(urw>190)urw=190;
 	 }
-
 	 if (PrFrame==0)
 	 { 	ErrScan=FindFrame(&PrFrame);
-
 	 if (ErrScan >0)
 	 goto FinEvRow;
 	 } //if (PrFrame==0)
@@ -1909,21 +1785,18 @@ int ScanBulString(void)
 	 urw1=urw;
 	 urw=150;
 	 if(PrPage==1)ErrScan=FindVoteTypeTop(&PrPage);
-
 	 // анализ  ошибки при поиске рамки и вида бюллетеня
 	 if((ErrScan==2)&&(PrFrame==0))ErrScan=1;
 	 urw=urw1;
-	 // проверка того,  что тип бюллетеня соответствует исходным данным
-	 if(PrPage==2)
-	 { for(i=1;i < NumVoteType+1;i++) if(PrVoteTypeTop[i]==1)nVoteType=i;
-	   j=0;
-	   for(i=1; i <= NumVoteType;i++)if((PrVoteTypeId[i]==1)&&(nVoteType==i))j=1;
+	 if(PrPage==2)	 // проверка того,  что тип бюллетеня соответствует исходным данным
+	 {      for(i=1;i < NumVoteType+1;i++) if(PrVoteTypeTop[i]==1)nVoteType=i;
+            j=0;
+            for(i=1; i <= NumVoteType;i++)if((PrVoteTypeId[i]==1)&&(nVoteType==i))j=1;
 
-      for(i=1; i <= NumVoteType;i++)if(PrVoteTypeId[i]==1) cout <<  "Vote Type ID   =  %d   " <<  i << endl;
+                            for(i=1; i <= NumVoteType;i++)if(PrVoteTypeId[i]==1) cout <<  "Vote Type ID   =  %d   " <<  i << endl;
+                            cout <<  "Vote Type  =  %d" <<  nVoteType << endl;
 
-        cout <<  "Vote Type  =  %d" <<  nVoteType << endl;
-
-	   if(j==0)ErrScan=20;
+            if(j==0)ErrScan=20;
 	 }
 
 	 if (ErrScan >0) goto FinEvRow;
@@ -1940,6 +1813,8 @@ int ScanBulString(void)
 		PageH=int(PageHM*float(NumDotY));//+0.5); // высота  страницы  в  точках
 		PageWM=PagePar[nVoteType][4]; // ширина  страницы в  мм  (при загрузке ( максимальная)
 		PageW=int(PageWM*float(NumDotX)); // ширина  страницы  в  точках
+		dyLine1M=PagePar[nVoteType][5];
+        dyLine1=int(dyLine1M*float(NumDotY));
 		dxStampAreaM=PagePar[nVoteType][2];  // ширина  зоны  печати в  мм
 		dxStampArea=int(dxStampAreaM*float(NumDotX)); // ширина  зоны  печати в  точках
 		dyStampAreaM=PagePar[nVoteType][3];
@@ -2069,14 +1944,10 @@ int ScanBulString(void)
 		((EndYoL < nstrLsEnd)||(EndYoR < nstrRsEnd)))
 		{
 		     if((nstr < (nstrLsEnd-NumDotY))&&(nstr < (nstrRsEnd-NumDotY))&&(PrKoef==1))
-		     { 		if (NstrFrControl > NumDotY)
-                    {   NstrFrControl=0;
-                        ErrScan=FrameControl();
-                    } else NstrFrControl=NstrFrControl+1;
+		     { 		if (NstrFrControl > NumDotY)   {   NstrFrControl=0;      ErrScan=FrameControl();  }
+                        else NstrFrControl=NstrFrControl+1;
 		     } else  ErrScan=FrameControl();
-
 		}
-
 
 	  if((nstr > nstrLsEnd*KoefY)&&(nstr > nstrRsEnd*KoefY)&&(ErrScan >0))
 	  { // поиск конца рамки
@@ -2093,8 +1964,6 @@ int ScanBulString(void)
 		if((EndYoL > 0)&&(EndYoR > 0))
 		{ 	// формирование данных для  начала  поиска данных типа выборов
 			//  в  конце страницы
-
-
 			zz=int(dxVoteType/2);
 			DeltaY=int(float(dyStampArea+dyVoteType +int(0.5*float(TMarSize)))*CosAlfaPage);
 			for(i=0;i < NumVoteType+1; i++)
@@ -2116,16 +1985,11 @@ int ScanBulString(void)
 		 { //  есть признак  проверки штампа
 			if (PrShFound==0)
 		 	{  urbl1=urbl;
-				//urbl=int((urw-urbl)/2);//65;
-                //urbl=100;
                 urbl=urbl+(urw-urbl)/3;
 				ErrScan=FindNumYchTop(&PrShFound);
 				if(PrShFound==1)
 				{ // штамп печати найден, обращение для распознавания номера
 				  //  ОБРАЩЕНИЕ К ФУНКЦИИ  РАСПОЗНАВАНИЯ НОМЕРА ИУ
-
-				//while (urbl < 80)
-				//{
 					NumUIKRec=tryConfirmStamp(1);
 
 					cout << " Number  UIK   ID =    " << UIKNum[0]    << endl;
@@ -2150,22 +2014,11 @@ int ScanBulString(void)
 							  case 9: strcat(NumUIKStr,"9"); break;
 							};
 						}
-						//goto finNumUIK1;
 					} else  {ErrScan=71; goto FinEvRow;}
-					/*else
-					{
-					  if(urbl >=80) ErrScan=71; goto FinEvRow;
-					}
-					urbl=urbl+10;*/
-				//}
-                //finNumUIK1:;
-
-
 					ii=0;
-					for(i=0;i < MaxNumUIK;i++)
-					if((UIKNum[i]>0)&&(ii==0))
+					for(i=0;i < MaxNumUIK;i++) if((UIKNum[i]>0)&&(ii==0))
 					{ if(NumUIKRec==UIKNum[i]) ii=1; };
-					if (ii==0) { ErrScan=7;  } ; //goto FinEvRow; }
+					if (ii==0) { ErrScan=7;  } ;
 				}
 				urbl=urbl1;
 		 	} // if(PrShFound==0) поиска печати номера УИК
@@ -2208,35 +2061,30 @@ int ScanBulString(void)
 		  if(ShArPr==1)
 		  { //  подготовка к  поиску конца  страницы
 			nbTL=0;nbLL=0;nbRR=0; nbTR=0;
-			nstrLsEnd=nstrVoteType[0]-int(1.2*float(TMarSize));//dyVoteType-2*NumDotY;
-			nstrRsEnd=nstrVoteType[NumVoteType]-int(1.2*float(TMarSize));//dyVoteType-2*NumDotY;
+			nstrLsEnd=nstrVoteType[0]-int(1.2*float(TMarSize));
+			nstrRsEnd=nstrVoteType[NumVoteType]-int(1.2*float(TMarSize));
 			DeltaY=int(float(dyStampArea)*CosAlfaPage);
 			DeltaX= RsXo-LsXo;
-			nstrLsEnd= ShArYo+DeltaY;//nstrVoteType[0]-int(1.2*float(TMarSize));
+			nstrLsEnd= ShArYo+DeltaY;
 			nstrRsEnd= nstrLsEnd + int(DeltaX*SinAlfaPage);
-			cout << " nstr !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  Found Stamp area" << endl;
 			}
 		}
 		if (ErrScan >0) goto FinEvRow;
 		// распознавание отметок  голосования
-		         urw1=urw;  urw=150;
+        urw1=urw;  urw=150;
 				   FindVoteMarks();
-				            urw=urw1;
+		urw=urw1;
 		// поиск  координат  печати УИК
 		// Определение наличия штампа и его  координат
 		if(PrCheckSh==1)
 		{ //  есть признак  проверки штампа
 			if((PrShFound==0)&&(ShArPr==1))
-			{ urbl1=urbl;  //urbl=55;
-			  //urw1=urw;    urw=urw-(65-urbl1);
-			  //urbl=int((urw-urbl)/2);//65;
+			{ urbl1=urbl;
 			  urbl=urbl+(urw-urbl)/3;
 			  ErrScan=FindNumYchBot(&PrShFound);
 			  if(PrShFound==1)
 			  { //штамп печати найден, обращение для распознавания номера
 				//  ОБРАЩЕНИЕ К ФУНКЦИИ  РАСПОЗНАВАНИЯ НОМЕРА ИУ
-				//while (urbl < 80)
-				//{
 					NumUIKRec=tryConfirmStamp(0);
 
                     cout << " Number  UIK   ID =    " << UIKNum[0]    << endl;
@@ -2260,24 +2108,12 @@ int ScanBulString(void)
 							  case 9: strcat(NumUIKStr,"9"); break;
 							};
 						}
-						//goto finNumUIK;
 					}else  {ErrScan=71; goto FinEvRow;}
-			/*		else
-					{
-					  if(urbl >=80) ErrScan=71; goto FinEvRow;
-					}
-					//urbl=urbl+10;
-				//}
-				finNumUIK:;
-				*/
 				ii=0;
-				for(i=0;i < MaxNumUIK;i++)
-				if((UIKNum[i]>0)&&(ii==0))
-				{ if(NumUIKRec==UIKNum[i]) ii=1; };
+				for(i=0;i < MaxNumUIK;i++)	if((UIKNum[i]>0)&&(ii==0))	{ if(NumUIKRec==UIKNum[i]) ii=1; };
 				if (ii==0) { ErrScan=7; };//goto FinEvRow; }
 			  }
 			  urbl=urbl1;
-			  //urw=urw1;
 			}// if(PrShFound==0) поиска печати номера УИК
 			if (ErrScan >0) goto FinEvRow;
 		} // конец  признака проверки штампа
@@ -2337,11 +2173,6 @@ int ScanBulString(void)
    if(PrPage==4)
    {  //  переписать  результаты  распознавания  страницы в данные
 	  //  результатов  голосования
-	  ////////////////////////////
-	  // RezRec
-//	  if(MasScan.MasRecOut[0]==0)
-//	  { MasScan.MasRecOut[0]=FormRezScanBull();  }
-	  /////////////////////
 	  // контроль количества   строк после  определения  конца рамки бюллетеня
 	  // если через установленное  время  двигатель  автоматически
 	  // не  остановился, то это говорит о  том,  что может  идти второй бюллетень
@@ -2360,8 +2191,6 @@ int ScanBulString(void)
 
 void GashMasVote(void)
 { // гашение динамических массивов
-
- // delete MasSQ;
    try
    { // гашение массив а  с  данными поквадратам голосования
 

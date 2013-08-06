@@ -24,25 +24,27 @@
 #include "HardProc.h"
 
 using namespace std;
+
 int Pr_Event=0;
 int main()
 {
     Start(true);
     int ch=0, PrBklKoib=0;
 //**********************************************
+    // гашение управляющих переменных
     PrNoBtnWait=0; // признак пропуска ожидания  кнопки
-
-   // system("cat ./Wav/BULL_NUF.wav > /dev/dsp"); //dsp
-
-    Init_Altera();           // инициализация  железа
-    Create_Threads(); //  инициализация потоков
-     Koib[1].VS = 1; Exit=false;
-    PrKlav=0;  //  отладочный  режим до подключения  клавиатуры
-    //Lang=1;     // установка английского языка ( для  отладки)
-    Version=0; // Номер версии сообщений!
-
-    LoadInd(); // загрузка сообщений из  файлов в  массивы
-
+    Exit=false; // выход
+    PrVoteTimeStart=0;      // признак наступления  времени голосования ( в день голосования)
+    PrVoteTimeEnd=0;        // признак окончания  времени  голосования ( в день голосования)
+    PrVoteDay=0;                    // признак "День голосования"
+    Koib[1].VS = 1;                  // установка начального  состояния КОИБ
+    PrKlav=0;                             //  признак наличия клавиатуры
+    //Lang=1;                                 // установка английского языка ( для  отладки)
+    Version=0;                          // Номер версии сообщений!
+     PrConnectOK=0;             // признак установки  связи со  вторым  сканером
+     Init_Altera();                     // инициализация  железа
+    Create_Threads();           //  инициализация потоков
+    LoadInd();                          // загрузка сообщений  и путей голосовых файлов в  массивы
     //  ввод кодов доступа из файла
     FILE *fw;
     if ((fw = fopen("./SetUpFiles/CodesOpFile.txt", "r"))!= NULL)
@@ -52,43 +54,24 @@ int main()
             fscanf(fw,"%d",&CodesOp[2]);
              fclose(fw);
     } else cout << "Не найден файл CodesOpFile.txt" << endl;
+     ReadSetUpFiles(); // считывание  начальных  данных
 
-     ReadSetUpFiles();
-
-    Exit=0; //PrBklKoib=1;
-    PrVoteTimeStart=0;
-    PrVoteTimeEnd=0;
-    PrVoteDay=0;
-     PrConnectOK=0;// признак установки  связи со  вторым  сканером
     do
-    {
-        ch=0;
-        if(KeyisReady)PrKlav=1; else PrKlav=0;
-
-/* !!!!*/        PrKlav=1;
-
-  /*      if(((PrKlav==1)&&(PrMenuBtn < 0))||(Exit))
-        {  // выдача сообщения о выборе режима, если подключена клавиатура
-                    PrMenuBtn =0; //PrBklKoib=1;
-                    InfSTablo1=1; SendInfToTablo1(); usleep(500000);
-                    InfSTablo2=0; SendInfToTablo2();
-        }
-        */
-        Exit=0;
-        if(PrBklKoib==0) goto LabRun; // определение момента  включения КОИБ
+    {   // основной  цикл программы управления
+            ch=0;
+            if(KeyisReady)PrKlav=1; else PrKlav=0;
+            /* !!!!*/        PrKlav=1;
+            Exit=0;
+            if(PrBklKoib==0) goto LabRun; // определение момента  включения КОИБ
 
 //******************НАЧАЛО  СУПЕРВИЗОРА ОБРАБОТКИ СОБЫТИЙ**************
             // гашение кнопок
             for(i=0;i<6;i++) Buttons[i]=0;
-            BtnPushed=-1; pr_btn=-1;
-            pr_opt=-1; PrUprOpt=-1;
-            // ожидание нажатия кнопок
-                 //for(int i=0;i<4;i++)     Optron[i]=0;
-           //get_Optrons_Imm();
+            BtnPushed=-1; pr_btn=-1;   pr_opt=-1; PrUprOpt=-1;
 
            if (PrNoBtnWait==0) Pr_Event= Any_Wait() ; // ожидание каког-либо события; возврат 1 -оптроны, 2- кнопки, 3- клава           PrNoBtnWait=0;
            else
-           {  // проверка нажатия  кнопок
+           {  // проверка нажатия  кнопок в  режиме поиска второго  сканера
                //get_Buttons_Imm();  Pr_Event=2;
                //if(PrConnectOK==1)Buttons[1]=1;
            }
@@ -99,11 +82,11 @@ int main()
                  PrUprOpt=0;
                  //get_Optrons_Imm();
                  for(int i=0;i<4;i++)
-                 { if(Optron[i] < ONE_PAPER) { PrUprOpt=100; goto MetEnd;}
+                 { if(Optron[i] < ONE_PAPERO[i]) { PrUprOpt=100; goto MetEnd;}
                    else
                    {  // формирование признаков состояния каждого  оптрона
-                      if( Optron[i] < NO_PAPER) Sost_Optrons[i]=1; else Sost_Optrons[i]=0;
-                    cout << " Optron  N =      "<< i << "     Value =   "<<  Optron[i] <<  "     Sostoyanie =    " << Sost_Optrons[i]<< endl;
+                        if( Optron[i] < NO_PAPERO[i]) Sost_Optrons[i]=1; else Sost_Optrons[i]=0;
+                        cout << " Optron  N =      "<< i << "     Value =   "<<  Optron[i] <<  "     Sostoyanie =    " << Sost_Optrons[i]<< endl;
                    }
                  }
                  // формирование признака управления PrUprOpt///
@@ -127,8 +110,6 @@ int main()
                  if((Sost_Optrons[0] ==1)&&(Sost_Optrons[1] ==1)&&(Sost_Optrons[2] ==1)&&(Sost_Optrons[3] ==1))PrUprOpt=15;    //на оптронах 0  и 1 и 2 И 3 определен  лист, лист  в  тракте
                  //  для основного режима
                  pr_opt=PrUprOpt;
-                //             for(int i=0;i<4;i++)     Optron[i]=0;
-                 //printf(" Optrons sost  Pr_UprOpt =  "); cout << pr_opt<< endl;
                  MetEnd:;
               }    break;
              case 2:
@@ -152,25 +133,21 @@ int main()
 
               }    break;
            }
-
 //        **************КОНЕЦ  СУПЕРВИЗОРА ОБРАБОТКИ СОБЫТИЙ**********
-
-        LabRun:; //  метка , обеспечивающая запуск основной программы после включения
+            LabRun:; //  метка , обеспечивающая запуск основной программы после включения
 
             if(PrMenuBtn<1)
-            {  calibrate_mode= MODE_NORMAL;
+            {  // рабочий  режим  КОИБ
+                calibrate_mode= MODE_NORMAL;
                 Exit=RUN();
                 if(PrNoBtnWait==0) PrModeChange=0;
-            } else { ch=ServMenu(); }
-
+            } else
+            {  // работа  в  сервисном  меню
+                ch=ServMenu();
+            }
            PrBklKoib=1;
-
-           //usleep(200000);
-
     } while ((ch!=27)||(!Exit));
-
     Start(false);
     cout << "  KOIB Work has been finished!" << endl;
-
     return 0;
 }// main
