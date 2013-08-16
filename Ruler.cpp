@@ -695,7 +695,7 @@ void LoadInd(void)
 //--------------Результаты распознавания--------------
 int WaitRR(void)
 {  // Анализ результатов распознавания бюллетеня
-    int pr1=0;
+    int pr1=1;
     if((PrErrScan<100)&&(PrErrScan>0))
     {  // бюллетень неустановленной  формы, вернуть назад с  сообщением
        pr1=1;
@@ -838,10 +838,10 @@ void Ind(std::string st1, std::string st2)
 	if (st2!="")  {      setSecline(&st2[0],0); 	    };
 }
 
-
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 int Samotestirovanie(void)    // Самотестирование оборудования
-{ int i=0;
+{ int i=0,j=0,Err=0;
+    std::string  st,st1;
     // запуск  двигателя
     //frontLED(0,1); // включение зеленой лампочки
      //  включение зеленого светодиода
@@ -865,12 +865,33 @@ int Samotestirovanie(void)    // Самотестирование оборудования
     Ind("",Out.Test[3]);  //пуск двигателя назад...
     Page_backTest();
     sleep(2);
+    // проверка оптронов
+    get_Optrons_Imm() ;
+       if(j==0) Ind("",Out.Test[10]);  //Оптроны
+   j=0;
+   st1="";
+    for(i=0;i<NumSensors;i++) if (Optron[i] < NO_PAPERO[i])
+    { // ошибка оптрона
+        if(i==0) st1=IntToStr(i);else   {  st1=st1+", "+ IntToStr(i);  j=1;   Err=1;}
+    }
+    sleep(1);
+    if(j==0) Ind("",Out.Test[11]);  else
+    { // выдача номеров неисправных оптронов
+        st=Out.Test[12]+st1;      Ind("",st);
+    }
+    sleep(1);
     // проверка принтера ( если он подключен)
     Ind("",Out.Test[8]);  //тест принтера
-
-
-sleep(1);
-    return i;
+    sleep(1);
+     if(CheckPrinter())
+    {	 // принтер подключен
+        Ind("",Out.Test[13]);
+    } else
+    {  // принтер не найден
+        Ind("",Out.Test[14]);   //Err=1;
+    }
+    sleep(1);
+    return Err;
 }
 
 
@@ -892,7 +913,7 @@ void TekDateTime(void)
 {
 	TekDT=GetDateTime();
 	DateS=IntToStr(TekDT.day)+"."+IntToStr(TekDT.month)+"."+IntToStr(TekDT.year);
-	TimeS=IntToStr(TekDT.hour)+":"+IntToStr(TekDT.minit)+":"+IntToStr(TekDT.sec);
+	TimeS=IntToStr(TekDT.hour)+":"+IntToStr(TekDT.minit);//+":"+IntToStr(TekDT.sec);
 }
 
 //-----------------------Сохранение результатов голосования---------------------
@@ -1045,32 +1066,34 @@ bool Protokol(std::string Prot, int Xbl, int Xv, int j)
 		 {
 		  st=StrBetweenStr12(Prot,"final=\"","\"",jj);
 		     Votes.Blank[Xbl].Vopr[Xv].Protocoles[j].Text.final=TrueFalseVstr(st); //final?
-		  Table=StrBetweenStr12(Prot,"<Table>","</Table>",jj); // Table
+		  Table=StrBetweenStr12(Prot,"<Table>","</Table>",jj); //---Table
 
-		  int Nvl=NStrVstr(Table,"<VoteLine "); // ---VoteLines
-		  Votes.Blank[Xbl].Vopr[Xv].Protocoles[j].Text.Table.NVoteLine=Nvl;
+		  int Nvl=NStrVstr(Table,"<VoteLine "); //---VoteLines
+		  Votes.Blank[Xbl].Vopr[Xv].Protocoles[j].Text.NVoteLine=Nvl;
 
 		  if (Nvl>0)
 		  {
 			for (int jjj = 1; jjj <=Nvl; jjj++)
 			{
-			   st=StrBetweenStr12(Table,"id=\"","\"",jjj);
-			      Votes.Blank[Xbl].Vopr[Xv].Protocoles[j].Text.Table.VoteLine[jjj].ID=st;  // id
-			   st=StrBetweenStr12(Table,"bold=\"","\"",jjj);
-			      Votes.Blank[Xbl].Vopr[Xv].Protocoles[j].Text.Table.VoteLine[jjj].bold=TrueFalseVstr(st);  // bold
-			   st=StrBetweenStr12(Table,"italic=\"","\"",jjj);
-			      Votes.Blank[Xbl].Vopr[Xv].Protocoles[j].Text.Table.VoteLine[jjj].italic=TrueFalseVstr(st);  // italic
-			   st=StrBetweenStr12(Table,"fontSize=\"","\"",jjj);    // fontSize
+			   std::string VL=StrBetweenStr12(Table,"VoteLine ","/>",jjj);
+
+			   st=StrBetweenStr12(VL,"ID=\"","\"",1);
+			      Votes.Blank[Xbl].Vopr[Xv].Protocoles[j].Text.VoteLine[jjj].ID=st;  // id
+			   st=StrBetweenStr12(VL,"bold=\"","\"",1);
+			      Votes.Blank[Xbl].Vopr[Xv].Protocoles[j].Text.VoteLine[jjj].bold=TrueFalseVstr(st);  // bold
+			   st=StrBetweenStr12(VL,"italic=\"","\"",1);
+			      Votes.Blank[Xbl].Vopr[Xv].Protocoles[j].Text.VoteLine[jjj].italic=TrueFalseVstr(st);  // italic
+			   st=StrBetweenStr12(VL,"fontSize=\"","\"",1);    // fontSize
 			   if (st !="")
 			   {
-				 Votes.Blank[Xbl].Vopr[Xv].Protocoles[j].Text.Table.VoteLine[jjj].fontSize=StrToInt<int>(st);
+				 Votes.Blank[Xbl].Vopr[Xv].Protocoles[j].Text.VoteLine[jjj].fontSize=StrToInt<int>(st);
 			   }
-			   st=StrBetweenStr12(Table,"fontSize=\"","\"",jjj);
-			      Votes.Blank[Xbl].Vopr[Xv].Protocoles[j].Text.Table.VoteLine[jjj].type=st;  // type
-			   st=StrBetweenStr12(Table,"ElectronNum=\"","\"",jjj);
-			      Votes.Blank[Xbl].Vopr[Xv].Protocoles[j].Text.Table.VoteLine[jjj].ElectronNum=st;  // ElectronNum
+			   st=StrBetweenStr12(VL,"fontSize=\"","\"",1);
+			      Votes.Blank[Xbl].Vopr[Xv].Protocoles[j].Text.VoteLine[jjj].type=st;  // type
+			   st=StrBetweenStr12(VL,"ElectronNum=\"","\"",1);
+			      Votes.Blank[Xbl].Vopr[Xv].Protocoles[j].Text.VoteLine[jjj].ElectronNum=st;  // ElectronNum
 			}
-		  } // End Vote Lines
+		  } // End VoteLines
 
 		  ProtLines=StrBetweenStr12(Prot,"<ProtocolLines>","</ProtocolLines>",jj); // ProtokolLines
 		  int Npl=NStrVstr(ProtLines,"<ProtocolLine "); // ---NProtokolLines
@@ -1080,19 +1103,26 @@ bool Protokol(std::string Prot, int Xbl, int Xv, int j)
 		  {
 			for (int jjj = 1; jjj <=Npl; jjj++)
 			{
-			   st=StrBetweenStr12(ProtLines,"align=\"","\"",jjj);
+			   std::string PL=StrBetweenStr12(ProtLines,"<ProtocolLine ","</ProtocolLine>",jjj);
+
+			   st=StrBetweenStr12(PL,"align=\"","\"",1);
 			      Votes.Blank[Xbl].Vopr[Xv].Protocoles[j].Text.ProtocolLine[jjj].align=st;  // align
-			   st=StrBetweenStr12(ProtLines,"bold=\"","\"",jjj);
+			   st=StrBetweenStr12(PL,"bold=\"","\"",1);
 			      Votes.Blank[Xbl].Vopr[Xv].Protocoles[j].Text.ProtocolLine[jjj].bold=TrueFalseVstr(st);  // bold
-			   st=StrBetweenStr12(ProtLines,"italic=\"","\"",jjj);
+			   st=StrBetweenStr12(PL,"italic=\"","\"",1);
 			      Votes.Blank[Xbl].Vopr[Xv].Protocoles[j].Text.ProtocolLine[jjj].italic=TrueFalseVstr(st);  // italic
-			   st=StrBetweenStr12(ProtLines,"fontSize=\"","\"",jjj);    // fontSize
+			   st=StrBetweenStr12(PL,"fontSize=\"","\"",1);    // fontSize
 			   if (st !="")
 			   {
 				 Votes.Blank[Xbl].Vopr[Xv].Protocoles[j].Text.ProtocolLine[jjj].fontSize=StrToInt<int>(st);
 			   }
-			   st=StrBetweenStr12(Table,"section=\"","\"",jjj);
-			      Votes.Blank[Xbl].Vopr[Xv].Protocoles[j].Text.ProtocolLine[jjj].section=st;  // section
+			   st=StrBetweenStr12(PL,"section=\"","\"",1);
+			   if (st!="")
+			   {
+		          Votes.Blank[Xbl].Vopr[Xv].Protocoles[j].Text.ProtocolLine[jjj].section=st;  // section
+		          std::string st1="section=\""+st+"\">";
+		          Votes.Blank[Xbl].Vopr[Xv].Protocoles[j].Text.ProtocolLine[jjj].text=StrBetweenStr12(PL,st1,"<",1);
+		       }
 			}
 		  } // End Protokol Lines
 		 }
@@ -1128,25 +1158,36 @@ bool Parser(std::string path)
 
  ofstream F;
  F.open("./Log/Parser.log", ios::out); //Log-файл
+ //Filtr
+  XML=FiltrStr(XML,"< ","<");
+  XML=FiltrStr(XML,"<  ","<");
+  XML=FiltrStr(XML," >",">");
+  XML=FiltrStr(XML,"  >",">");
+
+  XML=FiltrStr(XML,"</ ","</");
+  XML=FiltrStr(XML,"</  ","</");
+
+ // End Filtr
 
  SD=StrBetweenStr12(XML,"<SourceData",">",1); // источник данных
 
 
  if (SD !="") //--------------------Основная часть!!!
- { Par=true;
-  st1=StrBetweenStr12(SD,"DateTime=\"","-",1); //Date Votes
+ {
+  Par=true;
+  st1=StrBetweenStr12(SD,"DateTime=\"","\"",1); //Date Votes
   if (st1 !="")
   {
-	 //Votes.DByear=StrToInt<int>(st1);
-	 //Votes.DBmonth=StrToInt<int>(StrBetweenStr12(SD,"-","-",1));
-	 //Votes.DBday=StrToInt<int>(StrBetweenStr12(SD,"-","\"",1));
-
+	 Votes.DByear=IntVstr(st1,1);  //Year
+	 Votes.DBmonth=IntVstr(st1,2); // Month
+	 Votes.DBday=IntVstr(st1,3); // Day
+     /*
 	 Votes.DByear=StrToInt<int>(st1);
 	 st=StrBetweenStr12(SD,st1+"-","-",1);
 	 Votes.DBmonth=StrToInt<int>(st); 	 st=st1+"-"+st;
 	 st1=StrBetweenStr12(SD,st+"-","\"",1);
 	 Votes.DBday=StrToInt<int>(st1);
-
+     */
 
      Votes.DateV=IntToStr(Votes.DBday)+"."+IntToStr(Votes.DBmonth)+"."+IntToStr(Votes.DByear);
                F<<"Election_Date:"+Votes.DateV+"_:"+DateToString(Votes.DByear,Votes.DBmonth,Votes.DBday,Lang) <<'\n';
@@ -1155,34 +1196,49 @@ bool Parser(std::string path)
   Votes.IDel=StrBetweenStr12(SD,"id=\"","\"",1);      //ID выборов
   if (Votes.IDel !="")
   {
-               F<<Votes.IDel<<'\n';
+               F<<"ID="+Votes.IDel<<'\n';
   } else {     F<<"Error:ID_election_is_epson"<<'\n';}
 
   st=StrBetweenStr12(SD," isGasVrn=\"","\"",1);	//isGASvrn?
   if (st !="")
   {
       Votes.isGASvrn=TrueFalseVstr(st);
-               F<<Votes.isGASvrn<<'\n';
+               F<<"isGasVrn="+Votes.isGASvrn<<'\n';
   } else {     F<<"isGASvrn_is_epson"<<'\n';}
 
- } else {      F<<"Error:Main_part_is_epson"<<'\n'; } //-----------------НЕТ ОСНОВНОЙ ЧАСТИ!!
+  st=StrBetweenStr12(SD," protocolPassword=\"","\"",1); //ProtokolPassword
+  if (st !="")
+  {
+      Votes.ProtokolPassword=st;
+               F<<"ProtocolPassword="+Votes.ProtokolPassword<<'\n';
+  } else {     F<<"ProtokolPassword_is_epson"<<'\n';}
+
+  st=StrBetweenStr12(SD," password=\"","\"",1); //Password
+  if (st !="")
+  {
+      Votes.Password=st;
+               F<<"Password="+Votes.Password<<'\n';
+  } else {     F<<"Password_is_epson"<<'\n';}
+
+ } else {      F<<"Error:Main_part_is_epson_!!!"<<'\n'; } //-------------НЕТ ОСНОВНОЙ ЧАСТИ!!
+
 
  //------------------------есть ли описание референдумов?
- REF=StrBetweenStr12(XML,"Referendums","/Referendums",1);
+ REF=StrBetweenStr12(XML,"<Referendums>","</Referendums>",1);
    if (REF !="")
    {
 	 XML=StrBezStr(XML,REF); // Дальше анализируем без референдумов
 	           F<<"It_is_a_Referendum!"<<'\n';
    } else {    F<<"Referendum_part_is_epson"<<'\n';}
   //-----------------------количество типов бланков
-  Votes.Nblank = NStrVstr(XML,"/Blank>");
+  Votes.Nblank = NStrVstr(XML,"</Blank>");
   if (Votes.Nblank>0)
   {
                F<<"Nblank="+IntToStr(Votes.Nblank)<<'\n';
   } else {     F<<"Error:Nblank=0!"<<'\n'; }
   //-----------------------количество выборов
-  int Nel = NStrVstr(XML,"/Election>");
-  Elec=StrBetweenStr12(XML,"<Elections","/Elections>",1); // Выборы!
+  int Nel = NStrVstr(XML,"</Election>");
+  Elec=StrBetweenStr12(XML,"<Elections>","</Elections>",1); // Выборы!
   if (Elec !="")
   {
 	XML=StrBezStr(XML,Elec); // Дальше анализируем без выборов
@@ -1192,34 +1248,31 @@ bool Parser(std::string path)
   Mode=StrBetweenStr12(XML,"<Modes>","</Modes>",1);
   if (Mode !="")
   {
-	 Votes.Nmodes = NStrVstr(Mode,"/Mode"); // количество режимов
+	 Votes.Nmodes = NStrVstr(Mode,"</Mode>"); // количество режимов
 	  if (Votes.Nmodes>0)
 	  {
-		st="Modes: ";
+		st="Modes:";
 		for (int i = 1; i <= Votes.Nmodes; i++)
 		{
 		  Votes.Modes[i]=StrBetweenStr12(Mode,"<Mode>","</Mode>",i);
-		  st=st+Votes.Modes[i]+" ";
+		  st=st+Votes.Modes[i]+"_";
 		}
 	           F<<st<<'\n';
 	  }
 	} else {   F<<"Error:Modes_are_epson!"<<'\n';}
  //---------------------------время смены режимов
- MTT=StrBetweenStr12(XML,"ModeTimeTable","/ModeTimeTable",1);
+ MTT=StrBetweenStr12(XML,"<ModeTimeTable>","</ModeTimeTable>",1);
 	if (MTT !="")
 	{
       st1="Time_of_change_modes:";
 	  for (int i = 1; i <= Votes.Nmodes; i++)
 	  {
-
-	   st=StrBetweenStr12(MTT,"hour=\"","\"",i);
-	   Votes.Bhour[i]=StrToInt<int>(st);
-	   st=StrBetweenStr12(MTT,"minute=\"","\"",i);
-	   Votes.Bmin[i]=StrToInt<int>(st);
+	   st=StrBetweenStr12(MTT,"hour=\"","\"",i);   Votes.Bhour[i]=StrToInt<int>(st);
+	   st=StrBetweenStr12(MTT,"minute=\"","\"",i); Votes.Bmin[i]=StrToInt<int>(st);
 	   Votes.Bsec[i]=0;
 	   Votes.TimeB[i]=IntToStr(Votes.Bhour[i])+":"+IntToStr(Votes.Bmin[i])+":"+IntToStr(Votes.Bsec[i]);
 	   Votes.Unlim=false;
-       st1=st1+Votes.TimeB[i];
+       st1=st1+Votes.Modes[i]+":"+Votes.TimeB[i]+"_";
 	  }
 	          F<<st1<<'\n';
 	} else {
@@ -1229,16 +1282,16 @@ bool Parser(std::string path)
 		      F<<"Error:Time_of_change_modes_is_epson!"<<'\n';
 	}
  //----------------------------------Данные о УИК
-	Targets=StrBetweenStr12(XML,"<Targets >","</Targets>",1);
+	Targets=StrBetweenStr12(XML,"<Targets>","</Targets>",1);
 	if (Targets !="")
 	{
 	 Votes.Nuik=StrToInt<int>(StrBetweenStr12(Targets,"num=\"","\"",1));
 	         F<<"UIK_number="+IntToStr(Votes.Nuik)<<'\n';
 	 Votes.UIKname=(StrBetweenStr12(Targets,"name=\"","\"",1));
-             F<<"UIK name= "+Votes.UIKname<<'\n';
+             F<<"UIK_name= "+Votes.UIKname<<'\n';
 	} else { F<<"Error:UIK_information_is_epson!"<<'\n';}
  //----------------------------------Бланки!
- Bul=StrBetweenStr12(XML,"Blanks","/Blanks",1); // бюллетени
+ Bul=StrBetweenStr12(XML,"<Blanks>","</Blanks>",1); // бюллетени
    if (Bul !="") // Загрузка бюллетеней
    {
 	 for (int i = 1; i <= Votes.Nblank; i++) // Цикл загрузки бюллетеней
@@ -1278,7 +1331,7 @@ bool Parser(std::string path)
 		 Votes.Blank[i].NVopr=j-1;
 	   } else {} //секции не описаны
 
-	   Model=StrBetweenStr12(Bul,"<model>","</model",i); // модель бюллетеня
+	   Model=StrBetweenStr12(Bul,"<model>","</model>",i); // модель бюллетеня
 	   if (Model !="") // Расшифровываем модель бюллетеня
 	   {
 		 Votes.Blank[i].Nlh=0;
@@ -1390,7 +1443,7 @@ end: Votes.Blank[Xbl].Vopr[Xv].ID=st;
 	     st1=st1+"_MaxMarks="+st;
 	 }
 
-	PC=StrBetweenStr12(ElecX,"<ParentComittee","/>",1);                   //Parent Committee
+	PC=StrBetweenStr12(ElecX,"<ParentComittee ","/>",1);                   //Parent Committee
 	if (PC !="")
 	{
 	  Votes.Blank[Xbl].Vopr[Xv].PC.parentid=StrBetweenStr12(PC,"parentid=\"","\"",1);
@@ -1399,21 +1452,30 @@ end: Votes.Blank[Xbl].Vopr[Xv].ID=st;
 	        st1=st1+"_ParentComittee:"+Votes.Blank[Xbl].Vopr[Xv].PC.name;
 	} else {st1=st1+"_ParentComittee_epson!";}
 
-	SC=StrBetweenStr12(ElecX,"StampCommittees","/>",1);                   //Stamp Commitees
+	SC=StrBetweenStr12(ElecX,"<StampCommittees>","</StampCommittees>",1);                   //Stamp Commitees
 	if (SC !="")
 	{
-	  st =StrBetweenStr12(SC,"num=\"","\"",1);
-	  if (st !="")
+	  int Nsc=NStrVstr(SC,"<StampCommittee ");
+	  if (Nsc>0)
 	  {
-	      Votes.Blank[Xbl].Vopr[Xv].SC=StrToInt<int>(st);
-	      st1=st1+"_StampCommitees:"+st;
-      }
+	     Votes.Blank[Xbl].Vopr[Xv].Nsc=Nsc;
+	     st1="StampCommitees:_";
+	     for (int j=1; j<=Nsc; j++)
+	     {
+	       st =StrBetweenStr12(SC,"num=\"","\"",j);
+	       if (st !="")
+	       {
+	         Votes.Blank[Xbl].Vopr[Xv].SC[j]=StrToInt<int>(st);
+	         st1+=st+"_";
+           }
+	     }
+	  }
 	} else {st1=st1+"_StampCommitees_epson!";}
 
 	Mode=StrBetweenStr12(ElecX,"<Modes>","</Modes>",1);            //режимы
 	if (Mode !="")
 	{
-	  Votes.Blank[Xbl].Vopr[Xv].Nmodes = NStrVstr(Mode,"/Mode>");  // количество режимов
+	  Votes.Blank[Xbl].Vopr[Xv].Nmodes = NStrVstr(Mode,"</Mode>");  // количество режимов
 	  if (Votes.Blank[Xbl].Vopr[Xv].Nmodes>0)
 	  {
 	    st1=st1+"_Modes:";
@@ -1482,7 +1544,6 @@ end: Votes.Blank[Xbl].Vopr[Xv].ID=st;
 		 st1=st1+"_num="+st;
 	   }
 
-	   Votes.Blank[Xbl].Vopr[Xv].Candidates[jj].biography=new char[255]; //?
 	   Votes.Blank[Xbl].Vopr[Xv].Candidates[jj].biography=StrBetweenStr12(ElecX,"biography=\"","\"",jj); //
 
 	   st=StrBetweenStr12(ElecX,"selfRegistered=\"","\"",jj);
@@ -1504,6 +1565,7 @@ end: Votes.Blank[Xbl].Vopr[Xv].ID=st;
 	//---!!!---
 
          F<<st1<<'\n';
+
   } // ElecX не пустое
   else {} //ElecX пустое - Дяденька, а у них выборы (вопросы) не описаны!
 
@@ -1513,7 +1575,7 @@ end: Votes.Blank[Xbl].Vopr[Xv].ID=st;
  //--------------------------------------------------------Референдум!
  if (REF !="")
  {
-   int Nref = NStrVstr(REF,"/Referendum>"); // количество референдумов
+   int Nref = NStrVstr(REF,"</Referendum>"); // количество референдумов
 
 	for (int i = 1; i <= Nref; i++) // Цикл загрузки референдумов
    {
@@ -1654,27 +1716,27 @@ end2:  if (Xbl>0)
 		  st=StrBetweenStr12(Prot,"final=\"","\"",jj);  Votes.Blank[Xbl].Ref.Protocoles[j].Text.final=TrueFalseVstr(st); //final?
 		  Table=StrBetweenStr12(Prot,"<Table>","</Table>",jj); // Table
 		  int Nvl=NStrVstr(Table,"<VoteLine "); // ---VoteLines
-		  Votes.Blank[Xbl].Ref.Protocoles[j].Text.Table.NVoteLine=Nvl;
+		  Votes.Blank[Xbl].Ref.Protocoles[j].Text.NVoteLine=Nvl;
 
 		  if (Nvl>0)
 		  {
 			for (int jjj = 1; jjj <=Nvl; jjj++)
 			{
 			   st=StrBetweenStr12(Table,"id=\"","\"",jjj);
-			      Votes.Blank[Xbl].Ref.Protocoles[j].Text.Table.VoteLine[jjj].ID=st;  // id
+			      Votes.Blank[Xbl].Ref.Protocoles[j].Text.VoteLine[jjj].ID=st;  // id
 			   st=StrBetweenStr12(Table,"bold=\"","\"",jjj);
-			      Votes.Blank[Xbl].Ref.Protocoles[j].Text.Table.VoteLine[jjj].bold=TrueFalseVstr(st);  // bold
+			      Votes.Blank[Xbl].Ref.Protocoles[j].Text.VoteLine[jjj].bold=TrueFalseVstr(st);  // bold
 			   st=StrBetweenStr12(Table,"italic=\"","\"",jjj);
-			      Votes.Blank[Xbl].Ref.Protocoles[j].Text.Table.VoteLine[jjj].italic=TrueFalseVstr(st);  // italic
+			      Votes.Blank[Xbl].Ref.Protocoles[j].Text.VoteLine[jjj].italic=TrueFalseVstr(st);  // italic
 			   st=StrBetweenStr12(Table,"fontSize=\"","\"",jjj);    // fontSize
 			   if (st !="")
 			   {
-				 Votes.Blank[Xbl].Ref.Protocoles[j].Text.Table.VoteLine[jjj].fontSize=StrToInt<int>(st);
+				 Votes.Blank[Xbl].Ref.Protocoles[j].Text.VoteLine[jjj].fontSize=StrToInt<int>(st);
 			   }
 			   st=StrBetweenStr12(Table,"fontSize=\"","\"",jjj);
-			      Votes.Blank[Xbl].Ref.Protocoles[j].Text.Table.VoteLine[jjj].type=st;  // type
+			      Votes.Blank[Xbl].Ref.Protocoles[j].Text.VoteLine[jjj].type=st;  // type
 			   st=StrBetweenStr12(Table,"ElectronNum=\"","\"",jjj);
-			      Votes.Blank[Xbl].Ref.Protocoles[j].Text.Table.VoteLine[jjj].ElectronNum=st;  // ElectronNum
+			      Votes.Blank[Xbl].Ref.Protocoles[j].Text.VoteLine[jjj].ElectronNum=st;  // ElectronNum
 			}
 		  } // End Vote Lines
 
@@ -1798,64 +1860,55 @@ end2:  if (Xbl>0)
 }
 
 //--------------------------Обрабатывает значение Checks строки протокола, возвращает его правильность-----------------------------
-bool Checks(std::string Ch)
+bool Checks(std::string Ch, int XVote, int Xv)
 {
-   int SumZn=0;
-   int N=0;
+   bool Yes=false;
+//   int N=0;
 //   int Left=0;
 //   bool L=true;
-   int Zn=0;
+//   int Zn=0;
 //   int Right=0;
    int Rav=0; //=1 >2 <3 <>4 >=5 <=6
-   std::string st;
-   std::string st1;
-   N++;
+   std::string RavSt="";
+   //Ravenstvo
+			if (StrVstr(Ch,"=",1)) { Rav=1; RavSt="=";}
+			if (StrVstr(Ch,">",1))	{ Rav=2; RavSt=">"; }
+			if (StrVstr(Ch,"<",1))	{ Rav=3; RavSt="<"; }
+			if (StrVstr(Ch,"<>",1)) { Rav=4; RavSt="<>"; }
+			if (StrVstr(Ch,">=",1)) { Rav=5; RavSt=">="; }
+			if (StrVstr(Ch,"<=",1)) { Rav=6; RavSt="<="; }
+   //End Ravenstvo
+  // Left & Right
+  int index = Ch.find(RavSt);
+  std::string Left(Ch,0,index);
+  std::string Right(Ch,index+RavSt.length(),Ch.length());
+  // Left & Right
+  // S & M
+  int S=Koib[1].Rezult[1].Bl[XVote].Vop[Xv].Valid+
+        Koib[1].Rezult[2].Bl[XVote].Vop[Xv].Valid+
+        Koib[2].Rezult[1].Bl[XVote].Vop[Xv].Valid+
+        Koib[2].Rezult[2].Bl[XVote].Vop[Xv].Valid; //?????
+  int M=Votes.Blank[XVote].Vopr[Xv].NCandidates;   //?????
 
-   st=StrBetweenStr12(Ch, "[", "]", N);
-	 if (st !="")
-	 {
-	   Zn=StrToInt<int>(st);
-	 }
-	   //----------------Signum----------------
-		if (N>1)
-		{
-		  st1=StrBetweenStr12(Ch, "]", "[", N-1);
-		  if (st1 !="")
-		  {
-			if (StrVstr(st1,"=",1))
-			{
-			  Rav=1;
-			}
-			if (StrVstr(st1,">",1))
-			{
-			  Rav=2;
-			}
-			if (StrVstr(st1,"<",1))
-			{
-			  Rav=3;
-			}
-			if (StrVstr(st1,"<>",1))
-			{
-			  Rav=4;
-			}
-			if (StrVstr(st1,">=",1))
-			{
-			  Rav=5;
-			}
-			if (StrVstr(st1,"<=",1))
-			{
-			  Rav=6;
-			}
-			//-----
-		  }
-		} else { SumZn=Zn; }
-	   //------------------End Signum----------------
-	Rav=Rav;
- return SumZn;
+  Votes.Blank[XVote].Vopr[Xv].Protocoles[1].S=S;
+  Votes.Blank[XVote].Vopr[Xv].Protocoles[2].S=S;
+  Votes.Blank[XVote].Vopr[Xv].Protocoles[1].M=M;
+  Votes.Blank[XVote].Vopr[Xv].Protocoles[2].M=M;
+  // S & M
+
+
+//  int Nblok1=NStrVstr(Left,"(");
+ // int Nblok2=NStrVstr(Right,"(");
+
+//???????
+
+
+ return Yes;
 }
 
 //---------------------Обрабатывает значение Express строки протокола, возвращает его значение----------------------
-int Express(std::string Exp)
+int Express(std::string Exp, int XVote, int Xv, int Nkoib)
+// Nkoib=1 или 2, если 0, то оба КОИБа!
 {
    int N=0;
    int sig=0;
@@ -1873,47 +1926,98 @@ int Express(std::string Exp)
 	   if (StrVstr(st, "BlankType=Valid", 1))
 	   // Общее кол-во принятых действительных бюллетеней
 	   {
-		  Zn=0;
+		  if (Nkoib==0)
+		  {
+		    Zn=Koib[1].Rezult[1].Bl[XVote].Vop[Xv].Valid+Koib[2].Rezult[1].Bl[XVote].Vop[Xv].Valid+
+		       Koib[1].Rezult[2].Bl[XVote].Vop[Xv].Valid+Koib[2].Rezult[2].Bl[XVote].Vop[Xv].Valid;
+		  } else {
+		    Zn=Koib[Nkoib].Rezult[1].Bl[XVote].Vop[Xv].Valid+
+		       Koib[Nkoib].Rezult[2].Bl[XVote].Vop[Xv].Valid;
+		  }
 	   }
 	   if (StrVstr(st, "BlankType=NoMarks", 1))
 	   // Общее кол-во принятых бюллетеней без отметок
 	   {
-		  Zn=0;
+		  if (Nkoib==0)
+		  {
+		    Zn=Koib[1].Rezult[1].Bl[XVote].Vop[Xv].NoMarks+Koib[2].Rezult[1].Bl[XVote].Vop[Xv].NoMarks+
+		       Koib[1].Rezult[2].Bl[XVote].Vop[Xv].NoMarks+Koib[2].Rezult[2].Bl[XVote].Vop[Xv].NoMarks;
+		  } else {
+		    Zn=Koib[Nkoib].Rezult[1].Bl[XVote].Vop[Xv].NoMarks+
+		       Koib[Nkoib].Rezult[2].Bl[XVote].Vop[Xv].NoMarks;
+		  }
 	   }
 	   if (StrVstr(st, "BlankType=TooManyMarks", 1))
 	   // Общее кол-во принятых бюллетеней с превышением кол-ва отметок
 	   {
-		  Zn=0;
+		  if (Nkoib==0)
+		  {
+		    Zn=Koib[1].Rezult[1].Bl[XVote].Vop[Xv].ManyMarks+Koib[2].Rezult[1].Bl[XVote].Vop[Xv].ManyMarks+
+		       Koib[1].Rezult[2].Bl[XVote].Vop[Xv].ManyMarks+Koib[2].Rezult[2].Bl[XVote].Vop[Xv].ManyMarks;
+		  } else {
+		    Zn=Koib[Nkoib].Rezult[1].Bl[XVote].Vop[Xv].ManyMarks+
+		       Koib[Nkoib].Rezult[2].Bl[XVote].Vop[Xv].ManyMarks;
+		  }
 	   }
 	   if ((StrVstr(st, "BlankType=Valid", 1))&&(StrVstr(st, "VotingMode=Main", 1)))
 	   // Режим голосования-основной, кол-во принятых действительных бюллетеней
 	   {
-		  Zn=0;
+		  if (Nkoib==0)
+		  {
+		    Zn=Koib[1].Rezult[1].Bl[XVote].Vop[Xv].Valid+Koib[2].Rezult[1].Bl[XVote].Vop[Xv].Valid;
+		  } else {
+		    Zn=Koib[Nkoib].Rezult[1].Bl[XVote].Vop[Xv].Valid;
+		  }
 	   }
 	   if ((StrVstr(st, "BlankType=NoMarks", 1))&&(StrVstr(st, "VotingMode=Main", 1)))
 	   // Режим голосования-основной, кол-во принятых бюллетеней без отметок
 	   {
-		  Zn=0;
+		  if (Nkoib==0)
+		  {
+		    Zn=Koib[1].Rezult[1].Bl[XVote].Vop[Xv].NoMarks+Koib[2].Rezult[1].Bl[XVote].Vop[Xv].NoMarks;
+		  } else {
+		    Zn=Koib[Nkoib].Rezult[1].Bl[XVote].Vop[Xv].NoMarks;
+		  }
 	   }
 	   if ((StrVstr(st, "BlankType=TooManyMarks", 1))&&(StrVstr(st, "VotingMode=Main", 1)))
 	   // Режим голосования-основной, кол-во принятых бюллетеней с превышением кол-ва отметок
 	   {
-		  Zn=0;
+		  if (Nkoib==0)
+		  {
+		    Zn=Koib[1].Rezult[1].Bl[XVote].Vop[Xv].ManyMarks+Koib[2].Rezult[1].Bl[XVote].Vop[Xv].ManyMarks;
+		  } else {
+		    Zn=Koib[Nkoib].Rezult[1].Bl[XVote].Vop[Xv].ManyMarks;
+		  }
 	   }
 	   if ((StrVstr(st, "BlankType=Valid", 1))&&(StrVstr(st, "VotingMode=Portable", 1)))
 	   // Режим голосования-переносной, кол-во принятых действительных бюллетеней
 	   {
-		  Zn=0;
+		  if (Nkoib==0)
+		  {
+		    Zn=Koib[1].Rezult[2].Bl[XVote].Vop[Xv].Valid+Koib[2].Rezult[2].Bl[XVote].Vop[Xv].Valid;
+		  } else {
+		    Zn=Koib[Nkoib].Rezult[2].Bl[XVote].Vop[Xv].Valid;
+		  }
 	   }
 	   if ((StrVstr(st, "BlankType=NoMarks", 1))&&(StrVstr(st, "VotingMode=Portable", 1)))
 	   // Режим голосования-переносной, кол-во принятых бюллетеней без отметок
 	   {
-		  Zn=0;
+		  if (Nkoib==0)
+		  {
+		    Zn=Koib[1].Rezult[2].Bl[XVote].Vop[Xv].NoMarks+Koib[2].Rezult[2].Bl[XVote].Vop[Xv].NoMarks;
+		  } else {
+		    Zn=Koib[Nkoib].Rezult[2].Bl[XVote].Vop[Xv].NoMarks;
+		  }
 	   }
 	   if ((StrVstr(st, "BlankType=TooManyMarks", 1))&&(StrVstr(st, "VotingMode=Portable", 1)))
 	   // Режим голосования-переносной, кол-во принятых бюллетеней с превышением кол-ва отметок
 	   {
-		  Zn=0;
+		  if (Nkoib==0)
+		  {
+		    Zn=Koib[1].Rezult[2].Bl[XVote].Vop[Xv].ManyMarks+Koib[2].Rezult[2].Bl[XVote].Vop[Xv].ManyMarks;
+		  } else {
+		    Zn=Koib[Nkoib].Rezult[2].Bl[XVote].Vop[Xv].ManyMarks;
+		  }
 	   }
 	   //------------------End Expression---------------
 	   //------------------Signum----------------
@@ -1939,23 +2043,67 @@ int Express(std::string Exp)
    return SumZn;
 }
 //--------------------------------------------------------------------------
-bool MakeProtokol(int XVote)
+bool MakeProtokol(int XVote, int Xv)
 {
   //------Определяемся с наличием протоколов
-  if (Votes.Blank[XVote].Vopr[1].NProtocoles>0)
+  if (Votes.Blank[XVote].Vopr[Xv].NProtocoles>0)
   { //Protocol Bar
+
+
 
   }// End Protocol Bar
   else { //Protokol Johtur
-
     std::string ProtX=ReadFile("./Protokols/Protokols.XML");
     int Nprot=NStrVstr(ProtX, "</Protocol>");
-
     std::string Prot=StrBetweenStr12(ProtX,"<Protocol ","</Protocol>",1); //Номер требуемого протокола
-    Protokol(Prot,XVote,1,1);
+    Protokol(Prot,XVote,Xv,1);
 
   } //End Protokol Johtur
   //------End Определяемся с наличием протоколов
+
+  for (int i=1; i<=Votes.Blank[XVote].Vopr[Xv].NProtocoles; i++) // 1..Nprotokoles
+  {
+    //Работаем со строками Lines
+    if (Votes.Blank[XVote].Vopr[Xv].Protocoles[i].NLines>0)
+    {
+       for (int j=1; j<=Votes.Blank[XVote].Vopr[Xv].Protocoles[i].NLines; j++) //1..Nlines
+       {
+          //Значение строки на оба КОИБа
+          if (Votes.Blank[XVote].Vopr[Xv].Protocoles[i].Lines[j].expression!="")
+          {
+            Votes.Blank[XVote].Vopr[Xv].Protocoles[i].Lines[j].Value=
+            Express(Votes.Blank[XVote].Vopr[Xv].Protocoles[i].Lines[j].expression,
+                    XVote, Xv, 0);
+          }
+       } //End 1..Nlines
+    }
+    //End Работаем со строками Lines
+
+    //Работаем с контрольными соотношениями Checks
+    if (Votes.Blank[XVote].Vopr[Xv].Protocoles[i].NChecks>0)
+    {
+       for (int j=1; j<=Votes.Blank[XVote].Vopr[Xv].Protocoles[i].NChecks; j++) //1..NChecks
+       {
+          if ((Votes.Blank[XVote].Vopr[Xv].Protocoles[i].Checks[j].expression!="")&&
+              (Votes.Blank[XVote].Vopr[Xv].Protocoles[i].Checks[j].Enabled ))
+          {
+           Votes.Blank[XVote].Vopr[Xv].Protocoles[i].Checks[j].Itog=
+           Checks(Votes.Blank[XVote].Vopr[Xv].Protocoles[i].Checks[j].expression,
+                  XVote,Xv);
+
+
+
+          }
+       }
+    }
+    //End Работаем с контрольными соотношениями Checks
+
+  } // End 1..Nprotokoles
+
+
+
+
+
   return true;
 }
 
@@ -1988,6 +2136,7 @@ bool Print(int Type)
   ofstream F;
   char sst[128];
   std::string Printer;
+  std::string st;
   Rep_cnt=0;
   std::string Font=Votes.Blank[1].Vopr[1].Protocoles[1].Font;
   int FontSize=Votes.Blank[1].Vopr[1].Protocoles[1].Fontsize;
@@ -2414,13 +2563,11 @@ case 2: //---------------------------------------------------------Протокол тест
 	} break; // End Протокол тестирования
 
 	case 3: //---------------------------------------------Результаты голосования по выборам XVote
-	{              strcpy(sst,"./Tex/Pr_Rezult.tex");
+	{       strcpy(sst,"./Tex/Pr_Rezult.tex");
             F.open("./Log/Protokol_VR.log", ios::out); //Log-файл
         for(int i=1;i<=Votes.Nblank; i++)
-       {  // формирование файла ечати  результатов по всем выборам
+       {  // формирование файла печати результатов по всем выборам
             XVote=i;
-      // формирование файла печати  результатов по всем выборам
-
             //1
             Printer=Out.PrRezult[1]; // РЕЗУЛЬТАТЫ ГОЛОСОВАНИЯ
             SumRep(Rep_cnt, Printer,1,2,1,"","","",0, 0,0,0,0,0,0 ,FontSize); //Centr
@@ -2469,31 +2616,249 @@ case 2: //---------------------------------------------------------Протокол тест
 
 	case 4://----------------------------------------------------------------Не выполнение КС
 	{
-     F.open("./Log/Protokol_KS.log", ios::out); //Log-файл
+           strcpy(sst,"./Tex/Pr_Rezult.tex");
+           F.open("./Log/Protokol_KS.log", ios::out); //Log-файл
+
+            //1
+            Printer=Out.PrCh[1]; // Невыполненные контрольные соотношения
+            SumRep(Rep_cnt, Printer,1,2,1,"","","",0, 0,0,0,0,0,0 ,FontSize); //Centr
+            Rep_cnt++;
+            F<<Printer<<'\n';
+            //2
+            TekDateTime();
+            Printer=Out.PrCh[2]+" "+DateS+" "+TimeS; // Текущие дата и время:
+            SumRep(Rep_cnt, Printer,1,2,1,"","","",0, 0,0,0,0,0,0 ,FontSize); //Centr
+            Rep_cnt++;
+            F<<Printer<<'\n';
+            //3
+            Printer=Votes.Blank[XVote].Name; // Имя выборов
+            SumRep(Rep_cnt, Printer,1,2,1,"","","",0, 0,0,0,0,0,0 ,FontSize); //Centr
+            Rep_cnt++;
+            F<<Printer<<'\n';
+
+            if (Votes.Blank[XVote].Vopr[1].NProtocoles>0)
+            {
+              for (int i=1; i<=Votes.Blank[XVote].Vopr[1].NProtocoles; i++)
+              {
+                if (Votes.Blank[XVote].Vopr[1].Protocoles[i].Text.final)
+                //Итоговый протокол
+                {
+            //4
+            Printer=Out.PrCh[3]; //Строки протокола:
+            SumRep(Rep_cnt, Printer,2,1,1,"","","",0, 1,0,0,0,0,0 ,FontSize);
+            Rep_cnt++;
+            F<<Printer<<'\n';
+
+                   if (Votes.Blank[XVote].Vopr[1].Protocoles[i].NLines>0)
+                   {
+                      for (int j=1; j<=Votes.Blank[XVote].Vopr[1].Protocoles[i].NLines; j++)
+                      {
+                        //5...
+                        Printer=Votes.Blank[XVote].Vopr[1].Protocoles[i].Lines[j].Name;
+                        SumRep(Rep_cnt, Printer,2,1,1,
+                               (IntToStr(Votes.Blank[XVote].Vopr[1].Protocoles[i].Lines[j].N)+
+                               Votes.Blank[XVote].Vopr[1].Protocoles[i].Lines[j].AddNum),
+                               "","",
+                               Votes.Blank[XVote].Vopr[1].Protocoles[i].Lines[j].Value,
+                               20,15,15,1,15,0, FontSize);
+                        Rep_cnt++;
+                        F<<Printer<<'\n';
+                      }
+                   }
+            //6
+            Printer=Out.PrCh[4]; //Контрольные соотношения:
+            SumRep(Rep_cnt, Printer,2,1,1,"","","",0, 1,0,0,0,0,0 ,FontSize);
+            Rep_cnt++;
+            F<<Printer<<'\n';
+                   if (Votes.Blank[XVote].Vopr[1].Protocoles[i].NChecks>0)
+                   {
+                      for (int j=1; j<=Votes.Blank[XVote].Vopr[1].Protocoles[i].NChecks; j++)
+                      {
+                        //7...
+                        Printer=Votes.Blank[XVote].Vopr[1].Protocoles[i].Checks[j].expression;
+                        if (Votes.Blank[XVote].Vopr[1].Protocoles[i].Checks[j].Itog)
+                        {
+                            st=Printer=Out.PrCh[5]; //Выполнено
+                        } else {
+                            st=Printer=Out.PrCh[6]+  //Не Выполнено + выражение
+                            Votes.Blank[XVote].Vopr[1].Protocoles[i].Checks[j].ItogExpression;
+                        }
+                        SumRep(Rep_cnt, Printer,2,1,1,IntToStr(j),
+                               "","",
+                               0,
+                               20,15,15,1,15,0, FontSize);
+                        Rep_cnt++;
+                        F<<Printer<<'\n';
+
+            //8
+            Printer=Out.PrCh[7]+IntToStr(Votes.Blank[XVote].Vopr[1].Protocoles[i].S);
+            // S(сумма голосов, поданных за все альтернативы)=
+            SumRep(Rep_cnt, Printer,2,1,1,"","","",0, 1,0,0,0,0,0 ,FontSize);
+            Rep_cnt++;
+            F<<Printer<<'\n';
+
+            //9
+            Printer=Out.PrCh[8]+IntToStr(Votes.Blank[XVote].Vopr[1].Protocoles[i].M);
+            // M(Количество мандатов)=
+            SumRep(Rep_cnt, Printer,2,1,1,"","","",0, 1,0,0,0,0,0 ,FontSize);
+            Rep_cnt++;
+            F<<Printer<<'\n';
+
+                      }
+                   }
+                }
+              }
+            }
 
 
 	} break; // End Не выполнение КС
-	case 5: //--------------------------------------------------------------------------Итоговый протокол
+	case 5: //------------------------Итоовый протокол-----------------------------------------Итоговый протокол
 	{
-	 F.open("./Log/Protokol_Itog.log", ios::out); //Log-файл
+	      strcpy(sst,"./Tex/Pr_Itog.tex");
+	      F.open("./Log/Protokol_Itog.log", ios::out); //Log-файл
 
-	 if (Votes.Blank[1].Vopr[1].Protocoles[1].Enable)
-	 {
-		 std::string Font=Votes.Blank[1].Vopr[1].Protocoles[1].Font;
-		 /*
-		 int NumW=Votes.Blank[1].Vopr[1].Protocoles[1].numberWidth;
-		 int NameW=Votes.Blank[1].Vopr[1].Protocoles[1].nameWidth;
-		 int ValueW=Votes.Blank[1].Vopr[1].Protocoles[1].valueWidth;
-		 int Nlines=Votes.Blank[1].Vopr[1].Protocoles[1].NLines;
-		 int Nchecks=Votes.Blank[1].Vopr[1].Protocoles[1].NChecks;
-         */
+            if (Votes.Blank[XVote].Vopr[1].NProtocoles>0)
+            {
+              for (int i=1; i<=Votes.Blank[XVote].Vopr[1].NProtocoles; i++)
+              {
+                if (Votes.Blank[XVote].Vopr[1].Protocoles[i].Text.final)
+                //Итоговый протокол
+                {
+ 	               if (Votes.Blank[XVote].Vopr[1].Protocoles[i].Enable)
+	               {
+		             std::string Font=Votes.Blank[XVote].Vopr[1].Protocoles[i].Font;
 
-		  if (Votes.Blank[1].Vopr[1].Protocoles[1].Lines[1].type=="DontQueryUser")
-		  {
-			// Blank[1].Vopr[1].Protocoles[1].Lines[1].Value=Express(Blank[1].Vopr[1].Protocoles[1].Lines[1].)
+		             int NumW=Votes.Blank[XVote].Vopr[1].Protocoles[i].numberWidth;
+		             int NameW=Votes.Blank[XVote].Vopr[1].Protocoles[i].nameWidth;
+                     int ValueW=Votes.Blank[XVote].Vopr[1].Protocoles[i].valueWidth;
+		             int ValueTextW=Votes.Blank[XVote].Vopr[1].Protocoles[i].valueWidth;
 
+		             //Все кроме таблицы!!!
+		             int NPlines=Votes.Blank[XVote].Vopr[1].Protocoles[i].Text.NProtocolLine;
+                     if (NPlines>0)
+                     {
+                        for (int j=1; j<=NPlines; j++)
+                        {
+                        //N protokol lines
+
+                        st=Votes.Blank[XVote].Vopr[1].Protocoles[i].Text.ProtocolLine[j].text;
+
+                        TekDateTime();
+                        if (StrVstr(st,"{ElectionName}",1))
+                        {
+                           st=FiltrStr(st,"{ElectionName}",Votes.ElName);
+                        }
+                        if (StrVstr(st,"{VotingDate}",1))
+                        {
+                            st=FiltrStr(st,"{VotingDate}",DateToStringOrVoice(TekDT.year,TekDT.month,TekDT.day, true));
+                        }
+                        if (StrVstr(st,"{UIK}",1))
+                        {
+                            st=FiltrStr(st,"{UIK}"," "+IntToStr(Votes.Nuik)+" ");
+                        }
+
+                        int fs=Votes.Blank[XVote].Vopr[1].Protocoles[i].Text.ProtocolLine[j].fontSize;
+                        if (fs==0) {fs=8;}
+                        bool it=Votes.Blank[XVote].Vopr[1].Protocoles[i].Text.ProtocolLine[j].italic;
+                        bool bl=Votes.Blank[XVote].Vopr[1].Protocoles[i].Text.ProtocolLine[j].bold;
+                        std::string sec=Votes.Blank[XVote].Vopr[1].Protocoles[i].Text.ProtocolLine[j].section;
+                        std::string al=Votes.Blank[XVote].Vopr[1].Protocoles[i].Text.ProtocolLine[j].align;
+
+                        int Alg=1;
+                        if ((al=="Center"))
+                        {
+                           Alg=2;
+                        }
+                        if ((al=="Right"))
+                        {
+                           Alg=3;
+                        }
+
+                        int Typ=0;
+                        if ((sec=="PageHeader")||(sec=="Header"))
+                        {
+                           Typ=1;
+                        }
+                        if (sec=="Body")
+                        {
+                           Typ=2;
+                        }
+                        if (sec=="Footer")
+                        {
+                           Typ=3;
+                        }
+                        if (sec=="PageFooter")
+                        {
+                           Typ=4;
+                        }
+
+                        int Bold=1;
+                        if (bl)
+                        {
+                          Bold=2;
+                        }
+                        if (it)
+                        {
+                          Bold=3;
+                        }
+                        // А если и bold и Italic???
+
+                        Printer=st;
+                        SumRep(Rep_cnt, Printer,Typ,Alg,Bold,"","","",0, 0,0,0,0,0,0 ,fs);
+                        Rep_cnt++;
+                        F<<Printer<<'\n';
+
+                        }
+                     }
+                    // End Все кроме таблицы!!!
+
+                    //А теперь таблица!!!
+		             int Nlines=Votes.Blank[XVote].Vopr[1].Protocoles[i].NLines;
+
+                     if (Nlines>0)
+                     {
+                        for (int j=1; j<=Nlines; j++)
+                        {
+                        st=Votes.Blank[XVote].Vopr[1].Protocoles[i].Lines[j].Name;
+                        std::string NumSt=IntToStr(Votes.Blank[XVote].Vopr[1].Protocoles[i].Lines[j].N)+
+                                                   Votes.Blank[XVote].Vopr[1].Protocoles[i].Lines[j].AddNum;
+                        int Value=Votes.Blank[XVote].Vopr[1].Protocoles[i].Lines[j].Value;
+                        std::string ValueSt=IntToStr(Votes.Blank[XVote].Vopr[1].Protocoles[i].Lines[j].Value);
+                        std::string ValuePropSt="("+CisloToStringOrVoice(Value,true)+")";
+
+                        int fs=Votes.Blank[XVote].Vopr[1].Protocoles[i].Text.VoteLine[j].fontSize;
+                        if (fs==0) {fs=8;}
+                        bool it=Votes.Blank[XVote].Vopr[1].Protocoles[i].Text.VoteLine[j].italic;
+                        bool bl=Votes.Blank[XVote].Vopr[1].Protocoles[i].Text.VoteLine[j].bold;
+                        std::string type=Votes.Blank[XVote].Vopr[1].Protocoles[i].Text.VoteLine[j].type;
+
+                        int Typ=2;
+                        int Alg=1;
+                        int Bold=1;
+                        if (bl)
+                        {
+                          Bold=2;
+                        }
+                        if (it)
+                        {
+                          Bold=3;
+                        }
+                        // А если и bold и Italic???
+
+                        Printer=st;
+                        SumRep(Rep_cnt, Printer,Typ,Alg,Bold,NumSt,"",ValuePropSt,Value,
+                               NumW,0,NameW,ValueW,ValueTextW,0 ,fs);
+                        Rep_cnt++;
+                        F<<Printer<<'\n';
+
+                        }
+                     }
+                     //End А теперь таблица!!!
+
+	                }
+                 }
+              }
 		  }
-	   };
 	} break; // End Итоговый протокол
 
  } //End Switch
@@ -2887,10 +3252,12 @@ void Sos_7(void)
 }
 void Sos_8(void)
 {
-    std::string st1;
-    std::string st2;
-    TekDateTime(); //Текущие дата и время
-    st1=Out.Main[21]+" "+Votes.DateV; // Дата голосования ЧЧ.ММ.ГГ
+    std::string st1;     std::string st2;
+    std::string st3; std::string st4; std::string st5;
+    std::string stDig;
+    char FirstDig,SecDig;
+//          int ii,jj;
+        TekDateTime(); //Текущие дата и время
     PrVoteDay=0; //  начальная установка перед проверкой времени
      if (TekDT.year==Votes.DByear)
      {      if (TekDT.month == Votes.DBmonth)
@@ -2898,7 +3265,6 @@ void Sos_8(void)
                  {     //  день  голосования
                         PrVoteDay=1;
                         Koib[1].VS = 9;
-                        Say(11); //День голосования - сегодня
                         Ind(Out.Main[23]," "); //Распечатать исходные данные? ДА/НЕТ
                         Say(14); //Распечатать исходные данные?
                  }  else
@@ -2920,45 +3286,127 @@ void Sos_8(void)
                 PrVoteDay=-1;
          }
      }
-     switch ( PrVoteDay)
-     {  case -1:  {  st2=Out.Main[20];    } break;
-         case  0:  {  st2=Out.Main[19];   } break;
-         case  1:  {   st2=""; } break;
-     }
-     Ind(st1,st2);
-     //sleep(1);
-    // голосом правильно дату  голосования
-    Say(12); //День голосования - не сегодня
+
+    if(PrVoteDay!=1)
+    { // если не  день  голосования
 
 
- /*     int ii,jj;
-              stDig=IntToStr(Days);
-              FirstDig=stDig[stDig.length()-1];
-              ii=int(FirstDig);
-              switch (ii)
-              { case 49:  { st2=Out.Main[81]; jj=22;} break;  // день
-                 case 50:   case  51 : case  52 :  {st2=Out.Main[82];  jj=23;}break; // дня
-                 case  48 :   case  53 : case  54 :case  55 :   case  56 : case  57 : {st2=Out.Main[83];jj=24;} break; //дней
-              }//switch
-               st1=IntToStr(Days)+"  "+st2 +" "+Out.Main[28];
-               Ind(st1," "); // DD  дней до начала голосования
-              Golos="";
-	          Golos=CisloToStringOrVoice(Days,false) + OutV.MonthsPath[jj]+OutV.MainPath[19];
-               SayN(Golos);
-               */
+        st1=Out.Main[21]+" "+Votes.DateV; // Дата голосования ЧЧ.ММ.ГГ
 
-   /* Golos="  ";
-	Golos=OutV.MainPath[12]+" "+ CisloToStringOrVoice(Votes.DBday,false);
-	Golos=Golos+ CisloToStringOrVoice(Votes.DBmonth,false)+CisloToStringOrVoice(Votes.DByear,false); //
-	  switch ( PrVoteDay)
-     {  case -1:  {  Golos=Golos+ OutV.MainPath[11];  } break;
-         case  0:  {  Golos=Golos+ OutV.MainPath[9];  } break;
-     }
-    SayN(Golos);
-    */
-   //Начать работу в тренировочном режиме выборов?
-    st1=Out.Main[22];       st2=Out.Main[118];       Ind(st1,st2);
-    Say(13); //Начать работу в тренировочном режиме выборов?
+        switch ( PrVoteDay)
+        {  case -1:  {  st2=Out.Main[20];    } break;
+            case  0:  {  st2=Out.Main[19];   } break;
+            case  1:  {   st2=""; } break;
+        }
+        Ind(st1,st2);
+        //sleep(1);
+        // голосом правильно дату  голосования
+        switch(Votes.DBday)
+        {  // подключение файла дня
+            case 1:  st1= OutV.NumPath[94]; break;          case 2:  st1= OutV.NumPath[95]; break;          case 3:  st1= OutV.NumPath[96]; break;
+            case 4:  st1= OutV.NumPath[97]; break;          case 5:  st1= OutV.NumPath[98]; break;          case 6:  st1= OutV.NumPath[99]; break;
+            case 7:  st1= OutV.NumPath[100]; break;       case 8:  st1= OutV.NumPath[101]; break;       case 9:  st1= OutV.NumPath[102]; break;
+            case 10:  st1= OutV.NumPath[103]; break;    case 11:  st1= OutV.NumPath[104]; break;     case 12:  st1= OutV.NumPath[105]; break;
+            case 13:  st1= OutV.NumPath[106]; break;    case 14:  st1= OutV.NumPath[107]; break;     case 15:  st1= OutV.NumPath[108]; break;
+            case 16:  st1= OutV.NumPath[109]; break;    case 17:  st1= OutV.NumPath[110]; break;     case 18:  st1= OutV.NumPath[111]; break;
+            case 19:  st1= OutV.NumPath[112]; break;    case 20:  st1= OutV.NumPath[113]; break;    case 21:  st1= OutV.NumPath[114]; break;
+            case 22:  st1= OutV.NumPath[115]; break;    case 23:  st1= OutV.NumPath[116]; break;    case 24:  st1= OutV.NumPath[117]; break;
+            case 25:  st1= OutV.NumPath[118]; break;    case 26:  st1= OutV.NumPath[119]; break;    case 27:  st1= OutV.NumPath[120]; break;
+        case 28:  st1= OutV.NumPath[121]; break;    case 29:  st1= OutV.NumPath[122]; break;    case 30:  st1= OutV.NumPath[113]; break;
+            case 31:  st1= OutV.NumPath[124]; break;
+        }
+        switch(Votes.DBmonth)
+        {  // подключение файла месяцадня
+            case 1:  st2= OutV.MonthsPath[1]; break;          case 2:  st2= OutV.MonthsPath[2]; break;          case 3:  st2= OutV.MonthsPath[3]; break;
+            case 4:  st2= OutV.MonthsPath[4]; break;          case 5:  st2= OutV.MonthsPath[5]; break;          case 6:  st2= OutV.MonthsPath[6]; break;
+            case 7:  st2= OutV.MonthsPath[7]; break;         case 8:  st2= OutV.MonthsPath[8]; break;       case 9:  st2= OutV.MonthsPath[9]; break;
+            case 10:  st2= OutV.MonthsPath[10]; break;    case 11:  st2= OutV.MonthsPath[11]; break;     case 12:  st2= OutV.MonthsPath[12]; break;
+        }
+        // формирование файлов озвучивания  года голосования
+        stDig=IntToStr(Votes.DByear);
+        FirstDig=stDig[0];// цифра тысяч лет
+        switch (FirstDig)
+        {    case '1':  { st3=OutV.NumPath[74]; } break;  // одна тысяча
+                case '2':  { st3=OutV.NumPath[75]; } break;  // две тысячи
+                case '3':  { st3=OutV.NumPath[76]; } break;  // три тысячи
+        }//switch
+        FirstDig=stDig[1];// цифра сотен лет
+        switch (FirstDig)
+        {    case '0':  { st4=""; } break;  // ноль сотен
+             case '1':  { st4=OutV.NumPath[1]; } break;  // сто
+             case '2':  { st4=OutV.NumPath[2]; } break;  // двести
+             case '3':  { st4=OutV.NumPath[3]; } break;  // триста
+             case '4':  { st4=OutV.NumPath[1]; } break;  // четыреста
+             case '5':  { st4=OutV.NumPath[2]; } break;  // пятьсот
+             case '6':  { st4=OutV.NumPath[3]; } break;  // шестьсот
+             case '7':  { st4=OutV.NumPath[1]; } break;  // снмьсот
+             case '8':  { st4=OutV.NumPath[2]; } break;  // восемьсот
+             case '9':  { st4=OutV.NumPath[3]; } break;  // девятьсот
+        }//switch
+        FirstDig=stDig[2];// цифра десятков лет
+        SecDig  =stDig[3];// цифра единиц лет
+        if(FirstDig > '1')
+        {  switch (FirstDig)
+            {   case '2':  {  if(SecDig ==0) st5=OutV.NumPath[67];  else st5=OutV.NumPath[10];   } break;  // двадцатого/двадцать
+                case '3':  {  if(SecDig ==0) st5=OutV.NumPath[68];  else st5=OutV.NumPath[11];   } break;  // двадцатого/двадцать
+                case '4':  {  if(SecDig ==0) st5=OutV.NumPath[69];  else st5=OutV.NumPath[12];   } break;  // двадцатого/двадцать
+                    case '5':  {  if(SecDig ==0) st5=OutV.NumPath[70];  else st5=OutV.NumPath[13];   } break;  // двадцатого/двадцать
+                case '6':  {  if(SecDig ==0) st5=OutV.NumPath[71];  else st5=OutV.NumPath[14];   } break;  // двадцатого/двадцать
+                case '7':  {  if(SecDig ==0) st5=OutV.NumPath[72];  else st5=OutV.NumPath[15];   } break;  // двадцатого/двадцать
+                case '8':  {  if(SecDig ==0) st5=OutV.NumPath[73];  else st5=OutV.NumPath[16];   } break;  // двадцатого/двадцать
+                case '9':  {  if(SecDig ==0) st5=OutV.NumPath[125];  else st5=OutV.NumPath[17];   } break;  // двадцатого/двадцать
+            }//switch
+            switch (SecDig)
+            {   case '1':  {  st5=st5+" "+ OutV.NumPath[48];     } break;  // первого
+                case '2':  {  st5=st5+" "+ OutV.NumPath[49];     } break;  // второго
+                case '3':  {  st5=st5+" "+ OutV.NumPath[59];     } break;  // третьего
+                case '4':  {  st5=st5+" "+ OutV.NumPath[51];     } break;  // четвертого
+                case '5':  {  st5=st5+" "+ OutV.NumPath[52];     } break;  // пятого
+                case '6':  {  st5=st5+" "+ OutV.NumPath[53];     } break;  // шестого
+                case '7':  {  st5=st5+" "+ OutV.NumPath[54];     } break;  // седьмого
+                case '8':  {  st5=st5+" "+ OutV.NumPath[55];     } break;  // восьмого
+                case '9':  {  st5=st5+" "+ OutV.NumPath[56];     } break;  // девятого
+        }//switch
+        } else
+        {  if(FirstDig == '0')
+            { //"0"
+                switch (SecDig)
+                {  case '0':  {  st5= OutV.NumPath[126];     } break;  // сотого
+                    case '1':  {  st5= OutV.NumPath[48];     } break;  // первого
+                    case '2':  {  st5= OutV.NumPath[49];     } break;  // второго
+                    case '3':  {  st5= OutV.NumPath[59];     } break;  // третьего
+                    case '4':  {  st5= OutV.NumPath[51];     } break;  // четвертого
+                    case '5':  {  st5= OutV.NumPath[52];     } break;  // пятого
+                    case '6':  {  st5= OutV.NumPath[53];     } break;  // шестого
+                    case '7':  {  st5= OutV.NumPath[54];     } break;  // седьмого
+                    case '8':  {  st5= OutV.NumPath[55];     } break;  // восьмого
+                    case '9':  {  st5= OutV.NumPath[56];     } break;  // девятого
+                }//switch
+            }else
+            {   // "1"
+                switch (SecDig)
+                {  case '0':  {  st5= OutV.NumPath[57];     } break;  // десятого
+                    case '1':  {  st5= OutV.NumPath[58];     } break;  // одиннадцатого
+                    case '2':  {  st5= OutV.NumPath[59];     } break;  // двенадцатого
+                    case '3':  {  st5= OutV.NumPath[60];     } break;  // тринадцатого
+                    case '4':  {  st5= OutV.NumPath[61];     } break;  // четырнадцатого
+                    case '5':  {  st5= OutV.NumPath[62];     } break;  // пятнадцатого
+                    case '6':  {  st5= OutV.NumPath[63];     } break;  // шестнадцатого
+                    case '7':  {  st5= OutV.NumPath[64];     } break;  // семнадцатого
+                    case '8':  {  st5= OutV.NumPath[65];     } break;  // восемнадцатого
+                    case '9':  {  st5= OutV.NumPath[66];     } break;  // девятнадцатого
+                }//switch
+            }
+        }
+        Say(12); //Дата голосования
+        Golos="  ";
+        Golos=st1+" "+st2+" "+st3+" "+st4+" "+st5+" "+OutV.MonthsPath[13]; // года
+        SayN(Golos);
+         if(PrVoteDay==-1) Say(11);  if(PrVoteDay==0) Say(9);
+        //Начать работу в тренировочном режиме выборов?
+        st1=Out.Main[22];       st2=Out.Main[118];       Ind(st1,st2);
+        Say(13); //Начать работу в тренировочном режиме выборов?
+    }
 }
 
 void Sos_9(void)
@@ -2988,10 +3436,7 @@ void Sos_13(void)
 }
 void Sos_14(void)
 {
-    std::string st1;
-    std::string st2;
-    std::string stDig;
-    //st1=Out.Main[28]; //  до начала голосования
+    std::string st1;    std::string st2;    std::string stDig;
       if (Koib[1].Tren) // Не день голосования
       {
         Koib[1].VS = 14;
@@ -3011,7 +3456,7 @@ void Sos_14(void)
                st1=IntToStr(Days)+"  "+st2 +" "+Out.Main[28];
                Ind(st1," "); // DD  дней до начала голосования
               Golos="";
-	          Golos=CisloToStringOrVoice(Days,false) + OutV.MonthsPath[jj]+OutV.MainPath[19];
+	          Golos=CisloToStringOrVoice(Days,false) +" "+ OutV.MonthsPath[jj]+" "+OutV.MainPath[19];
                SayN(Golos);
           }
         //  формирование  сообщения о том, сколько дней  осталось до начала голосования
@@ -3029,13 +3474,12 @@ void Sos_15(void)
 void Sos_16(void)
 {
     std::string st1;
-    st1=Out.Main[34]+" "+IntToStr(Xblank);//+" "+Out.Main[35];
-    // снятие позиций  // Снимать позиции для выборов N..? ДА/НЕТ
+    st1=Out.Main[34]+" "+IntToStr(Xblank);
+    // снятие позиций  // Снимать позиции для выборов N..?
     Ind(st1," ");
     Golos="";
 	Golos=OutV.MainPath[22]+" "+CisloToStringOrVoice(Xblank,false) ; //Номер выборов
     SayN(Golos);
-    //Say(22); // Снимать позиции для выборов N..? ?!?!
 }
 void Sos_17(void)
 {
@@ -3046,9 +3490,6 @@ void Sos_17(void)
       Golos="";
      Golos=OutV.MainPath[23]+" "+CisloToStringOrVoice(Xcand,false)+" "+OutV.MainPath[24]+" "+CisloToStringOrVoice(Xblank,false) ; // номер выборов
     SayN(Golos);
-
-    //  Say(23); //Снимать позицию N... ?!?!
-   //   Say(24); // для выборов N...? ?!?!
 }
 void Sos_18(void)
 {
@@ -3091,9 +3532,6 @@ void Sos_20(void)
 void Sos_21(void)
 {
      Ind(Out.Main[43]," "); //Перечислить снятые позиции? ДА/НЕТ
-/*!!!  */     // формирование голосового сообщения по снятым позициям
-
-
      Say(27); //Перечислить снятые позиции?
 }
 void Sos_22(void)
@@ -3101,18 +3539,100 @@ void Sos_22(void)
      Ind(Out.Main[44]," "); //Подтверждаете изменения ?
      Say(61); //Подтверждаете_изменения_в_исходных_данных?
 }
+
+void ReadTime(int hour,int minut)
+{  // озвучивание  текущего времени
+    // формирование времени для озвучивания
+    std:: string st1,st2,stDig;
+    char FirstDig,SecDig;
+    switch (hour)
+    {  // часы для  озвучивания
+        case 0:    { st1= OutV.NumPath[47]+" "+ OutV.MonthsPath[16];  }   break;
+        case 1:    { st1= OutV.NumPath[19]+" "+ OutV.MonthsPath[14];  } break;
+        case 2:    { st1= OutV.NumPath[21]+" "+ OutV.MonthsPath[15];  } break;
+        case 3:    { st1= OutV.NumPath[22]+" "+ OutV.MonthsPath[15];  } break;
+        case 4:    { st1= OutV.NumPath[23]+" "+ OutV.MonthsPath[15];  }  break;
+        case 5:    { st1= OutV.NumPath[24]+" "+ OutV.MonthsPath[16];  }  break;
+        case 6:    { st1= OutV.NumPath[25]+" "+ OutV.MonthsPath[16];  }   break;
+        case 7:    { st1= OutV.NumPath[26]+" "+ OutV.MonthsPath[16];  }   break;
+        case 8:    { st1= OutV.NumPath[27]+" "+ OutV.MonthsPath[16];  }   break;
+        case 9:    { st1= OutV.NumPath[28]+" "+ OutV.MonthsPath[16];  }  break;
+        case 10:    { st1= OutV.NumPath[29]+" "+ OutV.MonthsPath[16];  }   break;
+        case 11:    { st1= OutV.NumPath[30]+" "+ OutV.MonthsPath[16];  }   break;
+        case 12:    { st1= OutV.NumPath[31]+" "+ OutV.MonthsPath[16];  }   break;
+        case 13:    { st1= OutV.NumPath[32]+" "+ OutV.MonthsPath[16];  }  break;
+        case 14:    { st1= OutV.NumPath[33]+" "+ OutV.MonthsPath[16];  }   break;
+        case 15:    { st1= OutV.NumPath[34]+" "+ OutV.MonthsPath[16];  }  break;
+        case 16:    { st1= OutV.NumPath[35]+" "+ OutV.MonthsPath[16];  }   break;
+        case 17:    { st1= OutV.NumPath[36]+" "+ OutV.MonthsPath[16];  }   break;
+        case 18:    { st1= OutV.NumPath[37]+" "+ OutV.MonthsPath[16];  }   break;
+        case 19:    { st1= OutV.NumPath[38]+" "+ OutV.MonthsPath[16];  }   break;
+        case 20:    { st1= OutV.NumPath[10]+" "+ OutV.MonthsPath[16];  }  break;
+        case 21:    { st1= OutV.NumPath[10]+" "+OutV.NumPath[19]+" "+ OutV.MonthsPath[14];  }  break;
+        case 22:    { st1= OutV.NumPath[10]+" "+OutV.NumPath[21]+" "+ OutV.MonthsPath[15];  }   break;
+        case 23:    { st1= OutV.NumPath[10]+" "+OutV.NumPath[22]+" "+ OutV.MonthsPath[15];  }  break;
+    }
+    stDig=IntToStr(minut);
+    FirstDig=stDig[0];// цифра десятков лет
+    SecDig  =stDig[1];// цифра единиц лет
+    if(minut >19)
+    {    // больше 19 минут
+        if(FirstDig > '1')
+        {  switch (FirstDig)
+            {   case '2':  { st2=OutV.NumPath[10];   } break;  // двадцать
+                case '3':  {  st2=OutV.NumPath[11];   } break;  // тридцать
+                case '4':  {  st2=OutV.NumPath[12];   } break;  // сорок
+                case '5':  {   st2=OutV.NumPath[13];   } break;  // пятьдесят
+            }//switch
+            switch (SecDig)
+            {   case '0':  {  st2=st2+" "+ OutV.MonthsPath[19];       } break;  // минут
+                case '1':  {  st2=st2+" "+ OutV.NumPath[18] +" "+ OutV.MonthsPath[17];       } break;  // одна минута
+                case '2':  {  st2=st2+" "+ OutV.NumPath[20] +" "+ OutV.MonthsPath[18];       } break;  // две минуты
+                case '3':  {  st2=st2+" "+ OutV.NumPath[22] +" "+ OutV.MonthsPath[18];       } break;  // три минуты
+                case '4':  {  st2=st2+" "+ OutV.NumPath[23] +" "+ OutV.MonthsPath[18];       } break;  // четыре минуты
+                case '5':  {  st2=st2+" "+ OutV.NumPath[24] +" "+ OutV.MonthsPath[19];       } break;  // пять минут
+                case '6':  {  st2=st2+" "+ OutV.NumPath[25] +" "+ OutV.MonthsPath[19];       }  break;  // шесть минут
+                case '7':  {  st2=st2+" "+ OutV.NumPath[26] +" "+ OutV.MonthsPath[19];       }  break;  // семь минут
+                case '8':  {  st2=st2+" "+ OutV.NumPath[27] +" "+ OutV.MonthsPath[19];       }  break;  // восемь минут
+                case '9':  {  st2=st2+" "+ OutV.NumPath[28] +" "+ OutV.MonthsPath[19];       }  break;  // девятьминут
+            }//switch
+        }
+    } else
+    {  // до 20 минут
+        switch (minut)
+        {  // минуты для  озвучивания
+            case 0:    st2= ""; break;
+            case 1:    { st2= OutV.NumPath[18] +" "+ OutV.MonthsPath[17];  }  break;
+            case 2:    { st2= OutV.NumPath[20] +" "+ OutV.MonthsPath[18];  } break;
+            case 3:    { st2= OutV.NumPath[22] +" "+ OutV.MonthsPath[18];  } break;
+            case 4:    { st2= OutV.NumPath[23] +" "+ OutV.MonthsPath[18];  } break;
+            case 5:    { st2= OutV.NumPath[24] +" "+ OutV.MonthsPath[19];  }  break;
+            case 6:    { st2= OutV.NumPath[25] +" "+ OutV.MonthsPath[19];  }  break;
+            case 7:    { st2= OutV.NumPath[26] +" "+ OutV.MonthsPath[19];  }  break;
+            case 8:    { st2= OutV.NumPath[27] +" "+ OutV.MonthsPath[19];  }  break;
+            case 9:    { st2= OutV.NumPath[28] +" "+ OutV.MonthsPath[19];  }  break;
+            case 10:    { st2= OutV.NumPath[29] +" "+ OutV.MonthsPath[19];  }  break;
+            case 11:    { st2= OutV.NumPath[30] +" "+ OutV.MonthsPath[19];  }  break;
+            case 12:    { st2= OutV.NumPath[31] +" "+ OutV.MonthsPath[19];  }  break;
+            case 13:    { st2= OutV.NumPath[32] +" "+ OutV.MonthsPath[19];  }  break;
+            case 14:    { st2= OutV.NumPath[33] +" "+ OutV.MonthsPath[19];  }  break;
+            case 15:    { st2= OutV.NumPath[34] +" "+ OutV.MonthsPath[19];  }  break;
+            case 16:    { st2= OutV.NumPath[35] +" "+ OutV.MonthsPath[19];  }  break;
+            case 17:    { st2= OutV.NumPath[36] +" "+ OutV.MonthsPath[19];  }  break;
+            case 18:    { st2= OutV.NumPath[37] +" "+ OutV.MonthsPath[19];  }  break;
+            case 19:    { st2= OutV.NumPath[38] +" "+ OutV.MonthsPath[19];  }  break;
+        }
+    }
+    Golos="  ";         Golos=st1+" "+st2;        SayN(Golos);
+} //  ReadTime
+
 void Sos_23(void)
-{
-        std::string st1;
-        std::string st2;
-        st1=Out.Main[45];// Проверьте распознавание!
-        st2=Out.Main[48]+TimeS; // Время: ЧЧ:ММ
-        Ind(st1,st2);
-        sleep(2);
-        st1=Out.Main[46] ; // Тестирование!
-        st2=Out.Main[47] + " 0"; //Тест 0
-        Ind(st1,st2);
-        Say(58); //Закончить тестирование - НЕТ
+{   //Тестирование! Проверьте распознавание. Время
+    std::string st1,st2;  Say(28);
+    TekDateTime();    int h =TekDT.hour;    int m=TekDT.minit; ReadTime(h,m);
+    st1=Out.Main[45]; st2=Out.Main[48]+TimeS; // Время: ЧЧ:ММ
+    Ind(st1,st2);
+    sleep(2);  st1=Out.Main[46] ;  st2=Out.Main[47] + " 0";  Ind(st1,st2);
 }
 
 void Sos_24(void)
@@ -3122,14 +3642,9 @@ void Sos_24(void)
 }
 
 void Sos_50(void)
-{
-      std::string st1;
-       //All=Koib[1].Rezult[XVote].All;
-        st1=Out.Main[47];
-      if (NumBullAll >= 0)
-      {
-         st1=st1+" "+IntToStr(NumBullAll); //Тест:...
-      }
+{  // количество бюллетеней
+      std::string st1;  st1=Out.Main[47];
+      if (NumBullAll >= 0)   st1=st1+" "+IntToStr(NumBullAll);
      Ind("",st1);
 }
 void ObrTestBull(void)
@@ -3138,7 +3653,8 @@ void ObrTestBull(void)
         Ind(Out.Main[127]," "); // Сканирование...
         SayVotes(1);  // здравствуйте
         Golosovanie();  // прием и распознавание бюллетеня
-        st1=IntToStr(NumBullAll)+" : "+IntToStr(MasScan.MasRecOut[2]); // количество принятых бюллетеней// номер УИК
+        //st1=IntToStr(NumBullAll)+" : "+IntToStr(MasScan.MasRecOut[2]); // количество принятых бюллетеней// номер УИК
+         st1=IntToStr(MasScan.MasRecOut[4])+" : "+IntToStr(MasScan.MasRecOut[2]); // тип бюллетеня (номер маркера)// номер УИК
         Golos="";    Golos=OutV.VotesPath[11]+" "+CisloToStringOrVoice(NumBullAll,false) ; //количество принятых бюллетеней
         SayN(Golos);
         if ((pr_rr==1)||(pr_rr==2))//НУФ//Бюллетень неустановленной формы!
@@ -3151,25 +3667,34 @@ void ObrTestBull(void)
         {   //Бюллетень действительный!//Все в порядке
             st1=st1+" "+Out.Votes[5]; // действительный
             st3=Out.Votes[9]+" N : ";  // Вопрос номер
-            SayVotes(5);
+            SayVotes(5); //
             int i=MasScan.MasRecOut[1]; // номер типа бланка распознанного бюллетеня
             int NumV=MasScan.MasRecOut[3]; // номер типа бланка распознанного бюллетеня
+            //int NumMarker=MasScan.MasRecOut[4]; // номер маркера бланка
             for(int j=1;j <= NumV;j++) //  по всем выборам (вопросам) на  бланке
             if(Votes.Blank[i].Vopr[j].ID!="0")
             {   st2="";
-                st2=st3+IntToStr(j)+" "+Out.Votes[10]+" N : ";
-                Golos= "";
+                 Golos= "";
                 Golos= OutV.VotesPath[9]+" "+CisloToStringOrVoice(j,false) ;
+               int jj=0;
+               for(int k=1; k <= Votes.Blank[i].Vopr[j].NCandidates;k++) if(MasScan.MasCandOut[j][k]!=0)jj=jj+1;
+               if(jj==1)
+               {  // одна  отметка по выыборам
+                        st2=st3+IntToStr(j)+" "+Out.Votes[10]+" N : ";             Golos= Golos+" "+OutV.VotesPath[10];
+               } else
+               {  // Больше одной  отметки
+                        st2=st3+IntToStr(j)+" "+Out.Votes[13]+" N : ";              Golos= Golos+" "+OutV.VotesPath[13] ;
+               }
                 for(int k=1; k <= Votes.Blank[i].Vopr[j].NCandidates;k++)
                 {  //по  кандидатам для каждых выборов
                     if(MasScan.MasCandOut[j][k]!=0)
-                    {  // если бланк - референдум, то по  каждому вопросу формируется список отметок
+                    {  // формирвоание списка кандидатов, за которых есть отметки
                         if(k>1) // кандидаты
                         {   st2=st2+", "+IntToStr(k);
-                            Golos= Golos+" "+OutV.VotesPath[13]+" "+CisloToStringOrVoice(k,false) ;
+                            Golos= Golos+" "+CisloToStringOrVoice(k,false) ;
                         } else // кандидат
-                        { st2=st2 + IntToStr(k);
-                            Golos= Golos+" "+OutV.VotesPath[10]+" "+CisloToStringOrVoice(k,false) ;
+                        {   st2=st2 + IntToStr(k);
+                            Golos= Golos+" "+CisloToStringOrVoice(k,false) ;
                         }
                     }
                 }
@@ -3203,26 +3728,27 @@ void Sos_29(void)
 {
       Ind(Out.Main[54],Out.Main[55]);
       Say(36); //Для перехода в стационарный режим голосования нажмите ДА
-      Say(37); //Для возврата к получению исходных данных и тестированию нажмите НЕТ
 }
 void Sos_30(void)
 {
-      //std::string st;
+     //std::string st;
      /* TekDateTime();
       int h=Votes.Bhour[1]-TekDT.hour;
       int m=Votes.Bmin[1]-TekDT.minit;
-      st=IntToStr(h)+" "+Out.Main[100]+" "+IntToStr(m)+" "+Out.Main[101];*/
-      Ind(Out.Main[56]," "); // До стационарного голосования осталось 10 минут:
-      Say(38); // До стационарного голосования осталось 10 минут
+      st=IntToStr(h)+" "+Out.Main[100]+" "+IntToStr(m)+" "+Out.Main[101];
+      */
+      Ind(Out.Main[56]," "); // До начала голосования осталось
+      Say(38); // До  начала голосования осталось
 }
 void Sos_31(void)
 {
       std::string st1;
       std::string st2;
-
-      TekDateTime();
+      Say(39); //Стационарное голосование. Время
+              TekDateTime();
       int h =TekDT.hour;
       int m=TekDT.minit;
+        ReadTime(h,m);
       //  стационарное  голосование Время: ** часов ** минут
       st1=Out.Main[57]; // стационарное голосование
       st2= Out.Main[48]+IntToStr(h)+" : "+IntToStr(m); // время ЧЧ:ММ
@@ -3230,7 +3756,7 @@ void Sos_31(void)
       sleep(2);
       st2= Out.Main[58]+" 0"; // Принято : 0
       Ind("",st2);
-      Say(39); //Начало стационарного голосования
+
 }
 
 void Sos_60(void)
@@ -3261,12 +3787,16 @@ void Sos_34(void)
 {
 	  std::string st1;
 	  std::string st2;
-	  TekDateTime(); //Текущие дата, время
+	   Say(44); //Переносное голосование. Время :
+        TekDateTime();
+      int h =TekDT.hour;
+      int m=TekDT.minit;
+        ReadTime(h,m);
+
 	  st1=Out.Main[62]+" "+TimeS; //Переносное_голосование!_Время:_
       int All=Koib[1].Rezult[XVote].All;
 	  st2=Out.Main[63]+" "+IntToStr(All); // Переносной:_
 	  Ind(st1,st2);
-      Say(44); //Переносное_голосование!
 }
 
 void Sos_70(void)
@@ -3300,9 +3830,9 @@ void Sos_36(void)
 void Sos_37(void)
 {
       std::string st;
-      st=Out.Main[68];//+IntToStr(XVote)+Out.Main[35];
+      st=Out.Main[51];//+IntToStr(XVote)+Out.Main[35];
       Ind(st," "); //Распечатать копию результатов голосования по выборам XVote? ДА/НЕТ
-      Say(50); //Распечатать копию результатов голосования по выборам ?!?!
+      Say(33); //Распечатать копию результатов голосования по выборам ?!?!
 }
 void Sos_38(void)
 {
@@ -3476,7 +4006,7 @@ int Sostoanie(void)
 		  //Загрузка системы
 		  st1=Out.Main[2];  Ind(st1," ");
 		  Zagruzka(); //  загрузка начальных данных КОИБ (установочные файлы)
-		  st=Out.Main[3]+"  (2013)"; //ПО_КОИБ_вер.
+		  st=Out.Main[3]+"  (2013)";   //ПО_КОИБ_вер.
  		  st1=Out.Main[4]+" "+SerNumKoib;  // Сканер N
 		  Ind(st, st1);
           sleep(1);
@@ -3491,15 +4021,20 @@ int Sostoanie(void)
 			 Ind(st,st1);
 			 Say(1); //Сканер готов
 			 Koib[1].VS = 2;
+            PrNoBtnWait=1;
           }
           else
-          {  st=Out.Main[4]+" "+SerNumKoib; // Сканер N
-             st1=Out.Main[7]; // не  готов
-			 Ind(st,st1); // Самотестирование не пройдено
-			 Say(2); //Сканер не готов
+          {  if(pr_btn==1) // Yes  продолжить  работу
+            {       //  продолжение работы
+                    Koib[1].VS = 2;        PrNoBtnWait=1;
+			} else
+			{     st=Out.Main[4]+" "+SerNumKoib; // Сканер N
+                    st1=Out.Main[7]; // не  готов
+                    Ind(st,st1); // Самотестирование не пройдено
+                    Say(2); //Сканер не готов
+			}
           }
-              PrNoBtnWait=1;
-		}
+		}break;
 	case 2: //------------------------------------------------Проверка наличия аварийных файлов
 		{
           if (AvarFiles())
@@ -3629,9 +4164,11 @@ int Sostoanie(void)
 			else
 			{ // Данные с FLASH загружены!
 				IDsave(); //Записать данные на HDD в Avar
-				Ind(Out.Main[18]," "); //  Данные  получены
-				Sos_8(); // переход в 8 состояние
                 Koib[1].VS = 8;
+				Ind(Out.Main[18]," "); //  Данные  получены
+				Say(10);
+				Sos_8(); // переход в 8 состояние
+
                 PrVoteTimeStart=0;     PrVoteTimeEnd=0;
 			}
 			cout << "  Umount before    !!!!!!!" <<  endl;
@@ -3684,7 +4221,7 @@ int Sostoanie(void)
                         PrNoBtnWait=1;
 			    } else
 			    {  // принтер не найден
-			         Ind(Out.Main[125],Out.Main[126]); //  Отправлено на  печать // Ждите
+			         Ind(Out.Main[125],Out.Main[126]); //  принтер не  найден
 			    }
             }
             if(pr_btn==0) //No
@@ -4350,28 +4887,22 @@ int Sostoanie(void)
 				  // голосовое  сообщение, "Здравствуйте!"
 				  if(pr_opt==6)
 				  {  // бюллетень вставлен правильно
-                        //SayVotes(1);
+
                         SayVotes(1);  // здравствуйте
                         Golosovanie();
-
-                        // голосовое  собщение " До свидания!"
                         SayVotes(8);// Спасибо
-                        //usleep(200000);
-                        //Ind(Out.Votes[6],""); //До свидания!
-                        //SayVotes(6);// До свидания
+
 				  }
                   if(pr_opt==100)
                   {   //-------------Бюллетень подан, бюллетень двойной
                         SayVotes(2);
-                        //Page_back();
                         for(int i=0;i<4;i++) Optron[i]=0;
                                              // if(pr_rr==6)
                         //Ind(Out.Votes[2],""); //Бюллетень неустановленной формы! 2 2 листа
                   }
                   if((pr_opt>1)&&(pr_opt < 6))
                   {   Ind(Out.Votes[7],""); //Вставьте  правильно  бюллетень
-                        for(int i=0;i<4;i++) Optron[i]=0;
-                      //usleep(200000);
+                       for(int i=0;i<4;i++) Optron[i]=0;
                   }
                 }
             }
@@ -4467,8 +4998,8 @@ int Sostoanie(void)
  	        } else
             {   if(pr_opt==6) //Yes
                 {      SayVotes(1);  // здравствуйте
-                    Golosovanie();
-                    SayVotes(8);// Спасибо
+                        Golosovanie();
+                        SayVotes(8);// Спасибо
                 }
                 if(pr_opt==100)
                 {   //-------------Бюллетень подан, бюллетень двойной
@@ -4660,9 +5191,13 @@ int Sostoanie(void)
                 //if(pr_btn==1)
                 {  // считывание набранного значения
                     if((pr_btn!=0)&&(pr_btn!=3))
-                    { get_KeyString(NUMBER);
-                      zz=atof(NUMBER);
-                      Votes.Blank[XVote].Vopr[1].Protocoles[1].Lines[Xv].Value=zz;
+                    {   st2=IntToStr(Votes.Blank[XVote].Vopr[1].Protocoles[1].Lines[Xv].Value);
+                        Ind("",st2); // выдача значения  до  ввода
+                        get_KeyString(NUMBER);
+                        Ind("",NUMBER); // выдача значения после ввода
+                        zz=atof(NUMBER);
+                        Votes.Blank[XVote].Vopr[1].Protocoles[1].Lines[Xv].Value=zz;
+
                     }
                     if(pr_btn==3)
                     { // возвращение на  предыдущую строку
@@ -5348,9 +5883,12 @@ bool RUN(void)
     //Проверка озвучки снятых позиций
 
     //Parser(FileName);
-   // Speak(3);
-
-
+    // Speak(3);
+    /*
+    std::string st="1234567890123456789012345678901234567890";
+    st=FiltrStr(st,"456","---");
+    cout <<st<<endl;
+    */
     /*
     //Проверка озвучки снятых позиций
     Votes.Nblank=1;
@@ -5359,9 +5897,17 @@ bool RUN(void)
 
     Speak(2);
     */
-
-
-
+ /*
+ std::string XML=ReadFile("./SourceDir/SourceData.XML");
+ cout <<XML<<endl;
+ //Filtr
+ //XML=(XML,"< ","<");
+ //XML=(XML,"<  ","<");
+ XML=FiltrStr(XML,"&&&&&&&",">");
+ //XML=(XML,"  >",">");
+cout <<"--------------------------------"<<endl;
+ cout <<XML<<endl;
+ */
     Exit=false;
     Exit=Sostoanie();
 

@@ -17,7 +17,7 @@ Volume
 Log-files & Images
 Scan INFO
 TESTS
-Save Scan
+Scan&Save image
 Access Codes
 Exit
 Remove Paper & Push Btn Yes
@@ -72,3 +72,4 @@ Buttons Test  (Yes/No)
 Flash Test (Yes/No)
 Maximum Light Green
 Maximum Light Blue
+Scan image

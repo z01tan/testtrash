@@ -13,8 +13,8 @@ extern   	int PageW; // ширина  страницы  в  точках
 extern   	int PageH; // высота  страницы  в  точках
 extern   	int LineWx;			//  толщина линии в  точках по горизонтали
 extern   	int LineWy;			//  толщина линии в  точках по вертикали
-extern   	int LMarSize; // размер полей  бюллетеня в  точках по горизонтали
-extern   	int TMarSize; // размер полей  бюллетеня в  точках  по вертикали
+//extern   	int LMarSize; // размер полей  бюллетеня в  точках по горизонтали
+//extern   	int TMarSize; // размер полей  бюллетеня в  точках  по вертикали
 extern   	int dxStampArea; // ширина  зоны  печати в  точках
 extern   	int dyStampArea; // высота  зоны  печати в  точках
 

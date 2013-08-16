@@ -109,13 +109,15 @@ extern   float dyVoteTypeM;    // ширина зоны типа выборов 
 extern   float LineWM;    // толщина  линий зоны типа выборов в  милиметрах
 extern   float LMarSizeM; // размер полей  бюллетеня в  миллиметрах по горизонтали
 extern   float TMarSizeM; // размер полей  бюллетеня в  миллиметрах  по вертикали
+extern   	int LMarSize; // размер полей  бюллетеня в  точках по горизонтали
+extern   	int TMarSize; // размер полей  бюллетеня в  точках  по вертикали
 extern   float dxStampAreaM; // ширина  зоны  печати в  мм
 extern   float dyStampAreaM; // высота  зоны  печати в  мм
 extern 	 int nsShArStart,nbShAr,ShArXo,ShArYo,ShArPr,colShAr;
 extern   float dyHeaderM; // высота заголовка  в мм
 extern	int nVoteType;
 struct TScanOut // выходной массив результатов сканирования  листа
-{ int MasRecOut[4]; //[0] – код ошибки; [1] - номер типа бланка;
+{ int MasRecOut[5]; //[0] – код ошибки; [1] - номер типа бланка;
   // [2] - номер распознанного участка   [3] - количество вопросов на бланке
   int MasVoprOut[NumVoprMax][3];
 		// [0] – наличие вопроса в бюллетене, определяется максимальным допустимым количеством отметок;
@@ -229,28 +231,6 @@ struct TCandidates // класс, описывающий кандидатов
 	int SQ; // – оставил, чтобы не ломать существующую структуру=dx
 };
 
-struct TLines // описываем строки протоколов
-{
-	int N; // – номер строки протокола
-	int ID; // – ID строки протокола
-	std::string Name; // – наименование строки
-	std::string expression; // формула вычисления значения строки
-	std::string AddNum; // – дополнительный номер строки
-	std::string type; // – тип строки (1 - DontQueryUser – не запрашивать ввод строки у пользователя;
-	                  //               2- Voting – строка для голосования;
-	                  //               3- Blank – строка для бланка;
-	                  //               4 - Election – строка для выборов)
-	int Value;// Итоговое значение строки
-};
-
-struct TChecks // описываем контрольные соотношения
-{
-	std::string expression; // - формула проверки контрольного соотношения
-	bool Enabled; // - включено ли контрольное соотношение
-	bool mild;	// - признак того, что КС мягкое, т.е. допускается отправка протокола, если такое КС не выполнено
-    bool Itog; // Выполнено ли в итоге контрольное соотношение
-};
-
 struct TPC // описываем вышестоящую комиссию
 {
 	std::string parentid; // - идентификатор комиссии из ГАС "Выборы"
@@ -268,12 +248,6 @@ struct TVoteLine // описываем строки
 	std::string ElectronNum;
 };
 
-struct Ttable // описываем таблицу протокола
-{
-	int NVoteLine; // кол-во строк
-	TVoteLine VoteLine[NstrokMax+1]; // строки
-};
-
 struct TProtocolLine
 {
   std::string align;
@@ -281,14 +255,40 @@ struct TProtocolLine
   bool italic;
   int fontSize;
   std::string section;
+  std::string text;
 };
 
 struct Ttext // описываем текст протокола
 {
 	bool final; // отвечает за принадлежность шаблона 1-итоговый, 0-о распределении голосов
-	Ttable Table; // таблица протокола
-	int NProtocolLine;
-	TProtocolLine ProtocolLine[NstrokMax+1];
+	int NVoteLine; // кол-во строк таблицы данных Table
+	TVoteLine VoteLine[NstrokMax+1]; // описание строк таблицы данных Table
+	int NProtocolLine; // кол-во строк протокола
+	TProtocolLine ProtocolLine[NstrokMax+1]; // описание строк протокола
+
+};
+
+struct TChecks // описываем контрольные соотношения
+{
+	std::string expression; // - формула проверки контрольного соотношения
+	bool Enabled; // - включено ли контрольное соотношение
+	bool mild;	// - признак того, что КС мягкое, т.е. допускается отправка протокола, если такое КС не выполнено
+    bool Itog; // Выполнено ли в итоге контрольное соотношение
+    std::string ItogExpression; //Итоговая формула
+};
+
+struct TLines // описываем строки протоколов
+{
+	int N; // – номер строки протокола
+	int ID; // – ID строки протокола
+	std::string Name; // – наименование строки
+	std::string expression; // формула вычисления значения строки
+	std::string AddNum; // – дополнительный номер строки
+	std::string type; // – тип строки (1 - DontQueryUser – не запрашивать ввод строки у пользователя;
+	                  //               2- Voting – строка для голосования;
+	                  //               3- Blank – строка для бланка;
+	                  //               4 - Election – строка для выборов)
+	int Value;// Итоговое значение строки
 };
 
 struct TProtocoles // класс, описывающий протоколы выборов
@@ -306,8 +306,10 @@ struct TProtocoles // класс, описывающий протоколы вы
 	int NLines; // – количество строк в протоколе
 	TLines Lines[NstrokMax+1]; // – массив описания строк протокола
 	int NChecks; // - количество контрольных соотношений
+    int S; // Сумма голосов, поданных за все альтернативы
+    int M; // Количество мандатов
 	TChecks Checks[NchecksMax+1]; // – массив описания контрольных соотношений
-	Ttext Text;   // - описание текста протокола
+	Ttext Text;   // - описание шаблона протокола
 };
 
 struct TVopr // Структура, описывающая заданный вопрос
@@ -316,7 +318,8 @@ struct TVopr // Структура, описывающая заданный во
 	std::string ID; // уникальный идентификатор выборов (референдума), к которым относится вопрос
 	std::string Name; // название выборов (референдума), к которым относится вопрос
 	TPC PC; // Данные о вышестоящей комиссии
-	int SC; // Номер комиссии
+	int Nsc; //Количество вышестоящих комиссий
+	int SC[5]; // Номера вышестоящих комиссий
 	int Nmodes; // кол-во режимов голосования
 	std::string Modes[MaxModes]; // режимы голос-я
 	int maxMarks; // максимальное количество мандатов
@@ -388,6 +391,8 @@ struct TVotes //Описание выборов
     std::string DateV; // дата выборов
     std::string IDel;  //ID выборов !
     bool isGASvrn; // признак использования ИК ВРН из ГАС Выборы
+    std::string ProtokolPassword;
+    std::string Password;
     int Nmodes; // кол-во режимов голосования
     std::string Modes[MaxModes]; // наименование режимов голос-я
     int Bhour[MaxModes]; // Время начала голосования 1-СГ, 2-ПГ
@@ -554,6 +559,7 @@ struct RepS // структура одной записи в файле rep.txt
 
  void LoadInd(void); // Загрузка выводимых на табло значений
  void TekDateTime(void);
+ void SayVotes(int Type);
 // ---------------------------------------------------------------------------
 
 

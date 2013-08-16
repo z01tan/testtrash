@@ -7,6 +7,7 @@
 #include <string>
 #include <time.h>
 #include <exception>
+#include <unistd.h>
 
 #include "MyX.h"
 #include "Ruler.h"
@@ -71,6 +72,25 @@ T StrToInt(const std::string& st)
     std::istringstream sts(st);
     T pp; sts >> pp;
     return pp;
+}
+//--------------------------------------Замена в str строк st1 на st2--------------------------------
+std::string FiltrStr(std::string str, std::string st1, std::string st2)
+{
+  std::string w=str;
+  int index=-1;
+  do
+  {
+     index = w.find(st1);
+     if (index >=0)
+     {
+        std::string w1(w,0,index);
+        std::string w2(w, index+ st1.length(), w.length()-st1.length()-index);
+        w=w1+st2+w2;
+     }
+
+  } while (index>=0);
+
+return w;
 }
 //-------------------------------------------------_i-int  f_float _d double -> String------------------------------------------
 std::string IntToStr(int pp)

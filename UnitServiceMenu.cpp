@@ -18,6 +18,7 @@
 #include <iostream>
 #include <math.h>
 #include <stdio.h>
+#include <sys/time.h>
 #include <time.h>
 #include "cr_BMP.h"
 #include "InitAltera.h"
@@ -57,49 +58,45 @@ int MaxLight;
   int InfSTablo1,InfSTablo2;// переменные с номерами сообщений на табло 1,2
   int CodesOp[3]; //  сохраненные коды  доступа операторов
   float MasSenValue[NumSensors][3];// массив значений порогов датчиков для листов
-  int PrSenYes=0; // признак получения  данных от  датчиков
-  int BtnYesPushed; // сохранение признака нажатия кн. ДА для ожидания поступления данных от датчиков
   unsigned MasBlUr[NumStrScan]; // массив среднего  уровня  каждой  точки по  уровню черного
   unsigned  MasWtUr[NumStrScan]; // массив среднего  уровня  каждой  точки по  уровню черного
   float MasBlUrSig[NumStrScan]; // массив среднего  уровня  каждой  точки по  уровню черного
   float MasWtUrSig[NumStrScan]; // массив среднего  уровня  каждой  точки по  уровню черного
   int MasNumPoints[NumStrScan]; //  массив  количества  точек для подсчитанных для  осреднения
-  uint16_t MasKoefPzs[NumStrScan]; // массив среднего  уровня  каждой  точки по  уровню черного
+  double MasKoefPzs[NumStrScan]; // массив среднего  уровня  каждой  точки по  уровню черного
   int PrPageCal,PgXoLCal,PgYoLCal,PgXoRCal,PgYoRCal;
   struct tm MyTime;
 
   float Optr0,Optr1,Optr2,Optr3;
 
-/* void FindSourceFile(void)
- { // формирование пути к  файлу
-   int fp;
-   fp = MountNRead("/dev/sdb1","/mnt/usb/SourceData.XML","/mnt/usb");
-   if( fp == -1)
-   {
-      printf("file on USB not found\n");
-      FileName="./SourceDir/SourceData.XML"; // !!!!!
-   } else
-   {   close(fp);
-       printf("file on USBt found   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
-      FileName="/mnt/usb/SourceData.XML";
-      cout << FileName <<endl;
-       //FileName="./SourceDir/SourceData.XML"; // !!!!!
+void TestScan(void)
+{  //********Тест сканирвоания - сканирование и запоминание образа ****************
+    Scptr_r = 0;
+    Scptr_s = 0;
+    MotorFuS = false;
+    waitBothOpt();
+    nstr =0;
+    Page_scan();
+    while(nstr>=0)
+    { //  ппередача  очередной  строки из буфера
+      nstr = getNextScanLine();
+    }
+    Page_back();// до  освобождения  всех оптронов ( внутри функции  проверка)
+    // сохранение образа  в  файле  .bmp
+    if(MakeBMPFile(&FBMP[0],SCAN_LINEW,max_gelesen)==0)  printf("\n BMP_File is written\n");
+    else printf("\n BMP_File open error\n");
+    return;
+}
 
-   }
-         cout << FileName <<endl;
-   // UMount("/mnt/usb");
- } //  void FindSourceFile(void)
-*/
-
-void TestScan()
-{  //********Сканирование в режиме Сервисное меню, Тест ****************
+void TestRecogn(void)
+{  //********Сканирование и распознавание в режиме Сервисное меню, Тест ****************
     //int d;
     Scptr_r = 0;
     Scptr_s = 0;
     MotorFuS = false;
     waitBothOpt();
-    int pr1=0;//MasScan.MasRecOut[0];
-    int NumV=0;//MasScan.MasRecOut[3];
+    int pr1=0;
+    int NumV=0;
     int rez=0;
     nstr =0;
     MasScan.MasRecOut[0]=0;
@@ -115,7 +112,7 @@ void TestScan()
       }
       if((pr1!=0)||(rez==111)) nstr=-1;
     }
-    cout <<  " PrError =   %d    "<<  pr1 << endl;
+   cout <<  " PrError =   %d    "<<  pr1 << endl;
     cout <<  " Result =   %d    "  <<  rez << endl;
     if((pr1<100)&&(pr1>0))
     {  // бюллетень неустановленной  формы
@@ -125,24 +122,23 @@ void TestScan()
     { rez=MasScan.MasRecOut[0];
       if(rez==111)
       {  // результаты  сформированы
-            NumV=MasScan.MasRecOut[3];
-            int ii= MasScan.MasVoprOut[NumV][1];
-            cout <<"Marks  =   "<<  ii  << endl;
+        NumV=MasScan.MasRecOut[3];
+        int ii= MasScan.MasVoprOut[NumV][1];
+        cout <<"Marks  =   "<<  ii  << endl;
 
-            switch (ii)
-            {   case -1: InfSTablo2=37;break;
-                case -2: InfSTablo2=38;break;
-                default: InfSTablo2=39;break;
-            }
+        switch (ii)
+        {   case -1: InfSTablo2=37;break;
+            case -2: InfSTablo2=38;break;
+            default: InfSTablo2=39;break;
         }
+      }
     }
     Page_back();// до  освобождения  всех оптронов ( внутри функции  проверка)
     // сохранение образа  в  файле  .bmp
-     if(MakeBMPFile(&FBMP[0],SCAN_LINEW,max_gelesen)==0)  printf("\n BMP_File is written\n");
-     else printf("\n BMP_File open error\n");
+    if(MakeBMPFile(&FBMP[0],SCAN_LINEW,max_gelesen)==0)  printf("\n BMP_File is written\n");
+    else printf("\n BMP_File open error\n");
     return;
-}
-
+}// TestRecogn
  //  запись и считывание  файлов начальной  загрузки
  //***********************************
 void SetUpKoibWrite(void)
@@ -151,13 +147,13 @@ void SetUpKoibWrite(void)
   if ((out = fopen("./SetUpFiles/SetUpKoibPar.dat", "wt"))!= NULL)
   { // запись в  файл
 	fprintf(out,"%10d\n",Lang);
-	fprintf(out,"%s",SourceDir1); fprintf(out,"\n");
-	fprintf(out,"%s",SaveDir);  	fprintf(out,"\n");
-	fprintf(out,"%s",Ip_master); fprintf(out,"\n");
-	fprintf(out,"%s",Ip_slave);  fprintf(out,"\n");
-	fprintf(out,"%s",iface);     fprintf(out,"\n");
-	fprintf(out,"%s",udp_port);  fprintf(out,"\n");
-	fprintf(out,"%s",SerNumKoib);fprintf(out,"\n");
+	fprintf(out,"%s",SourceDir1);   fprintf(out,"\n");
+	fprintf(out,"%s",SaveDir);      fprintf(out,"\n");
+	fprintf(out,"%s",Ip_master);    fprintf(out,"\n");
+	fprintf(out,"%s",Ip_slave);     fprintf(out,"\n");
+	fprintf(out,"%s",iface);        fprintf(out,"\n");
+	fprintf(out,"%s",udp_port);     fprintf(out,"\n");
+	fprintf(out,"%s",SerNumKoib);   fprintf(out,"\n");
 	fprintf(out,"%f",ScanerWorkTime);
 	fclose(out);
   }
@@ -215,7 +211,7 @@ int SetUpUprRead(void)
 	  fclose(fw);
 	} else
 	{  pr=1;
-	     cout << "Не найден файл SetUpUprPar.dat" << endl;
+	   cout << "Не найден файл SetUpUprPar.dat" << endl;
 	}
 	return pr;
 }// SetUpUprRead
@@ -334,51 +330,21 @@ void SendInfToTablo1(void)
    usleep(200000);
    InfSTablo1=0;strcpy(InfS,"\0"); strcpy(InfS1,"");
 }
-/*
-uint16_t float_to_8_8(double x)
-{
-        uint16_t ret;
-        uint8_t p1;
-        uint8_t p2;
 
-        p1 = x;
-        p2 = (x-p1)*255;
-        ret = (p1<<8)|p2;
-        return ret;
-}
-*/
-uint16_t calculate_koefPZS(int UrWht0,uint8_t black_level,uint8_t white_level)
-{
-        double mult;
-        uint16_t ret;
-        mult = (double)UrWht0/((double)white_level-(double)black_level);
-        ret = float_to_8_8(mult);
-        return ret;
-}
 void  SaveKoeffPzs(void)
 { // сохранение калибровочных коэффициентов линейки ПЗС
 
-  FILE *out;
-  if ((out = fopen("./SetUpFiles/KoefPzsTek.dat", "wt"))!= NULL)
-  { // запись в  файл
-	for(int i=0; i < NumStrScan; i++) fprintf(out,"%12d", MasKoefPzs[i]);
-	fclose(out);
-  }
-
-     // сохранение уровня  черного  в файл при  калибровке
-      calibrate_mode= MODE_CALIBRATE_INIT;
-     for(int i=0; i < LINE_LENGTH; i++) calibration_data[i]=MasBlUr[i];
-     save_calibration_data(calibration_data);
-
-     // сохранение коэффициента
-
-     int fd;
-     fd = creat(CALIBRATION_FILEK, O_WRONLY);
-     if(fd < 0)  pabort("Error: cannot write calibration data\n");
-     write(fd, MasKoefPzs, LINE_LENGTH);
-     close(fd);
-     calibrate_mode= MODE_NORMAL;
-
+    // удаление старого файла уровня  черного
+    system("rm -f ./SetUpFiles/calibration_data.bin");
+    // сохранение уровня  черного  в файл при  калибровке
+    calibrate_mode= MODE_CALIBRATE_INIT;
+    for(int i=0; i < LINE_LENGTH; i++) calibration_data[i]=MasBlUr[i];
+    save_calibration_data(calibration_data);
+    // удаление старого файла коэффициентов
+    system("rm -f ./SetUpFiles/calibration_dataK.bin");
+    // сохранение коэффициентов
+    for(int i=0; i < LINE_LENGTH; i++) calibration_dataK[i]=MasKoefPzs[i];
+    save_calibration_dataK(calibration_dataK);
 } // SaveKoeffPzs
 
 void  SaveKoeffSens(void)
@@ -386,9 +352,9 @@ void  SaveKoeffSens(void)
   FILE *out;
   if ((out = fopen("./SetUpFiles/KoefSenTek.dat", "wt"))!= NULL)
   { // запись в  файл
-        for(int i=0; i < NumSensors; i++)
-        for(int j=0; j < 3;j++ )fprintf(out,"%12.6f", MasSenValue[i][j]);
-        fclose(out);
+    for(int i=0; i < NumSensors; i++)
+    for(int j=0; j < 3;j++ )fprintf(out,"%12.6f", MasSenValue[i][j]);
+    fclose(out);
   }
   // расчет пороговых значений определения 1, 2 листов
   NO_PAPER  =MasSenValue[0][0];
@@ -429,49 +395,47 @@ void BLev1(int nn,unsigned urw_ch,unsigned* ur,float* sur)
 
 int  FindPgStartCalibr(int nstr)
 {  //  функция  поиска начала  листа бюллетеня
-	 int Pr=0;
- // определение левой границы
-		 EvChangeColRow(0,nstr,1,0,200,&nbxL,&XoL,&PrL);
-
-	  // определение правой границы
-		  EvChangeColRow(0,nstr,-1,NumStrScan-1,200,&nbxR,&XoR,&PrR);
-
-	  // формирование признака  окончания  поиска   начала  листа PrPage=1
-	  if((PrR==1)&&(PrL==1)) Pr=1;
-
-
+	int Pr=0;
+    // определение левой границы
+    EvChangeColRow(0,nstr,1,0,200,&nbxL,&XoL,&PrL);
+	// определение правой границы
+	EvChangeColRow(0,nstr,-1,NumStrScan-1,200,&nbxR,&XoR,&PrR);
+	// формирование признака  окончания  поиска   начала  листа PrPage=1
+	if((PrR==1)&&(PrL==1)) Pr=1;
    return Pr;
 }// FindPgStartCalibr;
 
 
 int EvalMedWhite(int nstr1)
 { // вычисление  среднего  значения  уровня  белого для каждого датчика линейки
-  int nn=0,i1=-1,i2=-1, pr1=0;//,sur1=0
-  for(nstr=0;nstr < nstr1; nstr++)
+  int nn=0,i1=-1,i2=-1;//, pr1=0;//,sur1=0
+  i1=200;//TMarSize*2;
+  for(nstr=i1;nstr < i1+nstr1; nstr++)
   { //  цикл по  строкам
-     nbxL=0,nbxR=0,XoL=0,XoR=0,PrL=0,PrR=0;
-     pr1=FindPgStartCalibr(nstr);
-     if(pr1==1)
-     {	for(int i= XoL; i < XoR; i++)
+     //nbxL=0;nbxR=0;PrL=0;PrR=0;
+     XoL=100;//LMarSize;
+     XoR=NumStrScan-100;//LMarSize;
+     //pr1=FindPgStartCalibr(nstr);
+     //if(pr1==1)
+     //{
+        for(int i= XoL; i <=XoR; i++)
 	    { // по точкам  строки
-		urw_ch=GetXYValue(nstr,i);
-		nn=MasNumPoints[i];
-		//g0=RecBlack(alfa,beta,urw,surw,urbl,surbl,urw_ch,&p00,&p11);
-//		if (g0==0)
-//		{  // точка определена  как белая
-		   BLev1(nn,urw_ch,&MasWtUr[i],&MasWtUrSig[i]);
-		   nn=nn+1;
-		   MasNumPoints[i]=nn;
-	//	}
-	  }
-
-     }
-
+            urw_ch=GetXYValue(nstr,i);
+            nn=MasNumPoints[i];
+            //	g0=RecBlack(alfa,beta,urw,surw,urbl,surbl,urw_ch,&p00,&p11);
+            //	if (g0==0)
+            //	{  // точка определена  как белая
+            BLev1(nn,urw_ch,&MasWtUr[i],&MasWtUrSig[i]);
+            nn=nn+1;
+            MasNumPoints[i]=nn;
+            //	}
+        }
+     //}
   }
-	// определение  уровня  белого в  начале и в конце строки
-  for(int i=200; i >= 0; i--) if(MasNumPoints[i]==0)   { i1=i; goto fini1; };
+    // определение  уровня  белого в  начале и в конце строки
+  for(int i=XoL+1; i >= 0; i--) if(MasNumPoints[i]==0)   { i1=i; goto fini1; };
   fini1:;
-  for(int i=NumStrScan-200; i < NumStrScan; i++) if(MasNumPoints[i]==0) { i2=i; goto fini2;};
+  for(int i=NumStrScan-XoR-1; i < NumStrScan; i++) if(MasNumPoints[i]==0) { i2=i; goto fini2;};
   fini2:;
   if(i1 >=0)
   {	for(int i=0; i<= i1; i++)
@@ -497,7 +461,6 @@ int EvalMedBlack(int nstr1)
 	for(int i=0; i < NumStrScan; i++)
 	  { // по точкам  строки
 		urw_ch=GetXYValue(nstr,i);
-		//MasBlUr[i]=urw_ch;
 		nn=MasNumPoints[i];
 		BLev1(nn,urw_ch,&MasBlUr[i],&MasBlUrSig[i]);
 		nn=nn+1;
@@ -511,37 +474,25 @@ void GetPzsScan(int ur)
 { // сканирование линейки ПЗС
   if(ur==0) // сканирование  уровня  черного
   { // сканирование без листа
-      max_gelesen=400;
-      //ClearKoeff();
-      //cout << " Before Scan Black level" << endl;
-      frontLED(5,0); // включение красной лампочкиидет процесс сканирования и обработки
+      max_gelesen=1000;
+      frontLED(2,0); // включение красной лампочкиидет процесс сканирования и обработки
       calibrate_mode= MODE_CALIBRATE_INIT;
       Page_scan();
       sleep(1); // для  снятия  отсчета
       Page_stop();
-
       calibrate_mode= MODE_NORMAL;
-      //Page_back();
-
-      EvalMedBlack(300);
-
-    frontLED(0,5);// увеличение интенсивности зеленой  лампочки и отключение красной
+      EvalMedBlack(200);
+      frontLED(0,2);// включение зеленой  лампочки и отключение красной
   }
   else
   {	//int i=-1;
     if(ur==1) // сканирование  чистого  листа
-	{ get_Optrons_Imm();
-      //while ((Optron[1] > NO_PAPER) || (Optron[2] > NO_PAPER))
-      waitBothOpt();
-      frontLED(5,0);// включение красной лампочкиидет процесс сканирования и обработки
-      Page_scan();
-      get_Optrons_Imm();
-      while (Optron[0] >  NO_PAPERO[0])  get_Optrons_Wait();
-      Page_stop();
-      Page_back();
-      cout << " The Last Optron Has been reached. Stop. Back " << endl;
-      EvalMedWhite(300);
-      frontLED(0,5);// увеличение интенсивности зеленой  лампочки и отключение красной
+	{   frontLED(2,0);// включение красной лампочкиидет процесс сканирования и обработки
+        calibrate_mode= MODE_NORMAL;
+        TestScan();
+        cout << " The Last Optron Has been reached. Stop. Back " << endl;
+        EvalMedWhite(300);
+        frontLED(0,2);// включение зеленой  лампочки и отключение красной
     }
   }
 }
@@ -551,37 +502,40 @@ void GetSensorsValue(int n)
   // n  -  количество листов
   if(n==0)
   {  get_Optrons_Imm();
-     if(Optron[0]>10)MasSenValue[0][n]=Optron[0];
-     if(Optron[1]>10)MasSenValue[1][n]=Optron[1];
-     if(Optron[2]>10)MasSenValue[2][n]=Optron[2];
-     if(Optron[3]>10)MasSenValue[3][n]=Optron[3];
+     if(Optron[0]>10)MasSenValue[0][n]=Optron[0];     if(Optron[1]>10)MasSenValue[1][n]=Optron[1];
+     if(Optron[2]>10)MasSenValue[2][n]=Optron[2];     if(Optron[3]>10)MasSenValue[3][n]=Optron[3];
   } else
-  { //int i=-1;
-        get_Optrons_Imm();
-        waitBothOpt();
-        //cout << " After Sheet Inserted" << endl;
-        //frontLED(5,1);// включение красной лампочкиидет процесс сканирования и обработки
-        Page_scan();
-        while (Optron[0] >  NO_PAPERO[0]) get_Optrons_Wait();
-        //cout << " Лист дошел до последнего оптрона. Останов двигателя. Считывание датчиков оптронов" << endl;
-        Page_stop();
-        get_Optrons_Imm();
-        if(Optron[0]>10)MasSenValue[0][n]=Optron[0];
-        if(Optron[1]>10)MasSenValue[1][n]=Optron[1];
-        if(Optron[2]>10)MasSenValue[2][n]=Optron[2];
-        if(Optron[3]>10)MasSenValue[3][n]=Optron[3];
-        //usleep(20000);
-        //Page_back();
-        //frontLED(0,5);// увеличение интенсивности зеленой  лампочки и отключение красной
+  {  //  при наличии 1 или 2 листов
+    Optr0=0;Optr1=0;Optr2=0;Optr3=0;
+    get_Optrons_Imm(); waitBothOpt();
+    Page_scan();
+    while (Optron[0] >  NO_PAPERO[0]) get_Optrons_Wait();
+    Page_stop();
+    get_Optrons_Imm();
+    if(Optron[0]>10)MasSenValue[0][n]=Optron[0];    if(Optron[1]>10)MasSenValue[1][n]=Optron[1];
+    if(Optron[2]>10)MasSenValue[2][n]=Optron[2];    if(Optron[3]>10)MasSenValue[3][n]=Optron[3];
+    Optr0=MasSenValue[0][n];Optr1=MasSenValue[1][n];Optr2=MasSenValue[2][n];Optr3=MasSenValue[3][n];
+            //  сдвиг листа на  новую точку ( точка 2)
+    usleep(500000); Page_scan();  usleep(100000); Page_stop();
+                         //  снятие  второй  точки значений оптронов
+    get_Optrons_Imm();
+    if(Optron[0]>10)MasSenValue[0][n]=Optron[0];    if(Optron[1]>10)MasSenValue[1][n]=Optron[1];
+    if(Optron[2]>10)MasSenValue[2][n]=Optron[2];    if(Optron[3]>10)MasSenValue[3][n]=Optron[3];
+    Optr0=Optr0+MasSenValue[0][n];Optr1=Optr1+MasSenValue[1][n];
+    Optr2=Optr2+MasSenValue[2][n];Optr3=Optr3+MasSenValue[3][n];
+        //  сдвиг листа на  новую точку
+    usleep(500000);Page_scan();  usleep(100000); Page_stop();
+        //  снятие третьей  точки значений оптронов
+    get_Optrons_Imm();
+    if(Optron[0]>10)MasSenValue[0][n]=Optron[0];    if(Optron[1]>10)MasSenValue[1][n]=Optron[1];
+    if(Optron[2]>10)MasSenValue[2][n]=Optron[2];    if(Optron[3]>10)MasSenValue[3][n]=Optron[3];
+    usleep(500000);  Page_back();
+    Optr0=Optr0+MasSenValue[0][n];Optr1=Optr1+MasSenValue[1][n];
+    Optr2=Optr2+MasSenValue[2][n];Optr3=Optr3+MasSenValue[3][n];
+        // осреднение значений оптронов по 3 точкам
+    MasSenValue[0][n]=Optr0/3; MasSenValue[1][n]=Optr1/3; MasSenValue[2][n]=Optr2/3; MasSenValue[3][n]=Optr3/3;
   }
 };
-
-
-int GetKodDost(int kod)
-{ //  получение кода  доступа от клавиатуры иd =-1;
-
-   return kod;
-}
 
 int KodDostAn(int kod)
 { // проверка правильности кода доступа
@@ -664,12 +618,12 @@ int ServMenu()
       if((KodDost < 1)&&(PrMenuBtn==1))
       {  PrMenuBtn=2; InfSTablo1=2; SendInfToTablo1();
          get_KeyString(NUMBER);
-         KodDost=ReadParFromTablo2();//GetKodDost(KodDost);
+         KodDost=ReadParFromTablo2();
          BtnPushed=1;// чтобы не подтверждать еще в одном цикле опроса кнопкой ДА
       }
 	  if((BtnPushed==0)&&(KodOp < 0)){  PrMenuBtn=-1;   goto finMenu;  }
 	  //   получение  кода  доступа по нажатию кн. ДА
-	  if ((BtnPushed==1)&&((KodOp < 0)))KodDost=1;//ReadParFromTablo2();//GetKodDost(KodDost);
+	  if ((BtnPushed==1)&&((KodOp < 0)))KodDost=1; // оператор УИК
 
 	  // проверка значения  кода доступа
 	  if(KodDost < 1)
@@ -723,69 +677,42 @@ int ServMenu()
 			   { if((BtnPushed==0)&&(MenuUr==0))
 				 {  // уменьшение  номера пункта меню
 					BtnPushed=-1;
-					if(ItemMenu0 >0)
-					{ for(int i=ItemMenu0-1;i >0; i--)if(MenuItems0[i]!=0) { ItemMenu0=i; goto met1;}
-                      met1:;
-					  // Формирование сообщения о пункте меню
-                      switch (ItemMenu0)
-						{ case 1: InfSTablo1=7;  break;
-						  case 2: InfSTablo1=8;  break;
-						  case 3: InfSTablo1=9;  break;
-						  case 4: InfSTablo1=10; break;
-						  case 5: InfSTablo1=11; break;
-						  case 6: InfSTablo1=12; break;
-						  case 7: InfSTablo1=13; break;
-						  case 8: InfSTablo1=14; break;
-						  case 9: InfSTablo1=15; break;
-						  case 10: InfSTablo1=16;break;
-						  case 11: InfSTablo1=17;break;
-						  case 12: InfSTablo1=18;break;
-						  case 13: InfSTablo1=19;break;
-						  case 14: InfSTablo1=20;break;
-						  case 15: InfSTablo1=21;break;
-						  case 16: InfSTablo1=22;break;
-						} // switch
-						SendInfToTablo1();
-					}
+                    if(ItemMenu0 ==1)
+                    {  for(int i=NumMenuItems;i >0; i--)if(MenuItems0[i]!=0) { ItemMenu0=i; goto met11;}
+                        met11:;
+					} else
+					{ 	  for(int i=ItemMenu0-1;i >0; i--)if(MenuItems0[i]!=0) { ItemMenu0=i; goto met1;}     met1:;	}
                 }
 				if((BtnPushed==1)&&(MenuUr==0))
 				{   // увеличение  номера пункта меню
 					BtnPushed=-1;
-					if(ItemMenu0 < NumMenuItems)
-					{  for(int i=ItemMenu0+1;i < NumMenuItems+1; i++ )
-                       if(MenuItems0[i]!=0) { ItemMenu0=i;goto met2;  } met2:;
-                       // Формирование сообщения о пункте меню
-                       switch (ItemMenu0)
-                        { case 1: InfSTablo1=7;  break;
-						  case 2: InfSTablo1=8;  break;
-						  case 3: InfSTablo1=9;  break;
-                          case 4: InfSTablo1=10; break;
-                          case 5: InfSTablo1=11; break;
-						  case 6: InfSTablo1=12; break;
-						  case 7: InfSTablo1=13; break;
-						  case 8: InfSTablo1=14; break;
-						  case 9: InfSTablo1=15; break;
-						  case 10: InfSTablo1=16;break;
-						  case 11: InfSTablo1=17;break;
-						  case 12: InfSTablo1=18;break;
-						  case 13: InfSTablo1=19;break;
-						  case 14: InfSTablo1=20;break;
-						  case 15: InfSTablo1=21;break;
-						  case 16: InfSTablo1=22;break;
-						} // switch
-						SendInfToTablo1();
-					}
+					if(ItemMenu0 == NumMenuItems)
+					{  for(int i=1;i < NumMenuItems+1; i++ )   if(MenuItems0[i]!=0) { ItemMenu0=i;goto met222;  } met222:;
+					} else
+					{  for(int i=ItemMenu0+1;i < NumMenuItems+1; i++ )   if(MenuItems0[i]!=0) { ItemMenu0=i;goto met2;  } met2:;    }
+                }
+                if(MenuUr==0)
+                { // Формирование сообщения о пункте меню
+                    switch (ItemMenu0)
+                    {  case 1: InfSTablo1=7;  break; 		  case 2: InfSTablo1=8;  break;		  case 3: InfSTablo1=9;  break;
+                        case 4: InfSTablo1=10; break;		  case 5: InfSTablo1=11; break;	  case 6: InfSTablo1=12; break;
+                        case 7: InfSTablo1=13; break;		  case 8: InfSTablo1=14; break;	  case 9: InfSTablo1=15; break;
+                        case 10: InfSTablo1=16;break;		  case 11: InfSTablo1=17;break;	  case 12: InfSTablo1=18;break;
+                        case 13: InfSTablo1=19;break;		  case 14: InfSTablo1=20;break;     case 15: InfSTablo1=21;break;
+                        case 16: InfSTablo1=22;break;
+                    } // switch
+                    SendInfToTablo1();
                 }
             }
         }
 //***************** начало  работы  по  пунктам  сервисного  меню  *********
 		switch (ItemMenu0)
-/*******/{ case 1:
+/*******/
+        { case 1:
             { // подменю КАЛИБРОВКА датчиков  и ПЗС
 			  if(BtnPushed==3) //нажата кн. ВЫБОР
 	          { InfSTablo1=23; SendInfToTablo1();
 				ItemMenu1=1; MenuUr=1;//MenuUr+1;
-				PrSenYes=0;BtnYesPushed=0;
 				for(int i=0; i < NumStrScan; i++)
 				{ // гашение  массивов калибровки
 				  MasBlUr[i]=0;	MasWtUr[i]=0;	MasBlUrSig[i]=0; MasWtUrSig[i]=0;
@@ -794,107 +721,101 @@ int ServMenu()
               };
               switch (ItemMenu1)
 				{ case 1: // калибровка датчиков без листа
-					{
+					{   if(BtnPushed==0)
+						{  ItemMenu1=ItemMenu1+1;
+							 // выдача сообщения  о  следующем параметре
+							 InfSTablo1=25; SendInfToTablo1(); InfSTablo2=0; SendInfToTablo2();
+                             BtnPushed=-1;
+						}
 					  //Buttons
                       if(BtnPushed==1)
 					  { //strcpy(InfS,"Калибровка датчиков на уровне 0");
-					    InfSTablo1=24; SendInfToTablo1();
-					    InfSTablo2=0; SendInfToTablo2();
+                        frontLED(2,0);// включение красной лампочкиидет процесс сканирования и обработки
+					    InfSTablo1=24; SendInfToTablo1();   InfSTablo2=0; SendInfToTablo2();
 						GetSensorsValue(0);
-						 usleep(50000);
-						InfSTablo2=1; SendInfToTablo2();
-						InfSTablo1=25; SendInfToTablo1();
-						PrSenYes=0;  ItemMenu1=ItemMenu1+1;
-						BtnPushed=-1;
+						InfSTablo2=1; SendInfToTablo2();    InfSTablo1=25; SendInfToTablo1();
+						ItemMenu1=ItemMenu1+1; BtnPushed=-1;
+						frontLED(0,2);// увеличение интенсивности зеленой  лампочки и отключение красной
 					  }
 					}; break;
 				  case 2: // калибровка с  одним листом
-					{ if(BtnPushed==1)
-					  {  InfSTablo1=26; SendInfToTablo1();
-					     InfSTablo2=0; SendInfToTablo2();
-					     frontLED(5,1);// включение красной лампочкиидет процесс сканирования и обработки
+					{  if(BtnPushed==0)
+						{  ItemMenu1=ItemMenu1+1;
+							 // выдача сообщения  о  следующем параметре
+							 InfSTablo1=27; SendInfToTablo1(); InfSTablo2=0; SendInfToTablo2();
+                             BtnPushed=-1;
+						}
+					    if(BtnPushed==1)
+					  {  frontLED(2,0);// включение красной лампочкиидет процесс сканирования и обработки
+					     InfSTablo1=26; SendInfToTablo1();   InfSTablo2=0; SendInfToTablo2();
 						 GetSensorsValue(1);
-						 Optr0=MasSenValue[0][1];Optr1=MasSenValue[1][1];Optr2=MasSenValue[2][1];Optr3=MasSenValue[3][1];
-						 //  сдвиг листа на  новую точку
-                         Page_scan();
-                         usleep(50000);
-                         Page_stop();
-                         //  снятие  второй  точки значений оптронов
-                        get_Optrons_Imm();
-                        if(Optron[0]>10)MasSenValue[0][1]=Optron[0];
-                        if(Optron[1]>10)MasSenValue[1][1]=Optron[1];
-                        if(Optron[2]>10)MasSenValue[2][1]=Optron[2];
-                        if(Optron[3]>10)MasSenValue[3][1]=Optron[3];
-                        Optr0=Optr0+MasSenValue[0][1];Optr1=Optr1+MasSenValue[1][1];
-                        Optr2=Optr2+MasSenValue[2][1];Optr3=Optr3+MasSenValue[3][1];
-                        //  сдвиг листа на  новую точку
-                        Page_scan();
-                        usleep(50000);
-                        Page_stop();
-                         //  снятие третьей  точки значений оптронов
-                        get_Optrons_Imm();
-                        if(Optron[0]>10)MasSenValue[0][1]=Optron[0];
-                        if(Optron[1]>10)MasSenValue[1][1]=Optron[1];
-                        if(Optron[2]>10)MasSenValue[2][1]=Optron[2];
-                        if(Optron[3]>10)MasSenValue[3][1]=Optron[3];
-                                Page_back();
-                        Optr0=Optr0+MasSenValue[0][1];Optr1=Optr1+MasSenValue[1][1];
-                        Optr2=Optr2+MasSenValue[2][1];Optr3=Optr3+MasSenValue[3][1];
-                        // осреднение значений оптронов по 3 точкам
-                        MasSenValue[0][1]=Optr0/3; MasSenValue[1][1]=Optr1/3;
-                        MasSenValue[2][1]=Optr2/3; MasSenValue[3][1]=Optr3/3;
-                        frontLED(0,5);// увеличение интенсивности зеленой  лампочки и отключение красной
-
 						 usleep(50000);
-						 InfSTablo2=2; SendInfToTablo2();
-						 InfSTablo1=27; SendInfToTablo1();
-						 PrSenYes=0;  ItemMenu1=ItemMenu1+1;
+						 InfSTablo2=2; SendInfToTablo2();    InfSTablo1=27; SendInfToTablo1();
+						 ItemMenu1=ItemMenu1+1;
 						 BtnPushed=-1;
+						 frontLED(0,2);// включение зеленой  лампочки и отключение красной
 					  }
 					}; break;
                   case 3: // калибровка  датчиков с двумя листами
-                    { if(BtnPushed==1)
-					  { InfSTablo1=28; SendInfToTablo1();
+                    {
+                         if(BtnPushed==0)
+						{  ItemMenu1=ItemMenu1+1;
+							 // выдача сообщения  о  следующем параметре
+							 InfSTablo1=29; SendInfToTablo1(); InfSTablo2=0; SendInfToTablo2();
+                             BtnPushed=-1;
+						}
+						if(BtnPushed==1)
+					  { frontLED(2,0);// включение красной лампочкиидет процесс сканирования и обработки
+                        InfSTablo1=28; SendInfToTablo1();
 						GetSensorsValue(2);
-						usleep(50000);
-						 Page_back();
-						InfSTablo2=3; SendInfToTablo2();
-						InfSTablo1=29; SendInfToTablo1();
-						PrSenYes=0;  ItemMenu1=ItemMenu1+1;
-						BtnPushed=-1;
+						InfSTablo2=3; SendInfToTablo2();  InfSTablo1=29; SendInfToTablo1();
+						ItemMenu1=ItemMenu1+1;  	BtnPushed=-1;
 						//  подготовка массива  к  сканированию уровня  черного
 						for(i=0;i< NumStrScan ;i++) MasBlUr[i]=0;
+						frontLED(0,2);// включение зеленой  лампочки и отключение красной
 					  }
 					}; break;
                   case 4: // калибровка ПЗС уровень черного
-                    { if(BtnPushed==1)
-					  { InfSTablo1=30; SendInfToTablo1();
-					    InfSTablo2=0; SendInfToTablo2();
+                    {  if(BtnPushed==0)
+						{  ItemMenu1=ItemMenu1+1;
+							 // выдача сообщения  о  следующем параметре
+							 InfSTablo1=31; SendInfToTablo1(); InfSTablo2=0; SendInfToTablo2();
+                             BtnPushed=-1;
+						}
+                        if(BtnPushed==1)
+					  { InfSTablo1=30; SendInfToTablo1();     InfSTablo2=0; SendInfToTablo2();
 
-					    altera_backlight(0,0,0);
+                        CalibrRqst=true;
+                        _clear();
+                        altera_backlight(0,0,0);
+                        CalibrRqst=false;  // очистка регистров
+                         //sleep(1);
 
 						GetPzsScan(0);
+						 CalibrRqst=true;
+   						altera_backlight(MaxLightR,MaxLightG,MaxLightB);
+                        CalibrRqst=false;  //
 
-						altera_backlight(MaxLightR,MaxLightG,MaxLightB);
 
 						//  подготовка массива  к  сканированию уровня  белого
-						InfSTablo1=31; SendInfToTablo1();
-						InfSTablo2=0; SendInfToTablo2();
+						InfSTablo1=31; SendInfToTablo1(); 	InfSTablo2=0; SendInfToTablo2();
 						for(i=0;i< NumStrScan ;i++)
 						{ MasWtUr[i]=0; MasNumPoints[i]=0; MasWtUrSig[i]=0;  }
                             BtnPushed=-1; ItemMenu1=ItemMenu1+1;
-
-                      }
+                        }
                     }; break;
                   case 5: // калибровка ПЗС уровень белого
-					{ if(BtnPushed==1)
-					  { InfSTablo1=32; SendInfToTablo1();
-					     InfSTablo2=0; SendInfToTablo2();
-					     //usleep(200000);
+					{
+					     if(BtnPushed==0)
+						{  ItemMenu1=ItemMenu1+1;
+							 // выдача сообщения  о  следующем параметре
+							 InfSTablo1=33; SendInfToTablo1(); InfSTablo2=0; SendInfToTablo2();
+                             BtnPushed=1;
+						}
+					    if(BtnPushed==1)
+					  { InfSTablo1=32; SendInfToTablo1();     InfSTablo2=0; SendInfToTablo2();
 						GetPzsScan(1);
-						InfSTablo1=33; SendInfToTablo1();
-						ItemMenu1=ItemMenu1+1;
-						//BtnPushed=-1;
+						InfSTablo1=33; SendInfToTablo1();     ItemMenu1=ItemMenu1+1;
 					  }
 					}; break;
                   default: ;
@@ -909,115 +830,123 @@ int ServMenu()
 				if((ItemMenu1==7)&&(BtnPushed==1))
 				{ // возвращение  в  меню предыдущего уровня
 				  // расчет и сохранение  коэффициентов ПЗС
-				  for(i=0;i< NumStrScan;i++)MasKoefPzs[i]=double(UrWhite0)/(MasWtUr[i]-MasBlUr[i]);
-				  // сохранить  коэффициенты  в файл
-				  SaveKoeffPzs();
-
-			      //alteraRegCalibr_write(); // чтобы  это сделать, возможно, нужно отключать нити, иначе
-			      // портятся  данные и  идет  дальше  ерунда
-				  // сохранение уровней  датчиков  бумаги
-				  SaveKoeffSens();
-				  ItemMenu1=8; //Калибровка завершена, нажмите кн. ДА
-				  InfSTablo1=34; SendInfToTablo1();
-                  InfSTablo2=0; SendInfToTablo2();
-                  BtnPushed=-1;
+                    for(i=0;i< NumStrScan;i++)
+                    {   double dd=double(MasWtUr[i])-double(MasBlUr[i]);
+                        if(dd>1)  MasKoefPzs[i]=double(UrWhite0)/dd; else MasKoefPzs[i]=1;
+                        if ((i<10)||((i>300)&&(i<311)))
+                        { cout << "  UrBlack = "<<MasBlUr[i] << "  UrWhite = " << MasWtUr[i]<< "  Koeff= "<<MasKoefPzs[i]<<endl;}
+                    }
+                    // сохранить  коэффициенты  в файл
+                    SaveKoeffPzs();
+                    CalibrRqst=true;  set_calibration_data();  CalibrRqst=false;
+                    // сохранение уровней  датчиков  бумаги
+                    SaveKoeffSens();
+                    ItemMenu1=8; //Калибровка завершена, нажмите кн. ДА
+                    InfSTablo1=34; SendInfToTablo1();
+                    InfSTablo2=0; SendInfToTablo2();
+                    BtnPushed=-1;
 				}
 				if((ItemMenu1==6)&&(BtnPushed==1))ItemMenu1=7;
             }; break;
-/*******/  case 2:
+/*******/
+        case 2:
             { // подменю КАЛИБРОВКА  ПЗС
               if(BtnPushed==3) //нажата кн. ВЫБОР
               { InfSTablo1=29; SendInfToTablo1();
 				ItemMenu1=1; MenuUr=1;//MenuUr+1;
-				PrSenYes=0;BtnYesPushed=0;
 				//  подготовка массива  к  сканированию уровня  черного
 				for(i=0;i< NumStrScan ;i++) MasBlUr[i]=0;
 				for(int i=0; i < NumStrScan; i++)
 				{  // гашение  массивов калибровки
-				   MasBlUr[i]=0;	MasWtUr[i]=0;	MasBlUrSig[i]=0; MasWtUrSig[i]=0;
-                   MasNumPoints[i]=0;
+				   MasBlUr[i]=0;	MasWtUr[i]=0;	MasBlUrSig[i]=0; MasWtUrSig[i]=0; MasNumPoints[i]=0;
                 }
-				// начальные знеачения по уровню белого и черного
-				//alfa=0.001; beta=0.5; surw=5; surbl=5;	 urw=170; urbl=40;
 				BtnPushed=-1;
               }
 			  switch (ItemMenu1)
 				{ case 1: // калибровка ПЗС уровень черного
-					{ if(BtnPushed==1)
-					  { InfSTablo1=30; SendInfToTablo1();
+					{  if(BtnPushed==0)
+						{  ItemMenu1=ItemMenu1+1;
+							 // выдача сообщения  о  следующем параметре
+							 InfSTablo1=31; SendInfToTablo1(); InfSTablo2=0; SendInfToTablo2();
+                             BtnPushed=-1;
+						}
+					    if(BtnPushed==1)
+					  { InfSTablo1=30; SendInfToTablo1();   InfSTablo2=0; SendInfToTablo2();
 
-					    InfSTablo2=0; SendInfToTablo2();
-
-					    altera_backlight(0,0,0);
+                        CalibrRqst=true; usleep(200000);
+                        _clear();
+                        usleep(200000);
+                                    altera_backlight(20,20,20);
+                        CalibrRqst=false;  // очистка регистров
+                         //sleep(1);
 
 						GetPzsScan(0);
-
-						altera_backlight(MaxLightR,MaxLightG,MaxLightB);
+                        CalibrRqst=true; usleep(200000);
+                                        altera_backlight(MaxLightR,MaxLightG,MaxLightB);
+                        CalibrRqst=false;  // очистка регистров
 						//  подготовка массива  к  сканированию уровня  белого
 						InfSTablo1=31; SendInfToTablo1();
 						for(i=0;i< NumStrScan ;i++)
 						{ MasWtUr[i]=0; MasNumPoints[i]=0; MasWtUrSig[i]=0;  }
-						BtnPushed=-1;
-						ItemMenu1=ItemMenu1+1;
+						BtnPushed=-1; 	ItemMenu1=ItemMenu1+1;
 					  }
 					}; break;
-                  case 2: // калибровка ПЗС уровень черного
-					{ if(BtnPushed==1)
-					  { InfSTablo1=32; SendInfToTablo1();
-					    InfSTablo2=0; SendInfToTablo2();
-						GetPzsScan(1);
-						InfSTablo1=33; SendInfToTablo1();
-						ItemMenu1=ItemMenu1+1;
-					  }
+                  case 2: // калибровка ПЗС уровень белого
+					{   if(BtnPushed==0)
+						{  ItemMenu1=ItemMenu1+1;
+                            // выдача сообщения  о  следующем параметре
+                            InfSTablo1=33; SendInfToTablo1(); InfSTablo2=0; SendInfToTablo2();
+                            BtnPushed=1;
+						}else
+					    {   if(BtnPushed==1)
+                            {   InfSTablo1=32; SendInfToTablo1(); InfSTablo2=0; SendInfToTablo2();
+                                GetPzsScan(1);
+                                InfSTablo1=33; SendInfToTablo1(); ItemMenu1=ItemMenu1+1;
+                            }
+                        }
 					}; break;
 			    }//switch (ItemMenu1)
 				if((ItemMenu1==5)&&(BtnPushed==1))
 				{ // возвращение  в  меню предыдущего уровня
-				  ItemMenu1=0; MenuUr=0;//MenuUr-1; //strcpy(InfS,"");
-   			      InfSTablo1=8; SendInfToTablo1();
-   			      InfSTablo2=0; SendInfToTablo2();
+				  ItemMenu1=0; MenuUr=0;
+				  InfSTablo1=8; SendInfToTablo1(); InfSTablo2=0; SendInfToTablo2();
    			      BtnPushed=-1; if(MenuUr < 0)MenuUr=0;
-			      //strcpy(InfS2,"");      	  		SendInfToTablo2(InfS2);
 				 }
 				 if((ItemMenu1==4)&&(BtnPushed==1))
 				 { // возвращение  в  меню предыдущего уровня
-				   ItemMenu1=5; InfSTablo1=34; SendInfToTablo1();
-
-				   InfSTablo2=0; SendInfToTablo2();
+				   ItemMenu1=5; InfSTablo1=34; SendInfToTablo1();  InfSTablo2=0; SendInfToTablo2();
 				   // расчет и сохранение  коэффициентов ПЗС
-				   for(i=0;i< NumStrScan;i++)MasKoefPzs[i]=calculate_koefPZS(UrWhite0,MasBlUr[i],MasWtUr[i]);
-
-				   // сохранить  коэффициенты  в файл
-				   SaveKoeffPzs();
-
-                    // alteraRegCalibr_write();
-
-				   BtnPushed=-1;
+                    for(i=0;i< NumStrScan;i++)
+                    {    double dd=double(MasWtUr[i])-double(MasBlUr[i]);
+                        if(dd>1)  MasKoefPzs[i]=double(UrWhite0)/dd; else MasKoefPzs[i]=1;
+                        if ((i<10)||((i>800)&&(i<831)))
+                        { cout << "  UrBlack = "<<MasBlUr[i] << "  UrWhite = " << MasWtUr[i]<< "  Koeff= "<<MasKoefPzs[i]<<endl;}
+                    }
+                    // сохранить  коэффициенты  в файл
+                    SaveKoeffPzs();
+                    CalibrRqst=true; usleep(200000); set_calibration_data();  CalibrRqst=false;
+                    ItemMenu1=5;
+                    BtnPushed=-1;
 				 }
 				 if((ItemMenu1==3)&&(BtnPushed==1))ItemMenu1=4;
 			   } break;
-/*******/	  case 3: { // подменю РАСПОЗНАВАНИЕ
+/* ==================================================================================******/
+        case 3: { // подменю РАСПОЗНАВАНИЕ
 				if(BtnPushed==3) //нажата кн. ВЫБОР
-				{ InfSTablo1=35; SendInfToTablo1();
-				   //InfSTablo2=0; SendInfToTablo2();
-				  ItemMenu1=1; MenuUr=1;
-                  InfSTablo2=4; SendInfToTablo2();
-                  BtnPushed=-1; PrNoBtnWait=1; PrEnterStart=1;
+				{ InfSTablo1=35; SendInfToTablo1(); InfSTablo2=4; SendInfToTablo2();
+				  ItemMenu1=1; MenuUr=1; BtnPushed=-1; PrNoBtnWait=1; PrEnterStart=1;
 				}  switch (ItemMenu1)
 				   {  case 1: // Начальный уровень черного
 						{ if(BtnPushed==0)
 						  {  ItemMenu1=ItemMenu1+1;  //ParOut=0;
 							 // выдача сообщения о следующем параметре
-							 InfSTablo1=36; SendInfToTablo1();
-                             InfSTablo2=5; SendInfToTablo2();
-                             BtnPushed=-1; //PrNoBtnWait=1; PrEnterStart=1;
+							 InfSTablo1=36; SendInfToTablo1(); InfSTablo2=5; SendInfToTablo2();
+                             BtnPushed=-1;
 						  } else
-						  {
-						    if((BtnPushed==1)||(PrEnterStart==1))
+						  { if((BtnPushed==1)||(PrEnterStart==1))
 							{   // считывание параметра
 							    get_KeyString(NUMBER);
-								urbl=ReadParFromTablo2();
-								PrEnterStart=0;
+								urbl=ReadParFromTablo2(); PrEnterStart=0;
 							}
 						  }
 						  BtnPushed=-1;
@@ -1026,33 +955,27 @@ int ServMenu()
 						{ if(BtnPushed==0)
 						  {  ItemMenu1=ItemMenu1+1;
 							 // выдача сообщения  о  следующем параметре
-							 InfSTablo1=37; SendInfToTablo1();
-                             InfSTablo2=6; SendInfToTablo2();
-                             BtnPushed=-1; //PrNoBtnWait=1; PrEnterStart=1;
+							 InfSTablo1=37; SendInfToTablo1(); InfSTablo2=6; SendInfToTablo2();
+                             BtnPushed=-1;
 						  } else
-						  {
-						      if((BtnPushed==1)||(PrEnterStart==1))
-						      { get_KeyString(NUMBER);
-						        urw=ReadParFromTablo2();
-                                PrEnterStart=0;
-						      }
+						  { if((BtnPushed==1)||(PrEnterStart==1))
+                            {   get_KeyString(NUMBER);
+                                urw=ReadParFromTablo2(); PrEnterStart=0;
                             }
+                          }
 						  BtnPushed=-1;
 						}; break;
 						 case 3: // калибровка уровень черного  для штампа
 						{ if(BtnPushed==0)
-						  {  ItemMenu1=ItemMenu1+1;
+						  {  ItemMenu1=ItemMenu1+1;BtnPushed=-1;
 							 // выдача сообщения  о  следующем параметре
-							 InfSTablo1=38; SendInfToTablo1();
-                             InfSTablo2=7; SendInfToTablo2();
-                             BtnPushed=-1; //PrNoBtnWait=1; PrEnterStart=1;
+							 InfSTablo1=38; SendInfToTablo1(); InfSTablo2=7; SendInfToTablo2();
 						  } else
 						  {
 						    if((BtnPushed==1)||(PrEnterStart==1))
 							{ // считывание параметра
 							  get_KeyString(NUMBER);
-							  UrBlSh=ReadParFromTablo2();
-							  PrEnterStart=0;
+							  UrBlSh=ReadParFromTablo2(); PrEnterStart=0;
 							}
 						  }
 						  BtnPushed=-1;
@@ -1061,16 +984,13 @@ int ServMenu()
 						{ if(BtnPushed==0)
 						  {  ItemMenu1=ItemMenu1+1;   //ParOut=0;
 							 // выдача сообщения  о  следующем параметре
-							 InfSTablo1=39; SendInfToTablo1();
-                             InfSTablo2=8; SendInfToTablo2();
-                             MaxLight=MaxLightR;
-                             BtnPushed=-1; //PrNoBtnWait=1; PrEnterStart=1;
+							 InfSTablo1=39; SendInfToTablo1();  InfSTablo2=8; SendInfToTablo2();
+                             MaxLight=MaxLightR; BtnPushed=-1;
 						  } else
 						  { if((BtnPushed==1)||(PrEnterStart==1))
 							{  // считывание параметра
 							   get_KeyString(NUMBER);
-							   UrWtSh=ReadParFromTablo2();
-							   PrEnterStart=0;
+							   UrWtSh=ReadParFromTablo2();  PrEnterStart=0;
 							}
 						  }
 						  BtnPushed=-1;
@@ -1078,18 +998,15 @@ int ServMenu()
 						case 5: // калибровка максимальный уровень подсветки красным
 						{ if(BtnPushed==0)
 						  {  ItemMenu1=ItemMenu1+1; // для выхода из меню
-							  InfSTablo1=73; SendInfToTablo1();
-							  //usleep(200000);
-                               InfSTablo2=8; SendInfToTablo2();
-							   MaxLight=MaxLightG;
-							   BtnPushed=-1; //PrNoBtnWait=1; PrEnterStart=1;
+							  InfSTablo1=73; SendInfToTablo1(); InfSTablo2=8; SendInfToTablo2();
+							   MaxLight=MaxLightG;  BtnPushed=-1;
 						  } else
 						  {
 						    if((BtnPushed==1)||(PrEnterStart==1))
 							{ // сохранение  параметров в файл текущих параметров
 							  get_KeyString(NUMBER);
 							  MaxLightR=ReadParFromTablo2();
-							  //altera_backlight(MaxLightR,MaxLightG,MaxLightB);
+							  altera_backlight(MaxLightR,MaxLightG,MaxLightB);
 							  PrEnterStart=0;
 							}
 						  }
@@ -1098,17 +1015,15 @@ int ServMenu()
                         case 6: // калибровка максимальный уровень подсветки зеленым
 						{ if(BtnPushed==0)
 						  {  ItemMenu1=ItemMenu1+1; // для выхода из меню
-							  InfSTablo1=74; SendInfToTablo1();
-							  InfSTablo2=8; SendInfToTablo2();
-							  MaxLight=MaxLightB;
-							  BtnPushed=-1; //PrNoBtnWait=1; PrEnterStart=1;
+							  InfSTablo1=74; SendInfToTablo1();  InfSTablo2=8; SendInfToTablo2();
+							  MaxLight=MaxLightB;  BtnPushed=-1;
 						  } else
 						  {
 						    if((BtnPushed==1)||(PrEnterStart==1))
 							{ // сохранение  параметров в файл текущих параметров
 							  get_KeyString(NUMBER);
 							  MaxLightG=ReadParFromTablo2();
-							  //altera_backlight(MaxLight,MaxLight,MaxLight);
+							  altera_backlight(MaxLight,MaxLight,MaxLight);
 							  PrEnterStart=0;
 							}
 						  }
@@ -1125,7 +1040,7 @@ int ServMenu()
 							{ // сохранение  параметров в файл текущих параметров
 							   get_KeyString(NUMBER);
 							  MaxLightB=ReadParFromTablo2();
-							  //altera_backlight(MaxLight,MaxLight,MaxLight);
+							  altera_backlight(MaxLight,MaxLight,MaxLight);
 							  PrEnterStart=0;
 							}
 						  }
@@ -1138,7 +1053,7 @@ int ServMenu()
 						    //altera_backlight(MaxLightR,MaxLightG,MaxLightB);
 						  } else
 						  {  if(BtnPushed==1)
-							{ // сохранение введенных паратеров в  файл
+							{ // сохранение введенных параметров в  файл
 							  SetUpRecWrite();
 							  altera_backlight(MaxLightR,MaxLightG,MaxLightB);
 							}
@@ -1147,13 +1062,13 @@ int ServMenu()
 				   }//switch (ItemMenu1)
 				   if((ItemMenu1==9)&&(BtnPushed==1))
 				 { // возвращение  в  меню предыдущего уровня
-				   ItemMenu1=0; MenuUr=0;//MenuUr-1;
-				   InfSTablo1=9; SendInfToTablo1();
-                    InfSTablo2=0; SendInfToTablo2();
-                    BtnPushed=-1; if(MenuUr < 0)MenuUr=0;
+				   ItemMenu1=0; MenuUr=0;
+				   InfSTablo1=9; SendInfToTablo1(); InfSTablo2=0; SendInfToTablo2();
+                   BtnPushed=-1; if(MenuUr < 0)MenuUr=0;
 				 }
 			   } break;
-/*******/	  case 4: { // подменю УПРАВЛЕНИЕ
+/* ================================================================================= */
+        case 4: { // подменю УПРАВЛЕНИЕ
 				if(BtnPushed==3) //нажата кн. ВЫБОР (кнопка 1 на КОИБ)
 				{ InfSTablo1=41; SendInfToTablo1();
 				  ItemMenu1=1; MenuUr=1;
@@ -1190,7 +1105,6 @@ int ServMenu()
 							{  // считывание параметра
 							   if(PrCheckSh==0)PrCheckSh=1; else PrCheckSh=0;
                                InfSTablo2=10; SendInfToTablo2();
-
 							}
 						  }
 						  BtnPushed=-1;
@@ -1246,12 +1160,14 @@ int ServMenu()
 				   BtnPushed=-1; if(MenuUr < 0)MenuUr=0;
 				 }
 			   } break;
-/*******/	  case 5: { // подменю ПОВТОР ПЕЧАТИ
+/* ================================================================================= */
+        case 5: { // подменю ПОВТОР ПЕЧАТИ
 
 
 
 			   } break;
-/*******/	  case 6: { // подменю СБРОС ПАРАМЕТРОВ
+/* ================================================================================= */
+        case 6: { // подменю СБРОС ПАРАМЕТРОВ
 				if(BtnPushed==3) //нажата кн. ВЫБОР (кнопка 1 на КОИБ)
 				{ InfSTablo1=45; SendInfToTablo1();
                   // ввод  начальных  значений из  файлов инициализации
@@ -1263,7 +1179,8 @@ int ServMenu()
 				 BtnPushed=-1;
 				}
 			   } break;
-/*******/	 case 7: { // подменю Сброс ИД
+/* ================================================================================= */
+        case 7: { // подменю Сброс ИД
 				if(BtnPushed==3) //нажата кн. ВЫБОР (кнопка 1 на КОИБ)
 				{ InfSTablo1=46; SendInfToTablo1();
 				  ItemMenu1=1; MenuUr=1;
@@ -1290,7 +1207,8 @@ int ServMenu()
 				 }
 				}
 			   } break;
-/*******/	 case 8: { // подменю ВВОД ДАТЫ
+/* ================================================================================= */
+        case 8: { // подменю ВВОД ДАТЫ
 				if(BtnPushed==3) //нажата кн. ВЫБОР (кнопка 1 на КОИБ)
 				{ // определение  текущей даты и времени
                   time(&timer);   TekTime=localtime(&timer);
@@ -1305,7 +1223,7 @@ int ServMenu()
 				switch (ItemMenu1)
 					{  case 1: // запрос  на  изменение даты
 					   { if(BtnPushed==0)
-						 {  //  выход из установки даты
+						 {  //  выход из установки даты даты и времени
 							ItemMenu1=9; BtnPushed=1;
 							//BtnPushed=-1; //if(MenuUr < 0)MenuUr=0;
 						 } else
@@ -1315,63 +1233,63 @@ int ServMenu()
 							  InfSTablo1=50; SendInfToTablo1();
 							  //usleep(300000);
                               InfSTablo2=14; SendInfToTablo2(); // выдача дня
-                              BtnPushed=-1; PrNoBtnWait=1; PrEnterStart=1;
+                              BtnPushed=-1; PrNoBtnWait=1; PrEnterStart=0;
 						   }
                          }
 						}; break;
-						case 2: // установка  дня
+						case 2: // выход из установки даты
 						{ if(BtnPushed==0)
 						  {  ItemMenu1=ItemMenu1+1;
 							 // выдача сообщения о следующем параметре
 							 InfSTablo1=51; SendInfToTablo1();
                              InfSTablo2=15; SendInfToTablo2(); //  выдача месяца
-                             PrEnterStart=1;
+                             PrEnterStart=0;
 						  } else
 						  { if((BtnPushed==1)||(PrEnterStart==1))
-						    {
+						    { InfSTablo2=0; SendInfToTablo2(); // гашение табло 2 для набора данных
 						       get_KeyString(NUMBER);
 						       MyTime.tm_mday=int(ReadParFromTablo2());
+						       InfSTablo2=14; SendInfToTablo2(); // выдача дня
                                PrEnterStart=0;
 						    }
-
-					//	    if(BtnPushed==1)
-					//		{  // считывание дня
-/*  считывание дня  */	//    MyTime.tm_mday=int(ReadParFromTablo2());
-                      //              PrEnterStart=0;
                           }
-						//	 if(PrEnterStart==1) get_KeyString(NUMBER);
-							 //PrNoBtnWait=1;
-						  //BtnPushed=-1;
 						}; break;
 						case 3: // установка месяца
 						{ if(BtnPushed==0)
 						  {  ItemMenu1=ItemMenu1+1;
 							 // выдача сообщения о следующем параметре
+							InfSTablo1=52; SendInfToTablo1();
                             InfSTablo2=16; SendInfToTablo2(); // выдача года
                             BtnPushed=-1; //PrNoBtnWait=1; PrEnterStart=1;
+                            PrEnterStart=0;
 						  } else
 						  {
 						    if((BtnPushed==1)||(PrEnterStart==1))
 							{  // считывание месяца
+							    InfSTablo2=0; SendInfToTablo2(); // гашение табло 2 для набора данных
 							   get_KeyString(NUMBER);
                                 MyTime.tm_mon=ReadParFromTablo2();
+                                InfSTablo2=15; SendInfToTablo2(); //  выдача месяца
                                PrEnterStart=0;
 							}
 						  }
 						}; break;
-						case 4: // максимальный угол наклона бланка MaxAngle
+						case 4: // установка года
 						{ if(BtnPushed==0)
 						  {  ItemMenu1=ItemMenu1+1;
 							 // выдача сообщения о следующем параметре
 							 InfSTablo1=53; SendInfToTablo1();
                              InfSTablo2=17; SendInfToTablo2();// выдача часов
-                             BtnPushed=-1; //PrNoBtnWait=1; PrEnterStart=1;
+                             BtnPushed=-1; //PrNoBtnWait=1;
+                             PrEnterStart=0;
 						  } else
 						  {
 						    if((BtnPushed==1)||(PrEnterStart==1))
 							{  // считывание года
+							     InfSTablo2=0; SendInfToTablo2(); // гашение табло 2 для набора данных
 							    get_KeyString(NUMBER);
                                 MyTime.tm_year=ReadParFromTablo2();
+                                InfSTablo2=16; SendInfToTablo2(); // выдача года
                                 PrEnterStart=0;
 							}
 						  }
@@ -1382,13 +1300,16 @@ int ServMenu()
 							 // выдача сообщения о следующем параметре
 							 InfSTablo1=54; SendInfToTablo1();
                              InfSTablo2=18; SendInfToTablo2(); // выдача минут
-                             BtnPushed=-1; //PrNoBtnWait=1; PrEnterStart=1;
+                             BtnPushed=-1; //PrNoBtnWait=1;
+                             PrEnterStart=0;
 						  } else
 						  {
 						     if((BtnPushed==1)||(PrEnterStart==1))
 							{  // считывание часа
+							     InfSTablo2=0; SendInfToTablo2(); // гашение табло 2 для набора данных
 							    get_KeyString(NUMBER);
                                 MyTime.tm_hour=ReadParFromTablo2();
+                                InfSTablo2=17; SendInfToTablo2(); // выдача года
                                 PrEnterStart=0;
 							}
 						  }
@@ -1398,12 +1319,15 @@ int ServMenu()
 						  {  ItemMenu1=ItemMenu1+1;
   							 InfSTablo1=55; SendInfToTablo1();
   							 InfSTablo2=13; SendInfToTablo2();
-  							 BtnPushed=-1; //PrNoBtnWait=1; PrEnterStart=1;
+  							 BtnPushed=-1; //PrNoBtnWait=1;
+  							 PrEnterStart=0;
 						  } else
 						  {  if((BtnPushed==1)||(PrEnterStart==1))
 							{  // установка  введенного значения  времени
+							    InfSTablo2=0; SendInfToTablo2(); // гашение табло 2 для набора данных
 							    get_KeyString(NUMBER);
 /*  считывание минут  */	    MyTime.tm_min=ReadParFromTablo2();
+                                InfSTablo2=18; SendInfToTablo2(); // выдача минут
                                 PrEnterStart=0;
 							}
 						  }
@@ -1419,12 +1343,15 @@ int ServMenu()
 							{  // сохранение новой даты и времени
 							   ItemMenu1=ItemMenu1+1;
 							   InfSTablo1=57; SendInfToTablo1();
-							   TekTime->tm_year=MyTime.tm_year-1990; TekTime->tm_mon=MyTime.tm_mon-1;
-							   TekTime->tm_mday=MyTime.tm_mday;
-                               TekTime->tm_hour=MyTime.tm_hour; TekTime->tm_min=MyTime.tm_min;
-                               mktime(TekTime);
-
-							   InfSTablo2=13; SendInfToTablo2(); // выдача даты и времени
+                                char sst[40],ss[128];
+                                sprintf(sst,"%04d.%02d.%02d-%02d:%02d:%02d ",MyTime.tm_year,MyTime.tm_mon,MyTime.tm_mday,MyTime.tm_hour,MyTime.tm_min,MyTime.tm_sec);
+                                strcpy(ss,"date -s ");
+                                strcat(ss,sst);
+                                // установка  системного  времени
+                                system(ss);
+                                // установка  времени на  аппаратуре
+                                strcpy(ss,"hwclock -w");     system(ss);
+							    InfSTablo2=13; SendInfToTablo2(); // выдача даты и времени
 							}
 						  }
 						}; break;
@@ -1438,7 +1365,8 @@ int ServMenu()
                     }
                     if((ItemMenu1==8)&&(BtnPushed==1)) ItemMenu1=9;
 			   } break;
-/*******/	 case 9: { // подменю ИЗГОТОВИТЕЛЬ
+/* ================================================================================= */
+        case 9: { // подменю ИЗГОТОВИТЕЛЬ
 				if(BtnPushed==3) //нажата кн. ВЫБОР (кнопка 1 на КОИБ)
 				{ // заводские настройки
 				  InfSTablo1=58; SendInfToTablo1();
@@ -1516,24 +1444,22 @@ int ServMenu()
 				}//switch (ItemMenu1)
 				if((ItemMenu1==5)&&(BtnPushed==1))
 				 { // возвращение  в  меню предыдущего уровня
-				   ItemMenu1=0; MenuUr=0;//MenuUr-1;
-				   InfSTablo1=15; SendInfToTablo1();
-				   InfSTablo2=0; SendInfToTablo2();
+				   ItemMenu1=0; MenuUr=0;
+				   InfSTablo1=15; SendInfToTablo1();   InfSTablo2=0; SendInfToTablo2();
 				   BtnPushed=-1;
 				 }
 			   } break;
-/*******/	 case 10: {// подменю ГРОМКОСТЬ
+/* ================================================================================= */
+        case 10: {// подменю ГРОМКОСТЬ
 				if(BtnPushed==3) //нажата кн. ВЫБОР (кнопка 1 на КОИБ)
 				{ // выдача параметров уровня громкости
 				  if(ItemMenu1==0)
-				  { ItemMenu1=1;  MenuUr=1;//MenuUr+1;
-                    InfSTablo1=62; SendInfToTablo1();
+				  { ItemMenu1=1;  MenuUr=1;          InfSTablo1=62; SendInfToTablo1();
                     InfSTablo2=22; SendInfToTablo2();//  выдача уровня  громкости
                     BtnPushed=-1;
 				  } else
 				  { ItemMenu1=2;
-				    InfSTablo1=66; SendInfToTablo1();
-				    InfSTablo2=0; SendInfToTablo2();//  выдача уровня  громкости
+				    InfSTablo1=66; SendInfToTablo1();   InfSTablo2=0; SendInfToTablo2();//  выдача уровня  громкости
 				    BtnPushed=1;
 				  }
 				}
@@ -1551,6 +1477,7 @@ int ServMenu()
 							if(VolumeUr > 0)
 							{ VolumeUr=VolumeUr-1;
                               InfSTablo2=22; SendInfToTablo2(); // выдача уровня  громкости на  табло
+                              setVoiceVolume(VolumeUr);  SayVotes(1);  // здравствуйте
                             }
 						 } else
 						 { if(BtnPushed==1)
@@ -1558,6 +1485,7 @@ int ServMenu()
                              if(VolumeUr < VolumeUrMax)
 							 { VolumeUr=VolumeUr+1;
                                InfSTablo2=22; SendInfToTablo2(); // выдача уровня  громкости на  табло
+                                setVoiceVolume(VolumeUr); SayVotes(1);  // здравствуйте
                              }
 						   }
 						}
@@ -1565,7 +1493,7 @@ int ServMenu()
 				}//switch (ItemMenu1)
 				if((ItemMenu1==2)&&(BtnPushed==1))
 				 { // возвращение  в  меню предыдущего уровня
-				   ItemMenu1=0; MenuUr=0;//MenuUr-1;
+				   ItemMenu1=0; MenuUr=0;
 				   InfSTablo1=16; SendInfToTablo1();
 				   // установка  уровня громкости динамиков
                     setVoiceVolume(VolumeUr);
@@ -1573,7 +1501,8 @@ int ServMenu()
 				   BtnPushed=-1; //if(MenuUr < 0)MenuUr=0;
 				 }
 			   } break;
-/*******/	 case 11: {// подменю Log- файлы и образы
+/* ================================================================================= */
+        case 11: {// подменю Log- файлы и образы
 				if(BtnPushed==3) //нажата кн. ВЫБОР (кнопка 1 на КОИБ)
 				{ InfSTablo1=63; SendInfToTablo1();
 				  ItemMenu1=1; MenuUr=1;//MenuUr+1;
@@ -1636,12 +1565,12 @@ int ServMenu()
 				 { // возвращение  в  меню предыдущего уровня
 				   ItemMenu1=0; MenuUr=0;//MenuUr-1;
 				   InfSTablo1=17; SendInfToTablo1();
-				   //usleep(300000);
                    InfSTablo2=0; SendInfToTablo2();
 				   BtnPushed=-1; //if(MenuUr < 0)MenuUr=0;
 				 }
 			   } break;
-/*******/	 case 12: { // подменю Информация о сканере
+/* ================================================================================= */
+        case 12: { // подменю Информация о сканере
 				if(BtnPushed==3) //нажата кн. ВЫБОР (кнопка 1 на КОИБ)
 				{ InfSTablo1=67; SendInfToTablo1();// данные по ведущему
                   InfSTablo2=23; SendInfToTablo2();
@@ -1688,13 +1617,14 @@ int ServMenu()
 				   ItemMenu1=0; MenuUr=0;//MenuUr-1;
 				   InfSTablo1=18; SendInfToTablo1();
 				   InfSTablo2=0; SendInfToTablo2();
-				   BtnPushed=-1; //if(MenuUr < 0)MenuUr=0;
+				   BtnPushed=-1;
 				 }
 			   } break;
-/*******/	 case 13: { // подменю ТЕСТЫ
+/* ================================================================================= */
+        case 13: { // подменю ТЕСТЫ
 				if((BtnPushed==3)&&(ItemMenu1==0)) //нажата кн. ВЫБОР (кнопка 1 на КОИБ)
 				{
-                  MenuUr=1;//MenuUr+1;
+                  MenuUr=1;
 				  // формирование пути к  файлу
                   FindSourceFile();
                   if (! Parser(FileName))
@@ -1705,14 +1635,9 @@ int ServMenu()
                   } else
                   {  // файл  данных найден
                      ItemMenu1=1;
-                     //InfSTablo1=70; SendInfToTablo1();
                      InfSTablo2=26; SendInfToTablo2(); // вставьте  лист
-                     // считывание исходных данных из файла
-                    // Parser(FileName);
                      // формирвоание исходных данных по выборам
                      FormIdScan();
-                     // гашение  массивов сканирования  бюллетеня
-                     GashBeforeScan();
                   }
                   UMount("/mnt/usb");
                   BtnPushed=-1;
@@ -1730,19 +1655,12 @@ int ServMenu()
 							    // гашение  массивов сканирования  бюллетеня
                                 GashBeforeScan();
                                 calibrate_mode= MODE_NORMAL;
-                               // InfSTablo2=28; SendInfToTablo2();//сканирование и сохранение
-                                frontLED(5,0);   // включение красной лампочкиидет процесс сканирования и обработки
+                                frontLED(2,0);   // включение красной лампочкиидет процесс сканирования и обработки
 
-                                ScanReady=true;
+                                TestRecogn(); // сканирование с  распознаванием
 
-                                TestScan();
-
-                                ScanReady=false;
-                                cout << " Average levels of White   and  Black " << endl;
-                                cout << urw << "   "<< urbl << endl;
-                                //SendInfToTablo2();
 								InfSTablo2=26; SendInfToTablo2();// вставьте лист
-								frontLED(0,5);// увеличение интенсивности зеленой  лампочки и отключение красной
+								frontLED(0,2);// увеличение интенсивности зеленой  лампочки и отключение красной
 							}
 						  }
 						  BtnPushed=-1;
@@ -1781,12 +1699,7 @@ int ServMenu()
 						  BtnPushed=-1;
 						}; break;
 						case 4: // выход
-						{ if((BtnPushed==0)||(BtnPushed==1))
-						  {  ItemMenu1=ItemMenu1+1;  BtnPushed=1; }
-						  //else
-						  //{ if(BtnPushed==1)// считывание параметра
-							//{ ItemMenu1=ItemMenu1+1;}
-						  //}
+						{ if((BtnPushed==0)||(BtnPushed==1))	  {  ItemMenu1=ItemMenu1+1;  BtnPushed=1; }
 						}; break;
 					}//switch (ItemMenu1)
 				   if((ItemMenu1==5)&&(BtnPushed==1))
@@ -1798,20 +1711,54 @@ int ServMenu()
 				   BtnPushed=-1; //if(MenuUr < 0)MenuUr=0;
 				 }
 			   } break;
-/*******/	 case 14: { // подменю СОХРАНИТЬ СКАН
+/* ================================================================================= */
+        case 14: { // подменю Сканирование  образа и его сохранение
+				if(BtnPushed==3) //нажата кн. ВЫБОР
+				{ InfSTablo1=75; SendInfToTablo1();// данные по ведущему
+                  InfSTablo2=45; SendInfToTablo2();// нажмите ДА, вставьте бюллетень
+				  ItemMenu1=1; MenuUr=1;//MenuUr+1;
+                  BtnPushed=-1;
+                }
+				switch (ItemMenu1)
+					{  case 1: // тестирование  сканера
+					   { if(BtnPushed==0)
+						 {  ItemMenu1=ItemMenu1+1;
+							 // выдача сообщения о следующем параметре
+							  InfSTablo1=66; SendInfToTablo1();
+							  InfSTablo2=0; SendInfToTablo2();
+						  } else
+						  { if(BtnPushed==1)
+							{   // сканирование образа
+                                calibrate_mode= MODE_NORMAL;
+                                frontLED(2,0);   // включение красной лампочкиидет процесс сканирования и обработки
 
-//  непонятно зачем, нам  результаты изображений не  нужны,
-//  достаточно log - файлов и изображения отсканированного бюллетеня
-//  частей отсканированного  бюллетеня нет неолбходимости сохранять
+                                TestScan();
 
+								InfSTablo2=45; SendInfToTablo2();// вставьте лист
+								frontLED(0,2);// увеличение интенсивности зеленой  лампочки и отключение красной
+							}
+						  }
+						  BtnPushed=-1;
+						}; break;
+						case 2: // выход
+						{ if((BtnPushed==0)||(BtnPushed==1)){  ItemMenu1=ItemMenu1+1;  BtnPushed=1; }
+						}; break;
+					}//switch (ItemMenu1)
+				   if((ItemMenu1==3)&&(BtnPushed==1))
+				 { // возвращение  в  меню предыдущего уровня
+				   ItemMenu1=0; MenuUr=0;//MenuUr-1;
+				   InfSTablo1=20; SendInfToTablo1();  InfSTablo2=0; SendInfToTablo2();   BtnPushed=-1;
+				 }
 			   } break;
-/*******/	 case 15: { // подменю КОДЫ  ДОСТУПА
+/* ================================================================================= */
+        case 15: { // подменю КОДЫ  ДОСТУПА
 
 //  пока  не  ясно, нужно  это  или  нет
 //  позже, если понадобится, доделаем
 
 			   } break;
-/*******/	 case 16:
+/* ================================================================================= */
+        case 16:
 			   { // подменю ВЫХОД
 				 if(BtnPushed==3)
 				 {  ItemMenu0=0; PrMenuBtn=-1;KodOp=-1;  KodDost=-1;
@@ -1822,6 +1769,7 @@ int ServMenu()
 				 }
 			   } break;
 		   } // switch
+/* ================================================================================= */
 		   //finMenu2:;
 		 }
 		 finMenu1:;

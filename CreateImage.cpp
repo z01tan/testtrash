@@ -32,9 +32,10 @@ int max_gelesen;    //кол-во записанных в массив стро�
 int MAXLINES = SCAN_MAXL; //600*8;
 int MAXWIDTH = SCAN_LINEW; //216*8;
 int Errno;
-int image_fd;
+int image_fd=-1;
 char line_buffer[LINE_LENGTH];
 int first_block_found = 0;
+
 
 int output_fd;
 int ChangeO;
@@ -91,7 +92,7 @@ int get_block_index(char * packet)
 int process_line(char * line_buffer, int line_number)
 {
 
-       if((ScanInProg>0) && (image_fd>0))
+       if((ScanInProg>0) && (image_fd>=0))
        {
    //      write(output_fd, line_buffer, LINE_LENGTH);
  //        Errno = pthread_mutex_lock(&mutx);
@@ -287,17 +288,19 @@ void* GetImage(void* arg) // Thread for getting Image & Optrones from Altera
 pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 // . . .Крутимся все время!!!!
 while(true) // основной бесконечный цикл
-   {
-        if (MotorFuS && (image_fd ==0)) {
+{
+    if (CalibrRqst) usleep(10000); // "останов" нити для записи регистров АЛЬТЕРЫ 
+    else{     
+           if (MotorFuS && (image_fd <0)) {
             image_fd = open_image_device(IMAGE_DEVICE);
             Scptr_s =0;
                     printf("\nimage_fd opened = %d\n",image_fd);fflush(0);
             Rest =-1;
             Strt = Starting;
 
-            } //MotorFuS && (image_fd ==0)
+           } //MotorFuS && (image_fd ==0)
 
-        if(image_fd>0){
+           if(image_fd>=0){
                if (Rest>0) Rest--;
                tmp = ScanRead();
 
@@ -315,15 +318,17 @@ while(true) // основной бесконечный цикл
                         ScanReady = false;
                         ScanInProg = 0;
                         MotorFuS = false;
-                        close(image_fd);
-                        image_fd = 0;
+                        printf("\n image_fd closed!=%d\n",close(image_fd));fflush(0);
+                    //    close(image_fd);
+                        image_fd = -1;
                         max_gelesen = Scptr_s;
-                        printf("\n image_fd closed!\n");fflush(0);
+                     //   printf("\n image_fd closed!\n");fflush(0);
 
                 } //if((tmp>0)||(!ScanReady)!!!!!!!!
-        }else /* image_fd>0 */
-        {usleep(1000);} // если не сканируем, то ждем 1000 мкс
-
+           }else /* image_fd>=0 */
+                {usleep(1000);} // если не сканируем, то ждем 1000 мкс
+        
+    
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       if(calibrate_mode==MODE_NORMAL){
         if(MotorFuS && (ScanInProg==0) && (Optron[3]<NO_PAPER)) //затемнился средний оптрон
@@ -339,13 +344,14 @@ while(true) // основной бесконечный цикл
            {Rest =-1;ScanInProg = 0;ScanReady = false;} /// !!!!!!!!!!!!!!!!!!!!!!!!!!!
        } // if(calibrate_mode==MODE_NORMAL)
 
-      if(MotorFuS &&(calibrate_mode==MODE_CALIBRATE_INIT))ScanInProg =1;
+      if(MotorFuS && (calibrate_mode==MODE_CALIBRATE_INIT))ScanInProg =1;
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    //  if(MotorRqst){altera_motor(motor_direction);MotorRqst=false;}
+            //  if(MotorRqst){altera_motor(motor_direction);MotorRqst=false;}
 
-
-   } return 0;
+     } //if (!CalibrRqst) 
+ } //while 
+ return 0;
 }
 //==============================================================================
 //-----------------------Thread Buttons&Co--------------------------------------
@@ -362,14 +368,20 @@ pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 bu1 = 1; bu2 = 1; impl1=0;impl2=0;
 while (true){
 
+ // нет ли требования записать регистры Альтеры
+ if (CalibrRqst) usleep(15000); // "останов" нити для записи регистров АЛЬТЕРЫ
+ else{  
+    
     if(MotorRqst) { altera_motor(motor_direction); MotorRqst=false; }
 
     if (!KeyisReady) usleep(15000);      //      wait for 15 msec!
     else usleep(5000);
-
-    // нет ли требования записать регистры Альтеры
-    if (CalibrRqst) {set_calibration_data();CalibrRqst = false;}
-
+    
+    if(motorWatch > 0)motorWatch--;
+    if(motorWatch == 0){motor_direction = MOTOR_STOP;motorWatch=-1;
+                        max_gelesen=0;MotorRqst = true;}
+    
+   
      // Опросим оптроны:
         for(i=0;i<4;i++) altopt[i] = Optron[i];
         adc_read(); // опросили!!
@@ -418,9 +430,8 @@ while (true){
     }
     sem_getvalue(&semBut,&semV);
     if((changeV>0 || changeF>0) && semV==0 ) sem_post(&semBut); // сообщаем об изменении кнопок***
-    if(motorWatch > 0)motorWatch--;
-    if(motorWatch == 0){motor_direction = MOTOR_STOP;MotorRqst = true;}
-  }//while (true)
+  }//if (!CalibrRqst)  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+}//while (true)
   return 0;
 }
 //------------------------------------------------------------------------------
@@ -455,7 +466,7 @@ int Create_Threads()
 	} // Fertig!
 
 // подготовка для чтения скана
-CalibrRqst = false;
+CalibrRqst = false;             //!!!!!!!!!!!!!!!!
 ScanInProg = 0;
 MotorFuS = 0;
 ScanReady = false;
@@ -471,7 +482,7 @@ Scptr_r = 0;// Нулим указатели на сканированные и 
 
   Errno = pthread_mutex_init(&mutx,NULL);
 // For use: pthread_mutex_lock(), pthread_mutex_trylock(),pthread_mutex_timedloc,
-//pthread_mutex_unlock() and pthread_mutex_destroy();
+// pthread_mutex_unlock() and pthread_mutex_destroy();
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!мьютексом будем защищать Scptr_s - указатель на сосканир.строку!!!!!!!!!!
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -525,12 +536,20 @@ Scptr_r = 0;// Нулим указатели на сканированные и 
 //.............................................................................
 void Close_Threads()
 {
-        free(PixCol);
-        free(PixelBMP);
-        sem_destroy(&semBut);
-        sem_destroy(&semOpt);
+        closeTTY();
+        close_device();
         pthread_mutex_destroy(&mutx);
         pthread_cancel(PID_Image);
         pthread_cancel(PID_But);
+        sleep(1);
+        close_Key();
+        
+        free(PixCol);
+        free(PixelBMP);
+        sleep (1);
+        sem_destroy(&semBut);
+        sem_destroy(&semOpt);
+    
+       
 }
 //==============================================================================

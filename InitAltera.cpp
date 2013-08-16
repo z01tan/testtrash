@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <fcntl.h>  
+#include <fcntl.h>
 #include <sys/ioctl.h>
 #include <linux/types.h>
 #include <linux/spi/spidev.h>
@@ -53,8 +53,9 @@ tesm    test_mode;
 clbr    calibrate_mode;
 int     motorWatch;
 
-double calibration_koeff[LINE_LENGTH];
+//double calibration_koeff[LINE_LENGTH];
 uint8_t calibration_data[LINE_LENGTH];
+double calibration_dataK[LINE_LENGTH];
 
 
 
@@ -65,13 +66,13 @@ uint8_t calibration_data[LINE_LENGTH];
  int    Optron[4] ;// 0самый нижний,1и2 правый и левый,3 -перед скан-линейкой!!!
  int    Buttons[6];// Массив кнопок(задних и терминальных) НУЖНО нулить после испоьзования!
  int    BackBut[5];// Рабочие массив кнопок.Нулить после использования
- int    but1,but2;  
- 
+ int    but1,but2;
+
  bool   KeyisReady;   // наличие клавиатуры!!
  bool   MotorFuS;   // запущен мотор вперед со сканированием
- 
+
  int    kfd;
- 
+
 
 struct termios tty, savetty, kbdtty;
 int    fdTTY;
@@ -82,7 +83,7 @@ int     max_brightness = 0x00;
 //------------------------------------------------------------------------------
 void pabort(const char *s)
 {
-	perror(s); 
+	perror(s);
    //     std::cout <<"";
 	abort();
 }
@@ -93,7 +94,7 @@ uint16_t float_to_8_8(double x)
         uint16_t ret;
         uint8_t p1;
         uint8_t p2;
-        
+
         p1 = x;
         p2 = (x-p1)*255;
         ret = (p1<<8)|p2;
@@ -103,7 +104,7 @@ uint16_t calculate_mult(uint8_t black_level)
 {
         double mult;
         uint16_t ret;
-        
+
         mult = 255/(255-(double)black_level);
         ret = float_to_8_8(mult);
         return ret;
@@ -113,16 +114,28 @@ void save_calibration_data(uint8_t* line_buffer)
 {
         int fd;
         int nw;
-            
+
         fd = creat(CALIBRATION_FILE, O_WRONLY);
         if(fd < 0)
                  pabort("Error: cannot write calibration data\n");
         nw = write(fd, line_buffer, LINE_LENGTH);
-        printf(" RESULT OF WRITE CALIBR %d\n",nw);
+     //   printf(" RESULT OF WRITE CALIBR %d\n",nw);
         close(fd);
-              
-        
-        
+
+
+
+}
+void save_calibration_dataK(double* line_bufferK)
+{
+    int fd;
+    int nw;
+
+        fd = creat(CALIBRATION_FILEK, O_WRONLY);
+        if(fd < 0)
+                 pabort("Error: cannot write calibration data_K\n");
+        nw = write(fd, line_bufferK, LINE_LENGTH * sizeof(double));
+        printf(" RESULT OF WRITE CALIBR KOEFF %d\n",nw);
+        close(fd);
 }
 //-----------------------------------------------------------------------------
 int load_calibration_data(void)
@@ -135,7 +148,19 @@ int load_calibration_data(void)
                 return -1;
         }
         read(fd, calibration_data, LINE_LENGTH);
-        printf("CALIBRATION FIRST=%d\n",calibration_data[1]);
+       // printf("CALIBRATION FIRST=%d\n",calibration_data[1]);
+        close(fd);
+        return 0;
+}
+int load_calibration_dataK(void)
+{
+    int fd;
+        fd = open(CALIBRATION_FILEK, O_RDONLY);
+        if(fd < 0){
+                printf("\nCALIBRATION_FILE_K NOT Found\n");
+                return -1;
+        }
+        read(fd, calibration_dataK, LINE_LENGTH * sizeof(double));
         close(fd);
         return 0;
 }
@@ -145,7 +170,16 @@ void set_calibration_data(void)
               altera_write(altera_fd, 0x800+i, calibration_data[i]<<8); //?????
                 }
         for(i=0; i<LINE_LENGTH; i++){
-              altera_write(altera_fd, 0x1000+i, calculate_mult(calibration_data[i])); }       
+              altera_write(altera_fd, 0x1000+i, calculate_mult(calibration_data[i])); }
+}
+void set_calibration_dataK(void)
+{int i;
+        for(i=0; i<LINE_LENGTH; i++){
+              altera_write(altera_fd, 0x800+i, calibration_data[i]<<8); //?????
+                }
+        for(i=0; i<LINE_LENGTH; i++){
+              altera_write(altera_fd, 0x1000+i, float_to_8_8(calibration_dataK[i])); }
+
 }
 //*****************************************************************************
 //-----------------------------------------------------------------------------
@@ -174,7 +208,7 @@ int open_device(const char *device)
 {
    int ret;
    int fd;
-        
+
         fd = open(device, O_RDWR);
         ret = ioctl(fd, SPI_IOC_WR_MODE, &mode);
         ret = ioctl(fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed);
@@ -194,7 +228,7 @@ uint16_t altera_read(int fd, uint16_t addr)
         char tx[4] = {0xFF, 0xFF, 0xFF, 0xFF};
         char rx[sizeof(tx)];
         int ret;
-        
+
         struct spi_ioc_transfer tr = {
 			tr.tx_buf = (unsigned long)tx,
 			tr.rx_buf = (unsigned long)rx,
@@ -214,7 +248,7 @@ uint16_t altera_write(int fd, uint16_t addr, uint16_t data)
         char tx[4] = {0xFF, 0xFF, 0xFF, 0xFF};
         char rx[sizeof(tx)];
         int ret;
-        
+
         struct spi_ioc_transfer tr = {
 			tr.tx_buf = (unsigned long)tx,
 			tr.rx_buf = (unsigned long)rx,
@@ -259,7 +293,7 @@ int refr;
                 motorWatch = -1;
                 printf("STOP\n");
                 break;
-         default:;   
+         default:;
         }
         if(solenoid == SOL_ON)
                 tmp|=(1<<3);
@@ -268,7 +302,7 @@ int refr;
                 printf("attempt# %d\n",3-refr);}
          else return;
         }
-   //    altera_write(altera_fd, 0x01, tmp); 
+   //    altera_write(altera_fd, 0x01, tmp);
 }
 
 void altera_testMode(tesm TMD)      /* Регистр 2 */
@@ -287,7 +321,7 @@ void altera_testMode(tesm TMD)      /* Регистр 2 */
                 printf(" MEDIAN\n");
                 tmp|=(1<<1);
                 break;
-         default:;  
+         default:;
         }
         altera_write(altera_fd, 0x02, tmp);
 }
@@ -302,10 +336,8 @@ void altera_backlight(int r,int g, int b)
 void _clear()
 {
     int i;
-    for(i=0; i<LINE_LENGTH; i++)
-          { altera_write(altera_fd, 0x800+i, 0x0);}
-    for(i=0; i<LINE_LENGTH; i++)
-          { altera_write(altera_fd, 0x1000+i, 0x100);}
+    for(i=0; i<LINE_LENGTH; i++) { altera_write(altera_fd, 0x800+i, 0x0);}
+    for(i=0; i<LINE_LENGTH; i++) { altera_write(altera_fd, 0x1000+i, 0x100);}
 }
 //-----------------------------i2c----------------------------------------------
 int i2c_open(void)
@@ -352,7 +384,7 @@ void adc_write(int fd, char * data)
 {
         char rx[2];
         int ret;
-        
+
         struct spi_ioc_transfer tr = {
 			tr.tx_buf = (unsigned long)data,
 			tr.rx_buf = (unsigned long)rx,
@@ -369,7 +401,7 @@ void init_adc(void)
         int adc_fd;
         char settings[2]={0, 0x60};
 	char mux[2]={0x10, 0x70};
-        
+
         printf("initializing adc\n");
         adc_fd = open_device(ALTERA_ADC_DEVICE);
         adc_write(adc_fd, settings);
@@ -433,14 +465,17 @@ int butt_get(int* b1, int* b2)
 }
 //----------------------End of Buttons------------------------------------------
 //---------------------Keyboard-------------------------------------------------
-int      open_Key(void) // 
+int      open_Key(void) //
 {
     kfd = open(Keyb_f, O_RDONLY | O_NONBLOCK);
     if (kfd<0)return 0;
     printf("Keyboard is OPENED!! = %d\n",kfd);
     return 1;
 }
- 
+void    close_Key(void)
+{
+    if(kfd>=0)close(kfd);
+}
 
 //---------------------End of KeyBoard Open-------------------------------------
 //------------------------TERMINAL----------------------------------------------
@@ -448,11 +483,11 @@ int openTTY(void)
 {
   char port[11];
   char* pport = &port[0];
-  
+
    memmove(pport,"/dev/ttyS1",11);
-   fdTTY = open ( pport, O_RDWR | O_NONBLOCK);  
+   fdTTY = open ( pport, O_RDWR | O_NONBLOCK);
    if (fdTTY == -1) { printf("open_portTTY: Unable to open %s. \n", port);return(-1);}
-                
+
    fcntl(fdTTY, F_SETFL, 0);
    printf("TTY-port is opened!!\n");
    tcgetattr(fdTTY, &savetty); // получили структуру termios
@@ -468,7 +503,7 @@ int openTTY(void)
    tty.c_cflag &= ~CSIZE;
    tty.c_cflag |= CREAD;
    tty.c_cflag |= CS8;
-   
+
   // tty.c_ospeed = B115200;
   // tty.c_ispeed = B115200;
  //  tty.c_cc[VMIN] = 0;
@@ -482,7 +517,7 @@ int openTTY(void)
 void closeTTY()
 {
    tcsetattr(fdTTY, TCSANOW, &savetty);
-   close(fdTTY); 
+   close(fdTTY);
 }
 void resetTTY()
 {
@@ -491,12 +526,12 @@ void resetTTY()
 }
 
 int readTTY(char * a,int size)
-{ 
+{
   int r;
   r = read(fdTTY, a, size);
   if (r == 0)*a = 0x00;
-  return(r);  
-}   
+  return(r);
+}
 
 int writeTTY(char* cmd, int size)
 { int r;
@@ -507,42 +542,51 @@ return(1);
 //----------------------End of TTY----------------------------------------------
 //==============================================================================
 int Init_Altera()
-{ 
-  int i; 
+{
+  int i;
   char led;
-  
+
  motor_direction = MOTOR_STOP;
  solenoid = SOL_OFF;
  backlight = DEFAULT_BACKLIGHT;
  test_mode = TEST_NONE;
  calibrate_mode = MODE_NORMAL;
- 
+
  NO_PAPER  = 171;
  ONE_PAPER  = 72;
  TWO_PAPER  =  80;
  for (i=0;i<4;i++)Optron[i] = 0;
  for (i=0;i<5;i++)Buttons[i]= 0;
- MotorFuS = false;   
+ MotorFuS = false;
  motorWatch = -1;
- 
+
   //  ScanInProg = 0;
     adc_read();
     printf("adc_data OK\n");
     init_adc();
     printf("init_adc OK\n");
     altera_fd = open_device(ALTERA_SPI_DEVICE);// for close call: close_device();
-    
- // Initial calibration data BlackLevel & Koeff
-    if (load_calibration_data()==0) set_calibration_data();
+
+// Initial calibration data BlackLevel & Koeff
+
+// для калибровки по белому
+ /*   bool cl=false,clK=false;
+    if (load_calibration_data()==0) cl=true;//set_calibration_data();
+    if(load_calibration_dataK()==0) clK=true;
+    if(clK && cl) set_calibration_dataK();
+    else {if(cl) set_calibration_data();
+          else _clear();}
+*/
+  if ((load_calibration_data()==0)) set_calibration_data();
     else{ _clear();}
-   
+
     led = '1';
     if(Led_opt(&led))pabort("Led Error!!!!\n");// зажгли опторары!!!!!
      altera_write(altera_fd, 0x01, 0);  // stop motor!
      altera_write(altera_fd, 0x02, 0);  // Test zero!
      altera_write(altera_fd, 0x04, backlight);
      altera_write(altera_fd, 0x05, backlight);
-     altera_write(altera_fd, 0x06, backlight);  
+     altera_write(altera_fd, 0x06, backlight);
       printf("BlackLevel write OK\n");
      if(openTTY() < 0) printf("NO Terminal!!!!!\n");
      return 0;

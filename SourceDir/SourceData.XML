@@ -1,93 +1,153 @@
 <?xml version="1.0" encoding="windows-1251"?>
-<SourceData DateTime="2013-07-14" id="e3d2cac7-8741-4a30-8af9-8dc6738e84ab" TrainingFileSuffix="_T" FileSuffix="_R" isGasVrn="true" protocolPassword="123" password="123" xmlns="http://localhost/Schemas/SIB2003/SourceData" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://localhost/Schemas/SIB2003/SourceData SourceData-schema.xsd">
-	<Elections ><Election name="Выборы депутатов Совета депутатов МО &quot;Выборгский муниципальный район&quot;  Энской области четвертого созыва" maxMarks="1" num="9479005114428"><ParentComittee parentid="9479005114434" name="Окружная избирательная комиссия №1"/><StampCommittees><StampCommittee num="1"/></StampCommittees><Protocol name="ПРОТОКОЛ  участковой избирательной комиссии об итогах голосования   ИЗБИРАТЕЛЬНЫЙ УЧАСТОК № 123  " numberWidth="3" nameWidth="65" valueWidth="4" textValueWidth="28" doNotReadOut="false"><Lines><Line num="1" additionalNum="" ID="1" name="число избирателей, внесенных в список на момент окончания голосования" type="Election"/><Line num="2" additionalNum="" ID="2" name="число бюллетеней, полученных участковой комиссией" type="Election"/><Line num="3" additionalNum="" ID="3" name="число бюллетеней, выданных избирателям  в помещении для голосования в день голосования" type="Election"/><Line num="4" additionalNum="" ID="4" name="число бюллетеней, выданных избирателям, проголосовавшим вне помещения для голосования" type="Election"/><Line num="5" additionalNum="" ID="5" name="число погашенных бюллетеней" type="Election"/><Line num="6" additionalNum="" ID="6" name="число бюллетеней, содержащихся в переносных ящиках для голосования" type="DontQueryUser" expression="{BlankType=Valid,VotingMode=Portable}+{BlankType=NoMarks,VotingMode=Portable}+{BlankType=TooManyMarks,VotingMode=Portable}"/><Line num="7" additionalNum="" ID="7" name="число бюллетеней, содержащихся в стационарных ящиках для голосования" type="DontQueryUser" expression="{BlankType=Valid}+{BlankType=NoMarks}+{BlankType=TooManyMarks}-{BlankType=Valid,VotingMode=Portable}-{BlankType=NoMarks,VotingMode=Portable}-{BlankType=TooManyMarks,VotingMode=Portable}"/><Line num="8" additionalNum="" ID="8" name="число недействительных бюллетеней" type="DontQueryUser" expression="{BlankType=NoMarks}+{BlankType=TooManyMarks}"/><Line num="9" additionalNum="" ID="9" name="число действительных бюллетеней" type="DontQueryUser" expression="{BlankType=Valid}"/><Line num="10" additionalNum="" ID="10" name="число открепительных удостоверений, полученных участковой комиссией" type="Election"/><Line num="11" additionalNum="" ID="11" name="число открепительных удостоверений, выданных участковой комиссией на избирательном участке" type="Election"/><Line num="12" additionalNum="" ID="12" name="число избирателей, проголосовавших по открепительным удостоверениям на избирательном участке" type="Election"/><Line num="13" additionalNum="" ID="13" name="число погашенных на избирательном участке открепительных удостоверений" type="Election"/><Line num="14" additionalNum="" ID="14" name="число утраченных бюллетеней " type="Election"/><Line num="15" additionalNum="" ID="15" name="число бюллетеней, не учтенных при получении " type="Election"/></Lines><Checks><Check enabled="true" expression="[6]+[7]=[8]+[9]"/><Check enabled="true" expression="[1]&gt;=0"/><Check enabled="true" expression="[2]=[3]+[4]+[5]+[14]-[15]"/><Check enabled="true" expression="[9]=S"/><Check enabled="true" expression="[10]&gt;=[11]"/><Check enabled="true" expression="[10]=[11]+[13]"/></Checks></Protocol><Candidates><Candidate lastName="ГАБОПЬЯНОВ" firstName="Кандидат" patronymic="Кандидатович" registered="true" disabled="false" num="1" id="9479005115775" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="ДАКЦЕВ" firstName="Кандидат" patronymic="Кандидатович" registered="true" disabled="false" num="2" id="9479005115776" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="ДКАФИМОВ" firstName="Кандидат" patronymic="Кандидатович" registered="true" disabled="false" num="3" id="9479005115777" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="ЗИБОЕВА" firstName="Кандидат" patronymic="Кандидатович" registered="true" disabled="false" num="4" id="9479005115778" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="ЗОНТИКОВА" firstName="Кандидат" patronymic="Кандидатович" registered="true" disabled="false" num="5" id="9479005115779" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="ЛАВТАШОВ" firstName="Кандидат" patronymic="Кандидатович" registered="true" disabled="false" num="6" id="9479005115780" biography="" selfRegistered="false" party="" noneAbove="false"/></Candidates><Modes><Mode>Main</Mode><Mode>Portable</Mode></Modes></Election><Election name="Выборы депутатов Совета депутатов МО &quot;Выборгский муниципальный район&quot;  Энской области четвертого созыва" maxMarks="1" num="9479005114428_2"><ParentComittee parentid="9479005114434" name="Окружная избирательная комиссия №1"/><StampCommittees><StampCommittee num="1"/></StampCommittees><Protocol name="ПРОТОКОЛ №2  участковой избирательной комиссии №123 об итогах голосования  " numberWidth="3" nameWidth="65" valueWidth="4" textValueWidth="28" doNotReadOut="false"><Lines><Line num="1" additionalNum="" ID="1" name="число избирателей, внесенных в список на момент окончания голосования" type="Election"/><Line num="2" additionalNum="" ID="2" name="число бюллетеней, полученных участковой комиссией" type="Election"/><Line num="3" additionalNum="" ID="3" name="число бюллетеней, выданных избирателям  в помещении для голосования в день голосования" type="Election"/><Line num="4" additionalNum="" ID="4" name="число бюллетеней, выданных избирателям, проголосовавшим вне помещения для голосования" type="Election"/><Line num="5" additionalNum="" ID="5" name="число погашенных бюллетеней" type="Election"/><Line num="6" additionalNum="" ID="6" name="число бюллетеней, содержащихся в переносных ящиках для голосования" type="DontQueryUser" expression="{BlankType=Valid,VotingMode=Portable}+{BlankType=NoMarks,VotingMode=Portable}+{BlankType=TooManyMarks,VotingMode=Portable}"/><Line num="7" additionalNum="" ID="7" name="число бюллетеней, содержащихся в стационарных ящиках для голосования" type="DontQueryUser" expression="{BlankType=Valid}+{BlankType=NoMarks}+{BlankType=TooManyMarks}-{BlankType=Valid,VotingMode=Portable}-{BlankType=NoMarks,VotingMode=Portable}-{BlankType=TooManyMarks,VotingMode=Portable}"/><Line num="8" additionalNum="" ID="8" name="число недействительных бюллетеней" type="DontQueryUser" expression="{BlankType=NoMarks}+{BlankType=TooManyMarks}"/><Line num="9" additionalNum="" ID="9" name="число действительных бюллетеней" type="DontQueryUser" expression="{BlankType=Valid}"/><Line num="10" additionalNum="" ID="10" name="число открепительных удостоверений, полученных участковой комиссией" type="Election"/><Line num="11" additionalNum="" ID="11" name="число открепительных удостоверений, выданных участковой комиссией на избирательном участке" type="Election"/><Line num="12" additionalNum="" ID="12" name="число избирателей, проголосовавших по открепительным удостоверениям на избирательном участке" type="Election"/><Line num="13" additionalNum="" ID="13" name="число погашенных на избирательном участке открепительных удостоверений" type="Election"/><Line num="14" additionalNum="" ID="14" name="число утраченных бюллетеней " type="Election"/><Line num="15" additionalNum="" ID="15" name="число бюллетеней, не учтенных при получении " type="Election"/></Lines><Checks><Check enabled="true" expression="[1]&gt;=0"/><Check enabled="true" expression="[6]+[7]=[8]+[9]"/><Check enabled="true" expression="[10]=[11]+[13]"/><Check enabled="true" expression="[10]&gt;=[11]"/><Check enabled="true" expression="[2]=[3]+[4]+[5]+[14]-[15]"/><Check enabled="true" expression="[9]=S"/></Checks></Protocol><Candidates><Candidate lastName="" firstName="1.Всероссийская политическая партия &quot;Аграрная партия России&quot;" patronymic="" registered="true" disabled="false" num="1" id="9479005116708" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="2.Всероссийская политическая партия &quot;Гражданская Сила&quot;" patronymic="" registered="true" disabled="false" num="2" id="9479005116709" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="3.Всероссийская политическая партия &quot;ЕДИНАЯ РОССИЯ&quot;" patronymic="" registered="true" disabled="false" num="3" id="9479005116710" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="4.Всероссийская политическая партия &quot;Народная партия России&quot;" patronymic="" registered="true" disabled="false" num="4" id="9479005116711" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="5.Всероссийская политическая партия &quot;Новая Россия&quot;" patronymic="" registered="true" disabled="false" num="5" id="9479005116712" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="6.Всероссийская политическая партия &quot;ПРАВОЕ ДЕЛО&quot;" patronymic="" registered="true" disabled="false" num="6" id="9479005116713" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="7.Всероссийская политическая партия &quot;Партия пенсионеров России&quot;" patronymic="" registered="true" disabled="false" num="7" id="9479005116714" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="8.Всероссийская политическая партия &quot;Партия свободных граждан&quot;" patronymic="" registered="true" disabled="false" num="8" id="9479005116715" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="9.Всероссийская политическая партия &quot;Социал-демократическая партия России&quot;" patronymic="" registered="true" disabled="false" num="9" id="9479005116716" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="10.Всероссийская политическая партия &quot;ЧЕСТНО&quot; /Человек. Справедливость. Ответственность/" patronymic="" registered="true" disabled="false" num="10" id="9479005116717" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="11.Всероссийская политическая партия ПАРТИЯ ЗА СПРАВЕДЛИВОСТЬ!" patronymic="" registered="true" disabled="false" num="11" id="9479005116718" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="12.Общероссийская политическая партия &quot;Воля&quot;" patronymic="" registered="true" disabled="false" num="12" id="9479005116719" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="13.Общероссийская политическая партия &quot;Народная партия &quot;За женщин России&quot;" patronymic="" registered="true" disabled="false" num="13" id="9479005116720" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="14.Политическая Партия &quot;КОММУНИСТЫ РОССИИ&quot;" patronymic="" registered="true" disabled="false" num="14" id="9479005116721" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="15.Политическая партия &quot;Альянс Зеленых - Народная партия&quot;" patronymic="" registered="true" disabled="false" num="15" id="9479005116722" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="16.Политическая партия &quot;Города России&quot;" patronymic="" registered="true" disabled="false" num="16" id="9479005116723" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="17.Политическая партия &quot;Гражданская Платформа&quot;" patronymic="" registered="true" disabled="false" num="17" id="9479005116724" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="18.Политическая партия &quot;Демократическая партия России&quot;" patronymic="" registered="true" disabled="false" num="18" id="9479005116725" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="19.Политическая партия &quot;Демократический выбор&quot;" patronymic="" registered="true" disabled="false" num="19" id="9479005116726" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="20.Политическая партия &quot;КОММУНИСТИЧЕСКАЯ ПАРТИЯ РОССИЙСКОЙ ФЕДЕРАЦИИ&quot;" patronymic="" registered="true" disabled="false" num="20" id="9479005116727" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="21.Политическая партия &quot;Коммунистическая партия социальной справедливости&quot;" patronymic="" registered="true" disabled="false" num="21" id="9479005116728" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="22.Политическая партия &quot;Молодая Россия&quot;" patronymic="" registered="true" disabled="false" num="22" id="9479005116729" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="23.Политическая партия &quot;Монархическая партия&quot;" patronymic="" registered="true" disabled="false" num="23" id="9479005116730" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="24.Политическая партия &quot;ПАРТИЯ ВЕТЕРАНОВ РОССИИ&quot;" patronymic="" registered="true" disabled="false" num="24" id="9479005116731" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="25.Политическая партия &quot;ПАТРИОТЫ РОССИИ&quot; " patronymic="" registered="true" disabled="false" num="25" id="9479005116732" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="26.Политическая партия &quot;Партия Духовного Преображения России&quot;" patronymic="" registered="true" disabled="false" num="26" id="9479005116733" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="27.Политическая партия &quot;Партия налогоплательщиков России&quot;" patronymic="" registered="true" disabled="false" num="27" id="9479005116734" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="28.Политическая партия &quot;Против всех&quot;" patronymic="" registered="true" disabled="false" num="28" id="9479005116735" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="29.Политическая партия &quot;Республиканская партия России - Партия народной свободы&quot;" patronymic="" registered="true" disabled="false" num="29" id="9479005116736" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="30.Политическая партия &quot;Родная Страна&quot;" patronymic="" registered="true" disabled="false" num="30" id="9479005116737" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="31.Политическая партия &quot;Российская Социалистическая партия&quot;" patronymic="" registered="true" disabled="false" num="31" id="9479005116738" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="32.Политическая партия &quot;Российская объединенная демократическая партия &quot;ЯБЛОКО&quot;" patronymic="" registered="true" disabled="false" num="32" id="9479005116739" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="33.Политическая партия &quot;Российская партия пенсионеров за справедливость&quot;" patronymic="" registered="true" disabled="false" num="33" id="9479005116740" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="34.Политическая партия &quot;Российская экологическая партия &quot;Зелёные&quot;" patronymic="" registered="true" disabled="false" num="34" id="9479005116741" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="35.Политическая партия &quot;Российский общенародный союз&quot;" patronymic="" registered="true" disabled="false" num="35" id="9479005116742" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="36.Политическая партия &quot;Союз Горожан&quot;" patronymic="" registered="true" disabled="false" num="36" id="9479005116743" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="37.Политическая партия &quot;Трудовая партия России&quot;" patronymic="" registered="true" disabled="false" num="37" id="9479005116744" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="38.Политическая партия &quot;УМНАЯ РОССИЯ&quot;" patronymic="" registered="true" disabled="false" num="38" id="9479005116745" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="39.Политическая партия ЛДПР" patronymic="" registered="true" disabled="false" num="39" id="9479005116746" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="40.Политическая партия СОЦИАЛЬНОЙ ЗАЩИТЫ" patronymic="" registered="true" disabled="false" num="40" id="9479005116747" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="41.Политическая партия СПРАВЕДЛИВАЯ РОССИЯ" patronymic="" registered="true" disabled="false" num="41" id="9479005116748" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="42.ВСЕРОССИЙСКАЯ ПОЛИТИЧЕСКАЯ ПАРТИЯ &quot;РОДИНА&quot;" patronymic="" registered="true" disabled="false" num="42" id="9479005116749" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="43.Всероссийская политическая партия &quot;Женский Диалог&quot;" patronymic="" registered="true" disabled="false" num="43" id="9479005116750" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="44.Всероссийская политическая партия &quot;ЗАЩИТНИКИ ОТЕЧЕСТВА&quot;" patronymic="" registered="true" disabled="false" num="44" id="9479005116751" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="45.Всероссийская политическая партия &quot;ПАРТИЯ ДЕЛА&quot;" patronymic="" registered="true" disabled="false" num="45" id="9479005116752" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="46.Всероссийская политическая партия &quot;Союз Труда&quot;" patronymic="" registered="true" disabled="false" num="46" id="9479005116753" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="47.Политическая партия &quot;Казачья партия Российской Федерации&quot;" patronymic="" registered="true" disabled="false" num="47" id="9479005116754" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="48.Политическая партия &quot;НАЦИОНАЛЬНОЙ БЕЗОПАСНОСТИ РОССИИ&quot;" patronymic="" registered="true" disabled="false" num="48" id="9479005116755" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="49.Политическая партия &quot;Партия СОЦИАЛЬНОЙ СОЛИДАРНОСТИ&quot;" patronymic="" registered="true" disabled="false" num="49" id="9479005116756" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="50.Политическая партия &quot;Рожденные в Союзе Советских Социалистических Республик&quot;" patronymic="" registered="true" disabled="false" num="50" id="9479005116757" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="51.Политическая партия &quot;Российская партия народного управления&quot;" patronymic="" registered="true" disabled="false" num="51" id="9479005116758" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="52.Российская политическая Партия Мира и Единства" patronymic="" registered="true" disabled="false" num="52" id="9479005116759" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="53.Всероссийская политическая партия &quot;Российская партия садоводов&quot;" patronymic="" registered="true" disabled="false" num="53" id="9479005116760" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="" firstName="54.Политическая партия &quot;Гражданская Позиция&quot;" patronymic="" registered="true" disabled="false" num="54" id="9479005116761" biography="" selfRegistered="false" party="" noneAbove="false"/></Candidates><Modes><Mode>Main</Mode><Mode>Portable</Mode></Modes></Election><Election name="Выборы депутатов Совета депутатов МО &quot;Высоцкое городское поселение&quot; Выборгского муниципального района Энской области первого созыва" maxMarks="1" num="9479005113419"><ParentComittee parentid="9479005113424" name="Окружная избирательная комиссия №1"/><StampCommittees><StampCommittee num="1"/></StampCommittees><Protocol name="ПРОТОКОЛ  участковой избирательной комиссии об итогах голосования   ИЗБИРАТЕЛЬНЫЙ УЧАСТОК № 123" numberWidth="3" nameWidth="65" valueWidth="4" textValueWidth="28" doNotReadOut="false"><Lines><Line num="1" additionalNum="" ID="1" name="Число избирателей, внесенных в список на момент окончания голосования" type="Election"/><Line num="2" additionalNum="" ID="2" name="Число избирательных бюллетеней, полученных участковой комиссией" type="Election"/><Line num="3" additionalNum="" ID="3" name="Число избирательных бюллетеней, выданных избирателям в помещении для голосования в день голосования" type="Election"/><Line num="4" additionalNum="" ID="4" name="Число избирательных бюллетеней, выданных избирателям, проголосовавшим вне помещения для голосования в день голосования" type="Election"/><Line num="5" additionalNum="" ID="5" name="Число погашенных избирательных бюллетеней" type="Election"/><Line num="6" additionalNum="" ID="6" name="Число избирательных бюллетеней, содержащихся в переносных ящиках для голосования" type="DontQueryUser" expression="{BlankType=Valid,VotingMode=Portable}+{BlankType=NoMarks,VotingMode=Portable}+{BlankType=TooManyMarks,VotingMode=Portable}"/><Line num="7" additionalNum="" ID="7" name="Число избирательных бюллетеней, содержащихся в стационарных ящиках для голосования" type="DontQueryUser" expression="{BlankType=Valid}+{BlankType=NoMarks}+{BlankType=TooManyMarks}-{BlankType=Valid,VotingMode=Portable}-{BlankType=NoMarks,VotingMode=Portable}-{BlankType=TooManyMarks,VotingMode=Portable}"/><Line num="8" additionalNum="" ID="8" name="Число недействительных избирательных бюллетеней" type="DontQueryUser" expression="{BlankType=NoMarks}+{BlankType=TooManyMarks}"/><Line num="9" additionalNum="" ID="9" name="Число действительных избирательных бюллетеней" type="DontQueryUser" expression="{BlankType=Valid}"/><Line num="9" additionalNum="а" ID="10" name="Число утраченных избирательных бюллетеней " type="Election"/><Line num="9" additionalNum="б" ID="11" name="Число избирательных бюллетеней, не учтенных при получении" type="Election"/></Lines><Checks><Check enabled="true" expression="[7]+[6]=[9]+[8]"/><Check enabled="true" expression="[9]=S"/><Check enabled="true" expression="[2]=[3]+[4]+[5]+[10]-[11]"/><Check enabled="true" expression="[1]&gt;=[3]+[4]"/></Checks></Protocol><Candidates><Candidate lastName="Кандидатов/101" firstName="Кандидат" patronymic="Кандидатович" registered="true" disabled="false" num="1" id="9479005114144" biography="" selfRegistered="false" party="" noneAbove="false"/><Candidate lastName="Кандидатов/102" firstName="Кандидат" patronymic="Кандидатович" registered="true" disabled="false" num="2" id="9479005114145" biography="" selfRegistered="false" party="" noneAbove="false"/></Candidates><Modes><Mode>Main</Mode><Mode>Portable</Mode></Modes></Election></Elections><Blanks ><Blank num="9479005114428" marker="1" name="ПРОТОКОЛ  участковой избирательной комиссии об итогах голосования   ИЗБИРАТЕЛЬНЫЙ УЧАСТОК № 123  " width="210" height="297" delta="10" orientation="P" maxPShift="10"><model><![CDATA[Code	X	Y	CX	CY	Page	Node
+<SourceData xmlns="http://localhost/Schemas/SIB2003/SourceData" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" DateTime="2013-09-12" id="e3d2cac7-8741-4a30-8af9-8dc6738e84ab" TrainingFileSuffix="_T" FileSuffix="_R" isGasVrn="true" protocolPassword="123" password="123" xsi:schemaLocation="http://localhost/Schemas/SIB2003/SourceData SourceData-schema.xsd">
+  <Elections>
+    <Election name="Выборы Президента Российской Федерации" maxMarks="1" num="100100031793505">
+      <ParentComittee parentid="2782000375425" name="Территориальная избирательная комиссия №15" />
+      <StampCommittees>
+        <StampCommittee num="15" />
+      </StampCommittees>
+      <Protocol name="ПРОТОКОЛ   участковой избирательной комиссии об итогах голосования    ИЗБИРАТЕЛЬНЫЙ УЧАСТОК № 959  Город Санкт-Петербург  " numberWidth="3" nameWidth="65" valueWidth="4" textValueWidth="28" doNotReadOut="true">
+        <Lines>
+          <Line num="1" additionalNum="" ID="1" name="Число избирателей, включенных в список избирателей на момент окончания голосования" type="Election" />
+          <Line num="2" additionalNum="" ID="2" name="Число избирательных бюллетеней, полученных участковой избирательной комиссией" type="Election" />
+          <Line num="3" additionalNum="" ID="3" name="Число избирательных бюллетеней, выданных избирателям, проголосовавшим досрочно" type="Election" />
+          <Line num="4" additionalNum="" ID="4" name="Число избирательных бюллетеней, выданных участковой избирательной комиссией избирателям в помещении для голосования в день голосования" type="Election" />
+          <Line num="5" additionalNum="" ID="5" name="Число избирательных бюллетеней, выданных избирателям, проголосовавшим вне помещения для голосования в день голосования" type="Election" />
+          <Line num="6" additionalNum="" ID="6" name="Число погашенных избирательных бюллетеней" type="Election" />
+          <Line num="7" additionalNum="" ID="7" name="Число избирательных бюллетеней, содержащихся в переносных ящиках для голосования" type="DontQueryUser" expression="{BlankType=Valid,VotingMode=Portable}+{BlankType=NoMarks,VotingMode=Portable}+{BlankType=TooManyMarks,VotingMode=Portable}" />
+          <Line num="8" additionalNum="" ID="8" name="Число избирательных бюллетеней, содержащихся в стационарных ящиках для голосования" type="DontQueryUser" expression="{BlankType=Valid}+{BlankType=NoMarks}+{BlankType=TooManyMarks}-{BlankType=Valid,VotingMode=Portable}-{BlankType=NoMarks,VotingMode=Portable}-{BlankType=TooManyMarks,VotingMode=Portable}" />
+          <Line num="9" additionalNum="" ID="9" name="Число недействительных избирательных бюллетеней" type="DontQueryUser" expression="{BlankType=NoMarks}+{BlankType=TooManyMarks}" />
+          <Line num="10" additionalNum="" ID="10" name="Число действительных избирательных бюллетеней" type="DontQueryUser" expression="{BlankType=Valid}" />
+          <Line num="11" additionalNum="" ID="11" name="Число открепительных удостоверений, полученных участковыми избирательными комиссиями" type="Election" />
+          <Line num="12" additionalNum="" ID="12" name="Число открепительных удостоверений, выданных участковой избирательной комиссией избирателям на избирательном участке до дня голосования" type="Election" />
+          <Line num="13" additionalNum="" ID="13" name="Число избирателей, проголосовавших по открепительным удостоверениям на избирательных участках" type="Election" />
+          <Line num="14" additionalNum="" ID="14" name="Число неиспользованных открепительных удостоверений" type="Election" />
+          <Line num="15" additionalNum="" ID="15" name="Число открепительных удостоверений, выданных избирателям территориальной избирательной комиссией" type="Election" />
+          <Line num="16" additionalNum="" ID="16" name="Число утраченных открепительных удостоверений" type="Election" />
+          <Line num="17" additionalNum="" ID="17" name="Число утраченных избирательных бюллетеней" type="Election" />
+          <Line num="18" additionalNum="" ID="18" name="Число избирательных бюллетеней, не учтенных при получении " type="Election" />
+        </Lines>
+        <Checks>
+          <Check enabled="true" expression="[11]=[12]+[14]+[16]" />
+          <Check enabled="true" expression="[10]=S" />
+          <Check enabled="true" expression="[1]&gt;=[3]+[4]+[5]" />
+          <Check enabled="true" expression="[2]=[3]+[4]+[5]+[6]+[17]-[18]" />
+          <Check enabled="true" expression="[7]+[8]=[9]+[10]" />
+        </Checks>
+        <Texts>
+          <Text final="true">
+            <Table>
+              <VoteLine ID="1" type="Line" fontSize="8" italic="false" bold="false" />
+              <VoteLine ID="2" type="Line" fontSize="8" italic="false" bold="false" />
+              <VoteLine ID="3" type="Line" fontSize="8" italic="false" bold="false" />
+              <VoteLine ID="4" type="Line" fontSize="8" italic="false" bold="false" />
+              <VoteLine ID="5" type="Line" fontSize="8" italic="false" bold="false" />
+              <VoteLine ID="6" type="Line" fontSize="8" italic="false" bold="false" />
+              <VoteLine ID="7" type="Line" fontSize="8" italic="false" bold="false" />
+              <VoteLine ID="8" type="Line" fontSize="8" italic="false" bold="false" />
+              <VoteLine ID="9" type="Line" fontSize="8" italic="false" bold="false" />
+              <VoteLine ID="10" type="Line" fontSize="8" italic="false" bold="false" />
+              <VoteLine ID="11" type="Line" fontSize="8" italic="false" bold="false" />
+              <VoteLine ID="12" type="Line" fontSize="8" italic="false" bold="false" />
+              <VoteLine ID="13" type="Line" fontSize="8" italic="false" bold="false" />
+              <VoteLine ID="14" type="Line" fontSize="8" italic="false" bold="false" />
+              <VoteLine ID="15" type="Line" fontSize="8" italic="false" bold="false" />
+              <VoteLine ID="16" type="Line" fontSize="8" italic="false" bold="false" />
+              <VoteLine ID="17" type="Line" fontSize="8" italic="false" bold="false" />
+              <VoteLine ID="18" type="Line" fontSize="8" italic="false" bold="false" />
+              <VoteLine ID="600600035189489" type="Vote" fontSize="8" italic="false" bold="false" />
+              <VoteLine ID="600600035189490" type="Vote" fontSize="8" italic="false" bold="false" />
+              <VoteLine ID="600600035189491" type="Vote" fontSize="8" italic="false" bold="false" />
+              <VoteLine ID="600600035189492" type="Vote" fontSize="8" italic="false" bold="false" />
+              <VoteLine ID="600600035189493" type="Vote" fontSize="8" italic="false" bold="false" />
+            </Table>
+            <ProtocolLines>
+              <ProtocolLine fontSize="8" italic="false" bold="false" align="Left" section="Header">Экземпляр №__</ProtocolLine>
+              <ProtocolLine fontSize="8" italic="false" bold="false" align="Center" section="Header">{ElectionName}</ProtocolLine>
+              <ProtocolLine fontSize="8" italic="false" bold="false" align="Center" section="Header">{VotingDate}</ProtocolLine>
+              <ProtocolLine fontSize="8" italic="false" bold="true" align="Center" section="Header">ПРОТОКОЛ</ProtocolLine>
+              <ProtocolLine fontSize="8" italic="false" bold="false" align="Center" section="Header">участковой избирательной комиссии об итогах голосования</ProtocolLine>
+              <ProtocolLine fontSize="8" italic="false" bold="false" align="Center" section="Header">Избирательный участок №{UIK}Город Санкт-Петербург</ProtocolLine>
+              <ProtocolLine fontSize="8" italic="false" bold="false" align="Left" section="Footer" />
+              <ProtocolLine fontSize="8" italic="false" bold="false" align="Left" section="Footer">Сведения о количестве поступивших в участковую избирательную комиссию</ProtocolLine>
+              <ProtocolLine fontSize="8" italic="false" bold="false" align="Left" section="Footer">в день голосования и до окончания подсчета голосов избирателей жалоб (заявлений),  ____________    ______________________</ProtocolLine>
+              <ProtocolLine fontSize="8" italic="false" bold="false" align="Left" section="Footer">прилагаемых к протоколу                                                                                                            (цифрами)                    (прописью)</ProtocolLine>
+              <ProtocolLine fontSize="8" italic="false" bold="false" align="Left" section="PageFooter">Председатель участковой избирательной комиссии</ProtocolLine>
+              <ProtocolLine fontSize="8" italic="false" bold="false" align="Right" section="PageFooter">______________________    _______________________________________________________________</ProtocolLine>
+              <ProtocolLine fontSize="8" italic="false" bold="false" align="Right" section="PageFooter">(фамилия, инициалы)                                             (подпись либо причина отсутствия,{$TAB}{$TAB}{$TAB}{$TAB}{$TAB}{$TAB}{$TAB}</ProtocolLine>
+              <ProtocolLine fontSize="8" italic="false" bold="false" align="Right" section="PageFooter">отметка об особом мнении){$TAB}{$TAB}{$TAB}{$TAB}{$TAB}{$TAB}{$TAB}{$TAB}</ProtocolLine>
+              <ProtocolLine fontSize="8" italic="false" bold="false" align="Left" section="PageFooter">Заместитель председателя комиссии</ProtocolLine>
+              <ProtocolLine fontSize="8" italic="false" bold="false" align="Right" section="PageFooter">______________________    _______________________________________________________________</ProtocolLine>
+              <ProtocolLine fontSize="8" italic="false" bold="false" align="Left" section="PageFooter">Секретарь комиссии</ProtocolLine>
+              <ProtocolLine fontSize="8" italic="false" bold="false" align="Right" section="PageFooter">______________________    _______________________________________________________________</ProtocolLine>
+              <ProtocolLine fontSize="8" italic="false" bold="false" align="Left" section="PageFooter">Члены комиссии:</ProtocolLine>
+              <ProtocolLine fontSize="8" italic="false" bold="false" align="Right" section="PageFooter">______________________    _______________________________________________________________</ProtocolLine>
+              <ProtocolLine fontSize="8" italic="false" bold="false" align="Right" section="PageFooter">______________________    _______________________________________________________________</ProtocolLine>
+              <ProtocolLine fontSize="8" italic="false" bold="false" align="Right" section="PageFooter">______________________    _______________________________________________________________</ProtocolLine>
+              <ProtocolLine fontSize="8" italic="false" bold="false" align="Right" section="PageFooter">______________________    _______________________________________________________________</ProtocolLine>
+              <ProtocolLine fontSize="8" italic="false" bold="false" align="Right" section="PageFooter">______________________    _______________________________________________________________</ProtocolLine>
+              <ProtocolLine fontSize="8" italic="false" bold="false" align="Right" section="PageFooter">______________________    _______________________________________________________________</ProtocolLine>
+              <ProtocolLine fontSize="8" italic="false" bold="false" align="Right" section="PageFooter">______________________    _______________________________________________________________</ProtocolLine>
+              <ProtocolLine fontSize="8" italic="false" bold="false" align="Right" section="PageFooter">______________________    _______________________________________________________________</ProtocolLine>
+              <ProtocolLine fontSize="8" italic="false" bold="false" align="Right" section="PageFooter">______________________    _______________________________________________________________</ProtocolLine>
+              <ProtocolLine fontSize="8" italic="false" bold="false" align="Right" section="PageFooter">______________________    _______________________________________________________________</ProtocolLine>
+              <ProtocolLine fontSize="8" italic="false" bold="false" align="Right" section="PageFooter">______________________    _______________________________________________________________</ProtocolLine>
+              <ProtocolLine fontSize="8" italic="false" bold="false" align="Right" section="PageFooter">______________________    _______________________________________________________________</ProtocolLine>
+              <ProtocolLine fontSize="8" italic="false" bold="false" align="Right" section="PageFooter">______________________    _______________________________________________________________</ProtocolLine>
+              <ProtocolLine fontSize="8" italic="false" bold="false" align="Right" section="PageFooter">______________________    _______________________________________________________________</ProtocolLine>
+              <ProtocolLine fontSize="8" italic="false" bold="false" align="Right" section="PageFooter">______________________    _______________________________________________________________</ProtocolLine>
+              <ProtocolLine fontSize="8" italic="false" bold="false" align="Right" section="PageFooter">______________________    _______________________________________________________________</ProtocolLine>
+              <ProtocolLine fontSize="8" italic="false" bold="false" align="Right" section="PageFooter">______________________    _______________________________________________________________</ProtocolLine>
+              <ProtocolLine fontSize="8" italic="false" bold="false" align="Left" section="PageFooter" />
+              <ProtocolLine fontSize="8" italic="false" bold="true" align="Left" section="PageFooter">{$TAB}{$TAB}{$TAB}{$TAB}{$TAB}МП                    Протокол подписан "___" _______________ 20___ года в ___ часов ___ минут</ProtocolLine>
+            </ProtocolLines>
+          </Text>
+        </Texts>
+      </Protocol>
+      <Candidates>
+        <Candidate lastName="Кандидатов/1123" firstName="Кандидат" patronymic="Кандидатович" registered="true" disabled="false" num="1" id="600600035189489" biography="" selfRegistered="false" party="" noneAbove="false" />
+        <Candidate lastName="Кандидатов/351" firstName="Кандидат" patronymic="Кандидатович" registered="true" disabled="false" num="2" id="600600035189490" biography="" selfRegistered="false" party="" noneAbove="false" />
+        <Candidate lastName="Кандидатов/4555" firstName="Кандидат" patronymic="Кандидатович" registered="true" disabled="false" num="3" id="600600035189491" biography="" selfRegistered="false" party="" noneAbove="false" />
+        <Candidate lastName="Кандидатов/587277" firstName="Кандидат" patronymic="Кандидатович" registered="true" disabled="false" num="4" id="600600035189492" biography="" selfRegistered="false" party="" noneAbove="false" />
+        <Candidate lastName="Кандидатов/8075" firstName="Кандидат" patronymic="Кандидатович" registered="true" disabled="false" num="5" id="600600035189493" biography="" selfRegistered="false" party="" noneAbove="false" />
+      </Candidates>
+      <Modes>
+        <Mode>Main</Mode>
+        <Mode>Portable</Mode>
+      </Modes>
+    </Election>
+  </Elections>
+  <Blanks>
+    <Blank num="100100031793505" marker="1" name="ПРОТОКОЛ   участковой избирательной комиссии об итогах голосования    ИЗБИРАТЕЛЬНЫЙ УЧАСТОК № 959  Город Санкт-Петербург  " width="210" height="297" delta="10" orientation="P" maxPShift="10">
+      <model><![CDATA[Code	X	Y	CX	CY	Page	Node
 MB	120	140	67	60	1	Picture shape
-LH	120	420	1460	8	1	Cell border
-LV	120	420	8	2410	1	Cell border
-LH	120	820	1860	8	1	Cell border
+LH	120	440	1460	8	1	Cell border
+LV	120	440	8	2390	1	Cell border
+LH	120	800	1860	8	1	Cell border
 LH	1580	140	400	8	1	Cell border
-LV	1580	140	8	680	1	Cell border
+LV	1580	140	8	660	1	Cell border
 LV	1980	140	8	2690	1	Cell border
 LH	120	2830	1860	8	1	Cell border
-SQ	1845	934	90	90	1	Auto shape
-SQ	1845	1252	90	90	1	Auto shape
-SQ	1845	1570	90	90	1	Auto shape
-SQ	1845	1888	90	90	1	Auto shape
-SQ	1845	2206	90	90	1	Auto shape
-SQ	1845	2524	90	90	1	Auto shape
-]]></model><Sections><int>9479005114428</int></Sections></Blank><Blank num="9479005114428_2" marker="2" name="ПРОТОКОЛ №2  участковой избирательной комиссии №123 об итогах голосования  " width="210" height="600" delta="10" orientation="P" maxPShift="10"><model><![CDATA[Code	X	Y	CX	CY	Page	Node
-MB	120	140	67	60	1	Picture shape
-LH	120	410	1460	8	1	Cell border
-LV	120	410	8	5450	1	Cell border
-LH	120	850	1860	8	1	Cell border
-LH	1580	140	400	8	1	Cell border
-LV	1580	140	8	710	1	Cell border
-LV	1980	140	8	5720	1	Cell border
-LH	120	5860	1860	8	1	Cell border
-LV	1050	850	8	5010	1	Cell border
-SQ	945	904	70	70	1	Auto shape
-SQ	945	1082	70	70	1	Auto shape
-SQ	945	1260	70	70	1	Auto shape
-SQ	945	1438	70	70	1	Auto shape
-SQ	945	1616	70	70	1	Auto shape
-SQ	945	1794	70	70	1	Auto shape
-SQ	945	1972	70	70	1	Auto shape
-SQ	945	2150	70	70	1	Auto shape
-SQ	945	2353	70	70	1	Auto shape
-SQ	945	2581	70	70	1	Auto shape
-SQ	945	2784	70	70	1	Auto shape
-SQ	945	2962	70	70	1	Auto shape
-SQ	945	3140	70	70	1	Auto shape
-SQ	945	3318	70	70	1	Auto shape
-SQ	945	3496	70	70	1	Auto shape
-SQ	945	3654	70	70	1	Auto shape
-SQ	945	3812	70	70	1	Auto shape
-SQ	945	3990	70	70	1	Auto shape
-SQ	945	4168	70	70	1	Auto shape
-SQ	945	4371	70	70	1	Auto shape
-SQ	945	4599	70	70	1	Auto shape
-SQ	945	4782	70	70	1	Auto shape
-SQ	945	4940	70	70	1	Auto shape
-SQ	945	5118	70	70	1	Auto shape
-SQ	945	5296	70	70	1	Auto shape
-SQ	945	5474	70	70	1	Auto shape
-SQ	945	5652	70	70	1	Auto shape
-SQ	1875	884	70	70	1	Auto shape
-SQ	1875	1067	70	70	1	Auto shape
-SQ	1875	1250	70	70	1	Auto shape
-SQ	1875	1408	70	70	1	Auto shape
-SQ	1875	1611	70	70	1	Auto shape
-SQ	1875	1814	70	70	1	Auto shape
-SQ	1875	1992	70	70	1	Auto shape
-SQ	1875	2170	70	70	1	Auto shape
-SQ	1875	2328	70	70	1	Auto shape
-SQ	1875	2486	70	70	1	Auto shape
-SQ	1875	2664	70	70	1	Auto shape
-SQ	1875	2827	70	70	1	Auto shape
-SQ	1875	2990	70	70	1	Auto shape
-SQ	1875	3168	70	70	1	Auto shape
-SQ	1875	3346	70	70	1	Auto shape
-SQ	1875	3524	70	70	1	Auto shape
-SQ	1875	3702	70	70	1	Auto shape
-SQ	1875	3880	70	70	1	Auto shape
-SQ	1875	4058	70	70	1	Auto shape
-SQ	1875	4236	70	70	1	Auto shape
-SQ	1875	4439	70	70	1	Auto shape
-SQ	1875	4642	70	70	1	Auto shape
-SQ	1875	4845	70	70	1	Auto shape
-SQ	1875	5048	70	70	1	Auto shape
-SQ	1875	5226	70	70	1	Auto shape
-SQ	1875	5404	70	70	1	Auto shape
-SQ	1875	5582	70	70	1	Auto shape
-]]></model><Sections><int>9479005114428_2</int></Sections></Blank><Blank num="9479005113419" marker="3" name="ПРОТОКОЛ  участковой избирательной комиссии об итогах голосования   ИЗБИРАТЕЛЬНЫЙ УЧАСТОК № 123" width="210" height="148" delta="10" orientation="P" maxPShift="10"><model><![CDATA[Code	X	Y	CX	CY	Page	Node
-MB	120	140	67	60	1	Picture shape
-LH	120	420	1460	8	1	Cell border
-LV	120	420	8	920	1	Cell border
-LH	120	750	1860	8	1	Cell border
-LH	1580	140	400	8	1	Cell border
-LV	1580	140	8	610	1	Cell border
-LV	1980	140	8	1200	1	Cell border
-LH	120	1340	1860	8	1	Cell border
-SQ	1845	844	90	90	1	Auto shape
-SQ	1845	1117	90	90	1	Auto shape
-]]></model><Sections><int>9479005113419</int></Sections></Blank></Blanks><Targets ><TargetCommittee num="2081" name="УИК №123"/></Targets><Modes ><Mode>Main</Mode><Mode>Portable</Mode></Modes><ModeTimeTable ><ModeTime mode="Main" hour="8" minute="00"/><ModeTime mode="Portable" hour="20" minute="00"/></ModeTimeTable></SourceData>
+SQ	1860	964	80	80	1	Auto shape
+SQ	1860	1372	80	80	1	Auto shape
+SQ	1860	1780	80	80	1	Auto shape
+SQ	1860	2188	80	80	1	Auto shape
+SQ	1860	2591	80	80	1	Auto shape
+]]></model>
+      <Sections>
+        <int>100100031793505</int>
+      </Sections>
+    </Blank>
+  </Blanks>
+  <Targets >
+    <TargetCommittee num="2081" name="УИК №2081" />
+  </Targets>
+  <Modes>
+    <Mode>Main</Mode>
+    <Mode>Portable</Mode>
+  </Modes>
+  <ModeTimeTable>
+    <ModeTime mode="Main" hour="12" minute="00" />
+    <ModeTime mode="Portable" hour="19" minute="00" />
+  </ModeTimeTable>
+</SourceData>

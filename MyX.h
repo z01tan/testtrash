@@ -29,7 +29,7 @@ struct TDataTime // структура даты и времени
 std::string IntToStr(int pp); //_i-int  f_float _d double -> String
 bool TrueFalseVstr(std::string st); //ѕравда или ложь в строке?
 template <typename T> T StrToInt(const std::string& st); //String-> <int> <float> <double>
-
+std::string FiltrStr(std::string str, std::string st1, std::string st2); // «амена в str строк st1 на st2
 bool StrVstr(std::string St, std::string St1, int N); //
 int IntVstr (std::string st, int Int); //¬ строковой переменной st ищет целое число C под номером Int
 std::string StrBezStr(std::string st, std::string st1); //возвращает строку st без подстроки st1

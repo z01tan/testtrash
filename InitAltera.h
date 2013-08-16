@@ -34,6 +34,7 @@ extern int     motorWatch;
 
 extern bool MotorFuS;   // запущен мотор вперед со сканированием
 extern uint8_t calibration_data[LINE_LENGTH];
+extern double calibration_dataK[LINE_LENGTH];
 
 extern int  NO_PAPER ;
 extern int ONE_PAPER ;
@@ -51,15 +52,18 @@ extern int fdTTY;
  void     altera_testMode(tesm TMD);
  void     altera_backlight(int r,int g, int b);
  void     set_calibration_data(void);
+ void     set_calibration_dataK(void);
  void     save_calibration_data(uint8_t * line_buffer);
+ void     save_calibration_dataK(double * line_bufferK);
  int      load_calibration_data(void);
+ int      load_calibration_dataK(void);
 
  int      butt_open(void);
  void     butt_close(void);
  int      butt_get(int* b1, int* b2);
 
  int      open_Key(void);
-
+ void     close_Key(void);
 
  int      openTTY(void);
  void     closeTTY();
@@ -68,6 +72,7 @@ extern int fdTTY;
  int      writeTTY(char* cmd,int size);
  uint16_t altera_read(int fd, uint16_t addr);
  uint16_t altera_write(int fd, uint16_t addr, uint16_t data);
+ void     close_device(void);
  void     _clear();
 
 #endif	/* INITALTERA_H */

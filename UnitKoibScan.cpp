@@ -292,14 +292,19 @@ int ReadSetUpFiles(void)
     if(pr==1)   {  sst=Out.Menu1[44];   setSecline(&sst[0],1);   };
     // установка  уровня громкости динамиков
     setVoiceVolume(VolumeUr);
-    setVoiceVolume(3);
+    //setVoiceVolume(3);
   // вычисление  пороговых значений по листам
-  //MaxLightR=160; MaxLightG=160;  MaxLightB=160;
+  MaxLightR=270; MaxLightG=270;  MaxLightB=270;
+  CalibrRqst=true; usleep(200000);
   altera_backlight(MaxLightR,MaxLightG,MaxLightB);
+  CalibrRqst=false;  // очистка регистров
 
 
 for(i=0;i<NumSensors;i++) NO_PAPERO[i]=MasSenValue[i][0]-20;
 for(i=0;i<NumSensors;i++) ONE_PAPERO[i]=MasSenValue[i][2]+20;
+
+for(i=0;i<NumSensors;i++) NO_PAPERO[i]=MasSenValue[i][0]-(MasSenValue[i][0]-MasSenValue[i][1])/2;//20;
+for(i=0;i<NumSensors;i++) ONE_PAPERO[i]=MasSenValue[i][2]+(MasSenValue[i][1]-MasSenValue[i][2])/2;//+20;
 
  NO_PAPER  =MasSenValue[0][0];
  ONE_PAPER=MasSenValue[0][2];
@@ -436,7 +441,7 @@ void FormIdScan(void)
 			  MasSQ[nVoteType][ii][0][3]=2*dxSQ; MasSQ[nVoteType][ii][0][4]=2*dySQ;
 			  // координаты точек начала поиска квадрата относительно  рамки бюллетеня
 			  MasSQ[nVoteType][ii][0][1]=int(float(Votes.Blank[i].Vopr[j].Candidates[k].SQx*NumDotY)/10)-LMarSize+int(0.5*float(LineWx))+dxSQ;
-			  MasSQ[nVoteType][ii][0][2]=int(float(Votes.Blank[i].Vopr[j].Candidates[k].SQy*NumDotY)/10)-TMarSize-int(1*float(dySQ))+int(0.5*float(LineWy));
+			  MasSQ[nVoteType][ii][0][2]=int(float(Votes.Blank[i].Vopr[j].Candidates[k].SQy*NumDotY)/10)-TMarSize-  24;//int(1*float(dySQ))+int(1.5*float(LineWy));
 			  // сохранение  координат угла квадрата для дальнейшего использования  в  расчетах коэффициента
 			  // достаточно  только  координаты  по ОУ, по ОХ коэффициент можно  считать
 			  // по расстоянию между вертикальными границами рамки (функция контроля рамки)
@@ -480,9 +485,10 @@ int FormRezScanBull(void)
 		pr1=111;
 		NumV=Votes.Blank[i].NVopr;
 		MasScan.MasRecOut[0]=pr1; //  признак окончания сканирования бюллетеня
-		MasScan.MasRecOut[1]=i;   // номер типа бланка распознанного бюллетеня
+		MasScan.MasRecOut[1]=i;   // номер  бланка распознанного бюллетеня
 		MasScan.MasRecOut[2]=NumUIKRec; // номер штампа на бюллетене
 		MasScan.MasRecOut[3]=NumV;
+		MasScan.MasRecOut[4]=nVoteType;
 		ii=0;  MaxMarks=0;
 		for(j=1;j <= NumV;j++)
 		if(Votes.Blank[i].Vopr[j].ID!="0")
@@ -521,7 +527,7 @@ void GashBeforeScan(void)
   NstrFrControl=NumDotY+1;
   dyLine1=0; dyLine1M=0;
   NumDotKoefY=0;  // счетчик  числа  расчетов коэффициента сжатия
-  for(j=0;j < 4 ;j++) MasScan.MasRecOut[j]=0;
+  for(j=0;j < 5 ;j++) MasScan.MasRecOut[j]=0;
   for(j=0;j <= NumVoprMax;j++)
   { MasScan.MasVoprOut[j][0]=0; MasScan.MasVoprOut[j][1]=0;
 	for(k=0; k <= NumCandMax; k++)  MasScan.MasCandOut[j][k]=0;
@@ -1737,7 +1743,8 @@ void FindVoteMarks(void)
 			   SearchSQ[j][0]=3; // признак окончания подсчета точек в квадрате
 			   // берется превышением  10% заполненной площади
 			   //if (float(NumBlP[nVoteType][j])/float(NumPMax[nVoteType][j]) > 0.01) g0=1; else g0=0;
-			   if (float(NumBlP[nVoteType][j]) > (0.5*float(dxSQ))) g0=1; else g0=0;
+			   if (float(NumBlP[nVoteType][j]) > (0.25*float(dxSQ))) g0=1; else g0=0;
+			   cout << " Candidat N = " << j << "   Number of points = " << NumBlP[nVoteType][j] << endl;
 			   RezRec[nVoteType][j]=g0;
 			}
 	   }
@@ -2025,9 +2032,9 @@ int ScanBulString(void)
 		 	if (ErrScan >0) goto FinEvRow;
 		 }//  конец  признака  проверки штампа
 		 // распознавание отметок  голосования
-         urw1=urw;  urw=150;
+        // urw1=urw;  urw=150;
 				FindVoteMarks();
-         urw=urw1;
+         //urw=urw1;
 		 // подготовка даннвх для поиска конца страницы
 		 if((ShArPr==0)&&(nstr > nsShArStart))
 		 {  //  начинается на  расстоянии зоны штампа в прямом
@@ -2071,9 +2078,9 @@ int ScanBulString(void)
 		}
 		if (ErrScan >0) goto FinEvRow;
 		// распознавание отметок  голосования
-        urw1=urw;  urw=150;
+       // urw1=urw;  urw=150;
 				   FindVoteMarks();
-		urw=urw1;
+		//urw=urw1;
 		// поиск  координат  печати УИК
 		// Определение наличия штампа и его  координат
 		if(PrCheckSh==1)

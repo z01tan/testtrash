@@ -14,7 +14,7 @@
 #include "CreateImage.h"
 #include "InitAltera.h"
 #include "HardProc.h"
-#include "HeaderMain.h"
+//#include "HeaderMain.h"      // UWAGA!!!! ERASE COMMENT SIGN!!!  
 
 //#define OUTPUT_FILE "scan.gr"
 
@@ -228,7 +228,8 @@ int Any_Wait() // ожидание каког-либо события; возв�
 { bool a = true; int pr1=0;
          while(a){
         //if(Wait_beiden() == 0) return 1;
-        if(PrVoteDay==1)
+// UWAGA!!!! ERASE COMMENT SIGN!!!             
+ /*       if(PrVoteDay==1)
         {   TekDateTime();
 
              if(PrVoteTimeStart==0)
@@ -258,17 +259,19 @@ int Any_Wait() // ожидание каког-либо события; возв�
             }
             if(PrVoteTimeEnd==11)
             {  // контроль времени окончания голосования
-                int h=Votes.Bhour[2]-TekDT.hour;  int m=Votes.Bmin[2]-TekDT.minit-wngtime;
+                int h=Votes.Bhour[2]-TekDT.hour;  int m=Votes.Bmin[2]-TekDT.minit-5;
                 if ((h<=0)&&(m<=0))
                 {  PrVoteTimeEnd=12; a=false;   }
             }
             if(PrVoteTimeEnd==13)
             {  // контроль времени окончания голосования
-                int h=Votes.Bhour[2]-TekDT.hour;  int m=Votes.Bmin[2]-TekDT.minit-wngtime;
+                int h=Votes.Bhour[2]-TekDT.hour;  int m=Votes.Bmin[2]-TekDT.minit;
                 if ((h<=0)&&(m<=0))
                 {  PrVoteTimeEnd=2; a=false;   }
             }
         }// if(PrVoteDay==1)
+  */
+// UWAGA!!!! ERASE COMMENT SIGN!!!             
         if (get_Optrons_Imm() == 1) { a=false; pr1=1;}
         if (get_Buttons_Imm() == 1) { a=false; pr1=2;}
         if ((Key_B!=Key_E))         { a=false; pr1=3;}
@@ -374,9 +377,9 @@ void Page_backTest()
 void Page_stop()
 {
     ScanReady = false;
-           ScanInProg = 0;
-           MotorFuS = false;
-           if(image_fd>0) {close(image_fd);image_fd = 0; max_gelesen = Scptr_s;}
+    ScanInProg = 0;
+    MotorFuS = false;
+  //  if(image_fd>0) {close(image_fd);image_fd = 0; max_gelesen = Scptr_s;}
     motor_direction = MOTOR_STOP;
     MotorRqst = true;
     //altera_motor(motor_direction);
