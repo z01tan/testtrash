@@ -14,7 +14,7 @@
 int WidthBMP; //= 30;//1728;
 int HeightBMP; //= 50;//4919;
 
-
+    char FBMP[]        = "/www/pages/Scan.bmp";
 
 
 int MakeBMPFile(char* nameF,int W, int H)
@@ -66,7 +66,7 @@ int MakeBMPFile(char* nameF,int W, int H)
 		Palette[i].rgbRed = Palette[i-1].rgbRed + 1;//10;
 	}
 	fwrite ( &Palette, 4 , 256, hFile);
-        
+
 	// Сохраняем BITMAP:
 	for (i = HeightBMP-1; i >= 0 ; i--)
 	{

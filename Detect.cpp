@@ -1,6 +1,5 @@
-// ---------------------------------------------------------------------------
+// -------------------written by GAI--------------------------------------------
 
-//#pragma hdrstop
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
@@ -9,15 +8,16 @@
 #include "Detect.h"
 
 // ---------------------------------------------------------------------------
-//#pragma package(smart_init)
-
 // Global settings !!!!!!!!!!!!!!!!!!
 
-int SymWidth = 18; // ??
-int SymHeigt = 64; // ??
+int SymWidth ;//= 24; // ??
+int SymHeigt ;//= 64; // ??
 int SymHeigtT; // ??
 
-int SymDist[3] = {36, 36, 36};
+int SymDist[3] ;//{36,36,36};
+
+int SymDIST0 ;  // !!!!!!!!!!!!!!!!!!NEW CONST FROM INPUT DATA !!!!!!!!!
+
 int Richtung = 1; // if richtung==0 then "end befor begin"
 int StZ[4]; // "0","9","8","9";
 // ---------------------------------------------------------------------------
@@ -69,12 +69,11 @@ double StAngle;
 // ++ по координатам нижнего угла рамки и наклону штампа вычислим X0,Y0 ++++++
 void  Transform(int a, int b, double alfa)
 {
-	//int s;
 	double w, h;
 	if (Richtung == 1) // в прямом направлении
 	{
 		w = 4.0 * NumDotX;
-		h = 11.5 * NumDotY; // 11.0 * NumDotY;
+		h = 11.5 * NumDotY * KoefY; // 11.0 * NumDotY;
 
 		X0 = (a) + (int)((w * cos(alfa)) - (h * sin(alfa)) + 0.5); // (a+6)
 		Y0 = (b - 2) - (int)(h * cos(alfa) + w * sin(alfa) + 0.5);
@@ -82,15 +81,11 @@ void  Transform(int a, int b, double alfa)
 	else // в обратном направлении
 	{
 		w = 4.0 * NumDotX;
-		h = 3.0 * NumDotY; // 3.25 * NumDotY;
+		h = 3.0 * NumDotY * KoefY; // 3.25 * NumDotY;
 
 		X0 = (a) + (int)((w * cos(alfa)) + (h * sin(alfa)) + 0.5);
 		Y0 = (b - 2) + (int)(h * cos(alfa) - w * sin(alfa) + 0.5);
 	}
-#ifdef AUSTESTEN
-	Form2->Edit15->Text = IntToStr(X0);
-	Form2->Edit16->Text = IntToStr(Y0);
-#endif
 }
 // ----------------------------------------------------------------------------
 
@@ -102,74 +97,28 @@ void getRowSym(int k) {
 	{
 		d = i;
 		x = (XT) + (int)(d * cos(StAngle) + 0.5);
-		y = YT + k - (int)(d * sin(StAngle) + 0.5);
-		/* ! */ //Color = Form1->Image2->Picture->Bitmap->Canvas->Pixels
-		//	[x + (int)(k * sin(StAngle) + 0.5)][y];
-	   //	urw_ch = (GetRValue(Color) * 0.3 + GetGValue(Color) * 0.59 +
-		//	GetBValue(Color) * 0.11);
-		//urw_ch=GetXYValue(x + (int)(k * sin(StAngle) + 0.5),y);
+		y = YT + k - (int)(d * sin(StAngle) * KoefY + 0.5);
 		urw_ch=GetXYValue(y,x + (int)(k * sin(StAngle) + 0.5));
-
 		dd = urw_ch;
 		// обращение  к функции  принятия решения о наличии  черного  в  точке
 		g0 = RecBlack(alfa, beta, urw, surw, urbl, surbl, dd, &p00, &p11);
-		// g0==1 черная!!!
+		// g0 == 1  - черная!!!
 		RowSym[i] = g0;
 		// RowSym[i] = (dd<105 ? 1:0);
 	}
 }
-// ------------------------------------------------------------------------------
-
-// ++++++++++++++ rotating characters +++++++++++++++++++++++
-// Уже не нужна !!!!!!!!!!!!!!!!!
-#ifdef AUSTESTEN
-
-void TurnSym(int a, int b) // a & b - coordinates of Symbol (LUC)
-{
-	int x, y, i, k, dd;
-	double d;
-	a = a;
-	b = b; // b - 4;
-	// for (x = 0; x < 80; x++)
-	// for (y = 0; y < 40; y++)
-	// Area[x][y] = 0;
-	for (k = 0; k <= SymHeigt + 8; k++) {
-		for (i = 0; i < 44; i++) // = SymWidth + 8
-		{
-			d = i;
-			x = a + (int)(d * cos(StAngle));
-			y = b + k - (int)(d * sin(StAngle));
-			Color = Form1->Image2->Picture->Bitmap->Canvas->Pixels
-				[x + (int)(k * sin(StAngle))][y];
-			urw_ch = (GetRValue(Color) * 0.3 + GetGValue(Color) * 0.59 +
-				GetBValue(Color) * 0.11);
-			dd = urw_ch;
-			// обращение  к функции  принятия решения о наличии  черного  в  точке
-			g0 = RecBlack(alfa, beta, urw, surw, urbl, surbl, dd, &p00,
-				&p11); // g0==1 черная!!!
-
-			Form1->Image2->Picture->Bitmap->Canvas->Pixels[100 + i][200 + k] =
-				(g0 == 1 ? 0 : 0xFFFFFF);
-			// Area[k][i] = g0;
-		}
-	}
-}
-#endif
-// ----------------------------------------------------------------------------
-
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // ----------------------------------------------------------------------------
 
 // ============================================================================
 int FindFirst() {
 	int i, k, sm, pr;
-	// int si[4];
 	k = 0;
 	pr = 0;
 	while (k < 20) {
 		getRowSym(k); // Запрашиваем строку с учетом наклона
 		sm = 0;
-		for (i = 0; i < 44; i++) {
+		for (i = 0; i < SymWidth+20; i++) {      //вместо 44 SymWidth=24 + 16+4 ??????
 			if (RowSym[i] == 1)
 				sm++;
 			if (i > 1 && (RowSym[i - 2] == 1))
@@ -181,8 +130,8 @@ int FindFirst() {
 				}
 				else
 					return (k);
-			}
-		}
+			} // if (sm > 1)
+		} //for (i...
 		k++;
 		pr = 1;
 	}
@@ -192,13 +141,12 @@ int FindFirst() {
 // ------------------------------------------------------------------------------
 int FindLast() {
 	int i, k, sm, pr;
-	// int si[4];
 	k = 0;
 	pr = 0;
 	while (k < 10) {
 		getRowSym(SymHeigt - k); // Запрашиваем строку с учетом наклона
 		sm = 0;
-		for (i = 0; i < 44; i++) {
+		for (i = 0; i < SymWidth+20; i++) {  //вместо 44 SymWidth=24 + 16+4 ??????
 			if (RowSym[i] == 1)
 				sm++;
 			if (i > 3 && (RowSym[i - 4] == 1))
@@ -210,8 +158,8 @@ int FindLast() {
 					k = k - 8;
 					break;
 				}
-			}
-		}
+			} // if (sm > 1)
+		} // for (i = 0;
 		k++;
 		pr = 1;
 	}
@@ -224,72 +172,41 @@ int FindLast() {
 void GetNext(int next) {
 	int i, k;
 	double x, y;
-#ifdef AUSTESTEN
-	Form2->Label14->Caption =
-		"# " + IntToStr((Richtung == 1 ? next : 3 - next));
-	Form2->Label14->Color = clBtnFace;
-#endif
 
 	if (next == 0) {
 		XT = X0; // -2
 		YT = Y0;
-#ifdef AUSTESTEN
-		Form2->Memo1->Lines->Add("XTn=" + IntToStr(XT) + " YTn=" +
-			IntToStr(YT));
-#endif
 		k = FindFirst();
-#ifdef AUSTESTEN
-		Form2->Memo1->Lines->Add("FFirst k=" + IntToStr(k) + " YTn=" +
-			IntToStr(YT));
-#endif
 		if (k > -15)
 			YT = YT + k;
 		i = FindLast();
 		if (i > -15)
 			SymHeigtT = SymHeigt - i;
-
-#ifdef AUSTESTEN
-		TurnSym(XT, YT); // for Debug only
-#endif
-	}
+	} // if (next == 0)
 	else {
 		x = X0;
 		y = Y0;
 		for (i = 0; i < next; i++) {
 			x = x + (SymDist[i] * cos(StAngle)); // es war 36.0  !!
 			y = y - (SymDist[i] * sin(StAngle));
-		}
+		} // for (i = 0;
 		XT = (int)(x + 0.5); // -2
 		YT = (int)y;
-#ifdef AUSTESTEN
-		Form2->Memo1->Lines->Add("XTn=" + IntToStr(XT) + " YTn=" +
-			IntToStr(YT));
-#endif
 		k = FindFirst();
 		if (k > -15)
 			YT = YT + k;
-#ifdef AUSTESTEN
-		TurnSym(XT, YT); // for Debug only
-#endif
-	}
+
+	} // else
 }
 
 // -----------------------------------------------------------------------------
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-// +++++ 					DETECT FUNCTION! 						  +++++++++
+// +++++ 					DETECT FUNCTION! 						  ++++++++++
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 int DetectSign(int next) {
 	int i, n, k, sm, pr, ptB, ptE;
 	int BegH;//, nn,Nsgn;
 	int Begin[3], End[3], cnt[3];
-	//System::UnicodeString ss, mm;
-    //AnsiString ss, mm;
-#ifdef AUSTESTEN
-	Form2->Memo1->Lines->Clear();
-	Form2->Memo1->Lines->Add("++++++++++++++++++++");
-	Form2->Memo1->Lines->Add("XT=" + IntToStr(XT) + " YT=" + IntToStr(YT));
-	Form2->Memo1->Lines->Add("SymHeigt=" + IntToStr(SymHeigtT));
-#endif
 
 	for (n = 0; n < 5; n++) // 5 сигнатур
 	{
@@ -311,41 +228,19 @@ int DetectSign(int next) {
 
 		for (k = 0; k < 4; k++) // по 3(4?) строки на анализ
 		{
-#ifdef AUSTESTEN
-			Form2->Memo1->Lines->Add("BegH+k=" + IntToStr(BegH + k));
-#endif
-
 			getRowSym(BegH + k);
-			//ss = "";
 			for (i = 0; i < 44; i++) // i=4
 			{
-#ifdef AUSTESTEN
-				if (RowSym[i] == 0)
-					ss = ss + "_";
-				else
-					ss = ss + "1";
-#endif
-				if (RowSym[i] == 1)
-					Row1[i] = 1;
+				if (RowSym[i] == 1) Row1[i] = 1;
 			} // for 44 1. mal
 
-#ifdef AUSTESTEN
-			Form2->Memo1->Lines->Add("symb=" + ss);
-#endif
 		} // for  строки на анализ
 
 		sm = 0;
 		pr = 0;
 		ptB = ptE = 0;
-		//ss = "";
 		for (i = 0; i < 44; i++) // i=4
 		{
-#ifdef AUSTESTEN
-			if (Row1[i] == 0)
-				ss = ss + "_";
-			else
-				ss = ss + "1";
-#endif
 			if (Row1[i] == 1)
 				sm++;
 			if (i > 3 && (Row1[i - 4] == 1))
@@ -367,9 +262,7 @@ int DetectSign(int next) {
 			}
 		} // for 44 2. mal
 
-#ifdef AUSTESTEN
-		Form2->Memo1->Lines->Add("Row1=" + ss);
-#endif
+
 		if (ptB > ptE)
 			ptB = ptE;
 
@@ -383,16 +276,10 @@ int DetectSign(int next) {
 					End[i] = Begin[0] + 30;
 				SgEs[n][LnCnt[n]] = End[i];
 				LnCnt[n]++;
-#ifdef AUSTESTEN
-				Form2->Memo1->Lines->Add("*Beg=" + IntToStr(Begin[i]) +
-					"  *End=" + IntToStr(End[i]));
-#endif
+
 			}
 
 		} // цикл по отрезкам
-#ifdef AUSTESTEN
-		Form2->Memo1->Lines->Add("****LnCnt=" + IntToStr(LnCnt[n]));
-#endif
 
 	} // for n    по сигнатурам!
 	ptB = 32;
@@ -411,18 +298,11 @@ int DetectSign(int next) {
 		if ((LnCnt[n] == 2) && ((SgBs[n][1] - ptB) > 34)) {
 			LnCnt[n] = 1;
 		} // !!!!!!!!!!!!!
-#ifdef AUSTESTEN
-		Form2->Memo1->Lines->Add("****LnCnt_K=" + IntToStr(LnCnt[n]));
-#endif
 	} // for n
 	// -----------------------------------------------------------------
 	if (next < 3 && ptE > SymDist[next])
 		SymDist[next] = ptE + 2; // корректировка смещения по Х
 	//
-
-#ifdef AUSTESTEN
-	Form2->Memo1->Lines->Add("****sm=" + IntToStr(sm));
-#endif
 	for (n = 0; n < 5; n++) {
 		pr = LnCnt[n];
 		switch (pr) {
@@ -474,9 +354,7 @@ int DetectSign(int next) {
 		default:
 			return (-15);
 		}
-#ifdef AUSTESTEN
-		Form2->Memo1->Lines->Add("Sign=" + IntToStr(Sign[n]));
-#endif
+
 	}
 	return (0);
 }
@@ -509,33 +387,6 @@ int DefineSym(int nz, Signum Arr) {
 }
 // ------------------------------------------------------------------------------
 
-// ----------------------------------------------------------------------------
-void StOut() {
-#ifdef AUSTESTEN
-	int oo;
-	oo = (Richtung == 1 ? Ziff : 3 - Ziff);
-	switch (oo) {
-	case 0: {
-			Form2->Edit8->Text = IntToStr(StZ[0]);
-			break;
-		}
-	case 1: {
-			Form2->Edit9->Text = IntToStr(StZ[1]);
-			break;
-		}
-	case 2: {
-			Form2->Edit10->Text = IntToStr(StZ[2]);
-			break;
-		}
-	case 3: {
-			Form2->Edit11->Text = IntToStr(StZ[3]);
-			break;
-		}
-
-	default: ;
-	}
-#endif
-}
 
 // ++++++++++++++++ Подтвердить очередную цифру    ++++++++++++++++++++++++++++
 // Выход: 		1 - подтвердили!!!, 0 - ОШИБКИ!
@@ -545,18 +396,9 @@ int DetectOne() {
 		Num = DefineSym(Ziff, Ziffer);
 		if (Num >= 0) {
 			StZ[Ziff] = Num;
-#ifdef AUSTESTEN
-			StOut();
-			Form2->Label14->Caption = "Det!!";
-			Form2->Label14->Color = clLime;
-#endif
 			return (Ziff+1);
 		}
 		else {
-#ifdef AUSTESTEN
-			Form2->Label14->Caption = "No D";
-			Form2->Label14->Color = clRed;
-#endif
 			return (0);
 		}
 	}
@@ -564,18 +406,9 @@ int DetectOne() {
 		Num = DefineSym(Ziff, Biffer);
 		if (Num >= 0) {
 			StZ[3 - Ziff] = Num;
-#ifdef AUSTESTEN
-			StOut();
-			Form2->Label14->Caption = "Det!!";
-			Form2->Label14->Color = clLime;
-#endif
 			return (Ziff+1);
 		}
 		else {
-#ifdef AUSTESTEN
-			Form2->Label14->Caption = "No D";
-			Form2->Label14->Color = clRed;
-#endif
 			return (0);
 		}
 	}
@@ -596,21 +429,11 @@ int tryConfirmStamp(int trend) {
 	Transform(XoShL, YoShL, StAngle);
 	for (i = 0; i < 4; i++)
 		StZ[i] = 0;
-	for (i = 0; i < 3; i++)
-		SymDist[i] = 36;
-#ifdef AUSTESTEN
-	// !!!!!!!!!Пока !!!!
-	Ziff = -1;
-
-	Form2->Edit8->Text = "-";
-	Form2->Edit9->Text = "-";
-	Form2->Edit10->Text = "-";
-	Form2->Edit11->Text = "-";
-	Form2->Visible = true;
-	return (0);
-#endif
+	for (i=40; i<44; i++)
+            RowSym[i] = 0;
+	for (i = 0; i < 3; i++) SymDist[i] = SymDIST0;
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
-#ifndef AUSTESTEN
+
 	DetS = 0;
 	for (i = 0; i < 4; i++) {
 		Ziff = i; // Ziff - порядковый номер анализир.цифры
@@ -622,24 +445,14 @@ int tryConfirmStamp(int trend) {
 		Ret = 0;
 		for (i = 0; i < 4; i++)
 			Ret = Ret + StZ[i] * Gewicht[i];
-		//Form1->Edit4->Text = IntToStr(Ret);
-
-		return (Ret);
+			return (Ret);
 	}
 	else {
-		//Form1->Edit4->Text = IntToStr(DetS - 10); //-4!!
 		return (DetS - 10);  //-4
 	}
-#endif
+
 
 }
-// --------------------------------------------------------------------------
 
-// +++++++++++++++++++ устанавливаем образцы и умолчания в соотв. со штампом
-void SetStamp() {
-	Ziff = -1;
-	// Form2->CheckBox3->Checked = true;
-	// Form2->Label14->Color = clBtnFace;
-}
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // *******************************************************************************

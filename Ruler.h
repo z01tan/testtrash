@@ -3,7 +3,7 @@
 #ifndef RulerH
 #define RulerH
 
-#include "MyX.h"
+//#include "MyX.h"
 #include "HeaderMain.h"
 
 // ----------------------------статические данные--------------------------------
@@ -33,7 +33,8 @@ int ImmYesNo(void); // Моментальный опрос нажатия клавиш Да Нет
 bool DriveGO(int Vektor, bool Solenoid); // Управление ШД
 int WaitRR(void); //Ожидание результатов распознавания бюллетеня
 
-bool SaveIG(int XVote); //Запись результатов на Flash
+bool SavePreRezult(void); //Сохранение предварительных результатов голосования
+bool SaveRezult(int XVote); //Запись результатов на Flash
 bool LoadSetup(void); // Загрузка первоначальных данных
 bool AvarFiles(void);  // Загрузка из файла аварийного выключения
 //bool CheckPrinter(void); //Определение - есть ли принтер?
@@ -41,11 +42,15 @@ bool SyncData(TKoib K, bool KB,TVotes V, bool VC); //Обмен данными по сети
 int KoibMain(void); // Определяет, главный ли КОИБ
 void Ind(std::string st1, std::string st2, int t); // Вывод данных на индикатор
 void Zagruzka(void);      // Загрузка начальных параметров
+void Koibsave(int N); // сохранение данных по 2 КОИБ  в  аварийный файл
 int Expression(std::string st); //
 void Delay(int Second);   // Задержка
 int Samotestirovanie(void);    // Самотестирование оборудования
 bool Catch(void); // Проверка соединения КОИБов
 
+
+int Block(std::string B, int XVote, int Xv, bool Left);
+bool Checks(std::string Ch, int XVote, int Xv); //Обрабатывает значение Checks строки протокола, возвращает его правильность
 //void TekDateTime(void);
 
 void IDsave(void); //Запись ИД в аварийную директорию
@@ -54,8 +59,9 @@ bool Protokol(std::string Prot, int Xbl, int Xv, int j); //Считывание данных про
 //bool Parser(std::string Path); // Парсер XML-файла
 int MakeFile(char* NameF);
 bool Print(int Type); // Печать на принтере
-
-void SayN(std::string st1); //Говорить сложные события
+void ReadTime(int pr0, int hour,int minut); // озвучивание  времени голосования
+std::string  SpeakElectionDate(void);
+int SayN(std::string st1); //Говорить сложные события
 void Say(int Type); //Говорить простые события
 
 //void Say5(std::string str1, std::string str2, std::string str3,std::string str4,std::string str5); //Говорить 5 простых событий
@@ -95,6 +101,7 @@ bool RUN(void); // Точка входа программы
  extern int Xv; // Указатель
  extern int XVote; // Указатель
 
-
+ extern int iBlocks1[10];
+ extern int iBlocks2[10];
 
 #endif

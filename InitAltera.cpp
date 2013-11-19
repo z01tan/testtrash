@@ -38,13 +38,15 @@ static  uint8_t   mode = 0;
 #define Kn1_f   "/sys/class/gpio/KNOPKA1/value"
 #define Kn2_f   "/sys/class/gpio/KNOPKA2/value"
 
-#define MOTORTIME 200
+//#define MOTORTIME 200
 
 #define Keyb_f "/dev/input/event0"
 
 #define TTY     "/dev/ttyS1"
 
 #define DEFAULT_BACKLIGHT  400;   ///511
+
+int  MOTORTIME ;
 
 mdirect motor_direction;
 sol     solenoid;
@@ -262,7 +264,7 @@ uint16_t altera_write(int fd, uint16_t addr, uint16_t data)
         ret = ioctl(fd, SPI_IOC_MESSAGE(1), &tr);
         if(ret<0)
   //              pabort("spi REG write error\n");
-        {  printf("spi REG write error ");return -1;}
+        {  printf("spi REG write error!!!!!\n ");return -1;}
         return (rx[2]<<8)|(rx[3]);
 }
 //------------------------------------------------------------------------------
@@ -336,8 +338,10 @@ void altera_backlight(int r,int g, int b)
 void _clear()
 {
     int i;
-    for(i=0; i<LINE_LENGTH; i++) { altera_write(altera_fd, 0x800+i, 0x0);}
-    for(i=0; i<LINE_LENGTH; i++) { altera_write(altera_fd, 0x1000+i, 0x100);}
+    for(i=0; i<LINE_LENGTH; i++)
+          { altera_write(altera_fd, 0x800+i, 0x0);}
+    for(i=0; i<LINE_LENGTH; i++)
+          { altera_write(altera_fd, 0x1000+i, 0x100);}
 }
 //-----------------------------i2c----------------------------------------------
 int i2c_open(void)
@@ -569,17 +573,17 @@ int Init_Altera()
 
 // Initial calibration data BlackLevel & Koeff
 
-// для калибровки по белому
- /*   bool cl=false,clK=false;
+ // для калибровки по белому
+    bool cl=false,clK=false;
     if (load_calibration_data()==0) cl=true;//set_calibration_data();
     if(load_calibration_dataK()==0) clK=true;
     if(clK && cl) set_calibration_dataK();
     else {if(cl) set_calibration_data();
           else _clear();}
-*/
-  if ((load_calibration_data()==0)) set_calibration_data();
-    else{ _clear();}
 
+/*  if ((load_calibration_data()==0)) set_calibration_data();
+    else{ _clear();}
+*/
     led = '1';
     if(Led_opt(&led))pabort("Led Error!!!!\n");// зажгли опторары!!!!!
      altera_write(altera_fd, 0x01, 0);  // stop motor!

@@ -2,8 +2,10 @@
 // Создание потоков обработки изображения и внешних устройсв
 //                     А.Галкин      07.05.2013
 //******************************************************************************
+#include <iostream>
 #include "CreateImage.h"
 #include "InitAltera.h"
+#include "AlteraSocket.h"
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -11,6 +13,8 @@
 #include <sys/poll.h>
 //#include <sched.h>
 #include <errno.h>
+#include "HeaderMain.h"
+#include "AlteraSocket.h"
 
 #define OUTPUT_FILE "scan.gr"
 
@@ -59,6 +63,8 @@ pthread_t  PID_Image;
 pthread_t  PID_But;
 sem_t semBut;
 sem_t semOpt;
+sem_t semRC;
+sem_t semSD;
 
 
 char* PixelBMP;
@@ -176,18 +182,21 @@ int read_Key()
         int ret;
    ufds[0].fd = kfd;
    ufds[0].events = POLLIN;
-   if((rv = poll(ufds, 1, 10))>=0)
+   if((rv = poll(ufds, 1, 10))>0)
    {
-       if(ufds[0].revents&POLLIN){
+        if(ufds[0].revents&POLLIN)
+        {
            ret = read(kfd, &input_event, sizeof(input_event));
-           if(ret<0) printf("Read fail!!\n");
-           ret = -1;
+           if(ret<0) {printf("Read fail!!\n");
+           return -1;}
            if(input_event.type == 1 && input_event.value ==0) // key is released
+           {
             ret = input_event.code;
-           if(ret!=69)return ret;
-       }
+            if(ret!=69)return ret;
+           }
+        }
    }
-   return -1;
+   return 0;
 }
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 int parceTTY(int fd)
@@ -280,17 +289,17 @@ int ScanRead()
 //==============================================================================
 //-----------------------Thread ScanRead----------------------------------------
 void* GetImage(void* arg) // Thread for getting Image & Optrones from Altera
-{ int loc_id;
-  int i,tmp,Rest,Strt;
+{ //int loc_id;
+  int tmp,Rest,Strt;
 
 
-  loc_id = * (int *) arg;
+ // loc_id = * (int *) arg;
 pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 // . . .Крутимся все время!!!!
 while(true) // основной бесконечный цикл
 {
-    if (CalibrRqst) usleep(10000); // "останов" нити для записи регистров АЛЬТЕРЫ 
-    else{     
+    if (CalibrRqst) usleep(10000); // "останов" нити для записи регистров АЛЬТЕРЫ
+    else{
            if (MotorFuS && (image_fd <0)) {
             image_fd = open_image_device(IMAGE_DEVICE);
             Scptr_s =0;
@@ -327,17 +336,21 @@ while(true) // основной бесконечный цикл
                 } //if((tmp>0)||(!ScanReady)!!!!!!!!
            }else /* image_fd>=0 */
                 {usleep(1000);} // если не сканируем, то ждем 1000 мкс
-        
-    
+
+
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       if(calibrate_mode==MODE_NORMAL){
-        if(MotorFuS && (ScanInProg==0) && (Optron[3]<NO_PAPER)) //затемнился средний оптрон
-          { Strt--; if(Strt==0)ScanInProg = 1; //!!!!!!!!!!!!начали передавать инфу!!!!!!!!!!!!
+        if(MotorFuS && (ScanInProg==0) && (Optron[3] < NO_PAPERO[3])) //затемнился средний оптрон
+          { Strt--; if(Strt==0)ScanInProg = 1; //!!!!!!!!!!!! начали передавать инфу!!!!!!!!!!!!
+             //std::cout << " Scanning  begins !!!!! 20130913" << std::endl;
           }
+        if((ScanInProg==1) && (Optron[3]>NO_PAPERO[3])) // освободился средний оптрон
+           {
+               std::cout << "  Image  Scan  The 3 optron  is free  nstr=  " << nstr<< std::endl;
+               for(int i=0;i<4;i++)
+                {std::cout << " End  Scanning  Optron  N =     "<< i << "   Value =   "<<Optron[i] <<  "   Porog = "<< NO_PAPERO[i] <<std::endl;}
 
-        if((ScanInProg==1) && (Optron[3]>NO_PAPER)) // освободился средний оптрон
-           {if(Rest<0) Rest = Braking;
-           }
+       		if(Rest<0) Rest = Braking;  }
 
        // if((Rest==0) && (ScanInProg ==1))
         if(Rest==0)
@@ -349,39 +362,40 @@ while(true) // основной бесконечный цикл
 
             //  if(MotorRqst){altera_motor(motor_direction);MotorRqst=false;}
 
-     } //if (!CalibrRqst) 
- } //while 
+     } //if (!CalibrRqst)
+ } //while
  return 0;
 }
 //==============================================================================
 //-----------------------Thread Buttons&Co--------------------------------------
 void* GetButt(void* arg) // Thread for getting SPI & other
-{ int loc_id;
+{ //int loc_id;
 int bu1,bu2;
-loc_id = * (int *) arg;
-int i,tmp,e;
-int impl1,impl2;
+//loc_id = * (int *) arg;
+int i,tmp;
+//int impl1,impl2;
 int semV,changeV,changeF;
+
 char K_buff;
 
 pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
-bu1 = 1; bu2 = 1; impl1=0;impl2=0;
+bu1 = 1; bu2 = 1;// impl1=0;impl2=0;
 while (true){
 
  // нет ли требования записать регистры Альтеры
  if (CalibrRqst) usleep(15000); // "останов" нити для записи регистров АЛЬТЕРЫ
- else{  
-    
+ else{
+
     if(MotorRqst) { altera_motor(motor_direction); MotorRqst=false; }
 
     if (!KeyisReady) usleep(15000);      //      wait for 15 msec!
     else usleep(5000);
-    
-    if(motorWatch > 0)motorWatch--;
+
+  /*  if(motorWatch > 0)motorWatch--;
     if(motorWatch == 0){motor_direction = MOTOR_STOP;motorWatch=-1;
                         max_gelesen=0;MotorRqst = true;}
-    
-   
+*/
+
      // Опросим оптроны:
         for(i=0;i<4;i++) altopt[i] = Optron[i];
         adc_read(); // опросили!!
@@ -389,17 +403,20 @@ while (true){
         sem_getvalue(&semOpt,&i);
         if(ChangeO>0 && i==0) {sem_post(&semOpt); ChangeO = 0;} // сообщаем об изменении оптронов*****
     //-------------------------------------------------------------
+// если сканируем, то кнопки не спрашиваем ?!
+  if (ScanInProg==0){  //**********************************************
 
-
-    // опросим изменения кропок задней панели...
+   // опросим изменения кропок задней панели...
     BackBut[0] =1 - bu1;
     BackBut[1] =1 - bu2;
     changeV= 0;
     if(butt_get(&bu1,&bu2)) pabort("Buttons Error");
-    if (bu1==0 && BackBut[0]==0){ impl1 =1; if (Buttons[0]==0){changeV =1; Buttons[0]=1;}} // нажали и не была нажата
-    if (bu2==0 && BackBut[1]==0){ impl2 =1; if (Buttons[1]==0){changeV =1; Buttons[1]=1;}}
-    if(BackBut[0]==1 && bu1==1)impl1 =0;
-    if(BackBut[1]==1 && bu2==1)impl2 =0;
+    if (bu1==0 && BackBut[0]==0){ //impl1 =1;
+        if (Buttons[0]==0){changeV =1; Buttons[0]=1;}} // нажали и не была нажата
+    if (bu2==0 && BackBut[1]==0){ //impl2 =1;
+        if (Buttons[1]==0){changeV =1; Buttons[1]=1;}}
+   // if(BackBut[0]==1 && bu1==1)impl1 =0;
+   //if(BackBut[1]==1 && bu2==1)impl2 =0;
     // printf("BackButs %d, %d\n",bu1,bu2);//!!!!!!!!!!!!!!!!!!!!
     //... и кнопок дисплея
   //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -413,6 +430,7 @@ while (true){
         if(open_Key()) {KeyisReady = true; }}
     if (KeyisReady) {
         tmp = read_Key(); // in mode non_block
+        if(tmp<0){close_Key();KeyisReady = false;} //???????????????????????????????????????????????????????????
         if (tmp>0) {
           // printf("KeyPressed %d\n",tmp);
            if(tmp==KEYYES){Buttons[0] = 1;changeV=1;tmp=0;}
@@ -430,8 +448,49 @@ while (true){
     }
     sem_getvalue(&semBut,&semV);
     if((changeV>0 || changeF>0) && semV==0 ) sem_post(&semBut); // сообщаем об изменении кнопок***
-  }//if (!CalibrRqst)  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-}//while (true)
+//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    // теперь опросим сетку
+  if(isConnected==1){ //
+    if (have_Printer==1) // Client
+    {
+        i = CheckClt();
+
+        switch(i){
+        case -10:{totR=-10;break;}
+        case 1: {if(sendFlag){tmp = WriteClt(bWptr,totW);
+                totW = tmp;sendFlag=0;}break;}
+        case 2: {if(!recvFlag){tmp = ReadClt(bRptr,totR);
+                 totR = tmp;recvFlag = 1;}break;}
+        case 3:{
+          //  if(sendFlag){tmp = WriteClt(bWptr,totW);totW = tmp;sendFlag=0;}
+            if(!recvFlag){tmp = ReadClt(bRptr,totR);totR = tmp;recvFlag = 1;}break;
+        }
+        default:totR = i;  }
+
+    }
+    if (have_Printer==0)    // Server
+    {
+        i = CheckList();
+
+        switch(i){
+        case -10:{totR=-10;break;}
+        case 1: {if(sendFlag){tmp = WriteList(bWptr,totW);
+                totW = tmp;sendFlag=0;}break;}
+        case 2: {if(!recvFlag){tmp = ReadList(bRptr,totR);
+                 totR = tmp;recvFlag = 1;}break;}
+        case 3:{
+            if(!recvFlag){tmp = ReadList(bRptr,totR);totR = tmp;recvFlag = 1;}break;
+        }
+        default:totR = i;   }
+
+    }
+  } //PrConnectOK==1
+//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+ }  // if (ScanInProg==0)******************************************************
+
+ }  //if (!CalibrRqst)  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+}   //while (true)
   return 0;
 }
 //------------------------------------------------------------------------------
@@ -490,7 +549,7 @@ Scptr_r = 0;// Нулим указатели на сканированные и 
   adc_read();
   for(i=0;i<4;i++) printf("OPTRON%d,=%d\n",i,Optron[i]);
 
-// creating Semophor for OPTRONS
+// creating Semaphor for OPTRONS
 
   Errno = sem_init(&semOpt,0,0);
   if(Errno!=0) {printf("SemOptrons error!!!\n");return(-1);}
@@ -508,6 +567,12 @@ Scptr_r = 0;// Нулим указатели на сканированные и 
   Errno = pthread_create(&PID_Image,&attr,GetImage,&idS);
   if(Errno!=0)  {printf("ThreadImage error!!!!\n");return(-1);}
 // Запустили!!!
+// creating Semaphor for LAN
+    Errno = sem_init(&semSD,0,0);
+    if(Errno!=0) {printf("SemSEND error!!!\n");return(-1);}
+// For use: sem_post(), sem_wait(), sem_trywait(), sem_destroy() & sem_getvalue().
+    Errno = sem_init(&semRC,0,0);
+    if(Errno!=0) {printf("SemRECEIVE error!!!\n");return(-1);}
 ///////////////////////////////////////////////////////////
 // подготовка для кнопок и Co
   KeyisReady = false;
@@ -515,7 +580,7 @@ Scptr_r = 0;// Нулим указатели на сканированные и 
   if(butt_open()<0) pabort("BackButtons fail!!!\n");
   Key_B = 0;Key_E = 0;
 
-// creating Semophor for Buttons&Co
+// creating Semaphor for Buttons&Co
 
   Errno = sem_init(&semBut,0,0);
   if(Errno!=0) {printf("SemButtons error!!!\n");return(-1);}
@@ -543,13 +608,15 @@ void Close_Threads()
         pthread_cancel(PID_But);
         sleep(1);
         close_Key();
-        
+
         free(PixCol);
         free(PixelBMP);
         sleep (1);
         sem_destroy(&semBut);
         sem_destroy(&semOpt);
-    
-       
+        sem_destroy(&semRC);
+        sem_destroy(&semSD);
+
+
 }
 //==============================================================================

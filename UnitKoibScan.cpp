@@ -13,6 +13,7 @@
 #include "HeaderMain.h"
 #include "InitAltera.h"
 #include "HardProc.h"
+#include "Detect.h"
 
 using std::cout;
 using std::endl;
@@ -278,12 +279,14 @@ int ReadSetUpFiles(void)
   //  считывание  параметров КОИБ
   pr=SetUpKoibRead();
   if(pr==1)   {  sst=Out.Menu1[40];   setSecline(&sst[0],1);   };
+  strcpy(Ip_slave,"");  // Гашение IP  адреса  подчиненного  сканера, он определяется  после  соединеия со вторым сканером
   // считывания параметров управления
   if(pr==0) pr=SetUpUprRead();
     if(pr==1)   {  sst=Out.Menu1[41];   setSecline(&sst[0],1);   };
     // считывание параметров  бюллетеней
   if(pr==0) pr=SetUpBullRead();
     if(pr==1)   {  sst=Out.Menu1[42];   setSecline(&sst[0],1);   };
+
   // считывания параметров  распознавания
   if(pr==0) pr=SetUpRecRead();
     if(pr==1)   {  sst=Out.Menu1[43];   setSecline(&sst[0],1);   };
@@ -292,24 +295,21 @@ int ReadSetUpFiles(void)
     if(pr==1)   {  sst=Out.Menu1[44];   setSecline(&sst[0],1);   };
     // установка  уровня громкости динамиков
     setVoiceVolume(VolumeUr);
-    //setVoiceVolume(3);
   // вычисление  пороговых значений по листам
-  MaxLightR=270; MaxLightG=270;  MaxLightB=270;
-  CalibrRqst=true; usleep(200000);
+  //MaxLightR=220; MaxLightG=220;  MaxLightB=220;
+  CalibrRqst=true; //  для корректной  записи в  регистры
+  usleep(200000);
   altera_backlight(MaxLightR,MaxLightG,MaxLightB);
-  CalibrRqst=false;  // очистка регистров
-
+  CalibrRqst=false;  //
 
 for(i=0;i<NumSensors;i++) NO_PAPERO[i]=MasSenValue[i][0]-20;
 for(i=0;i<NumSensors;i++) ONE_PAPERO[i]=MasSenValue[i][2]+20;
 
-for(i=0;i<NumSensors;i++) NO_PAPERO[i]=MasSenValue[i][0]-(MasSenValue[i][0]-MasSenValue[i][1])/2;//20;
-for(i=0;i<NumSensors;i++) ONE_PAPERO[i]=MasSenValue[i][2]+(MasSenValue[i][1]-MasSenValue[i][2])/2;//+20;
 
  NO_PAPER  =MasSenValue[0][0];
  ONE_PAPER=MasSenValue[0][2];
    for(i=1;i<NumSensors;i++)  if(NO_PAPER > MasSenValue[i][0]) NO_PAPER=MasSenValue[i][0];
-            NO_PAPER=NO_PAPER-20;
+            NO_PAPER = NO_PAPER-20;
     for(i=1;i<NumSensors;i++)  if(ONE_PAPER  < MasSenValue[i][2]) ONE_PAPER=MasSenValue[i][2];
             ONE_PAPER=ONE_PAPER+20;
 
@@ -319,6 +319,8 @@ for(i=0;i<NumSensors;i++) ONE_PAPERO[i]=MasSenValue[i][2]+(MasSenValue[i][1]-Mas
   PageHM=Max_Bull_Height;// высота  страницы в при загрузке (максимальная) мм
   PageW=int(PageWM*float(NumDotX)); // ширина  страницы  в  точках
   PageH=int(PageHM*float(NumDotY)); // высота  страницы  в  точках
+// установка  ограничения вращения  двигателя по  времени
+    MOTORTIME=250*ceil(Max_Bull_Height/297- 0.2);
 
   LMarSize= int(LMarSizeM*float(NumDotX));
   TMarSize= int(TMarSizeM*float(NumDotY));// размер полей  бюллетеня в  точках  по вертикали
@@ -335,14 +337,13 @@ for(i=0;i<NumSensors;i++) ONE_PAPERO[i]=MasSenValue[i][2]+(MasSenValue[i][1]-Mas
   dyMF=TMarSize+2*LineWy+dyVoteType; // высота зоны от начала листа до начала  зоны  заголовка
   nstrStampStartL=LineWy+dyStamp-dyStampNum; // строка начала поиска штампа
   colStampR=PageW-(LMarSize+LineWx)-2;  // колонка начала поиска штампа справа
+  //  параметры  символов
+  SymWidth= int(Dig_Width*NumDotX); // ??
+  SymHeigt=int(Dig_Height*NumDotY); // ??
+  SymDIST0=SymWidth+int(Dig_Interv*NumDotX);
   surw=5;   // Оценка СКО мат. ожидания  уровня  белого (среднее значение)
   surbl=5;  // Оценка СКО мат. ожидания  уровня  черного (среднее значение)
-
-    //MAXLINES=PageH+5*TMarSize;
-    MAXLINES=int(Max_Bull_Height*float(NumDotY))+5*TMarSize;
-
-    //printf(" MAXLINES  =   %d\n",MAXLINES);
-
+  MAXLINES=int(Max_Bull_Height*float(NumDotY))+5*TMarSize;
   return pr;
 } //ReadSetUpFiles
 
@@ -441,7 +442,7 @@ void FormIdScan(void)
 			  MasSQ[nVoteType][ii][0][3]=2*dxSQ; MasSQ[nVoteType][ii][0][4]=2*dySQ;
 			  // координаты точек начала поиска квадрата относительно  рамки бюллетеня
 			  MasSQ[nVoteType][ii][0][1]=int(float(Votes.Blank[i].Vopr[j].Candidates[k].SQx*NumDotY)/10)-LMarSize+int(0.5*float(LineWx))+dxSQ;
-			  MasSQ[nVoteType][ii][0][2]=int(float(Votes.Blank[i].Vopr[j].Candidates[k].SQy*NumDotY)/10)-TMarSize-  24;//int(1*float(dySQ))+int(1.5*float(LineWy));
+			  MasSQ[nVoteType][ii][0][2]=int(float(Votes.Blank[i].Vopr[j].Candidates[k].SQy*NumDotY)/10)-TMarSize-  20;//int(1*float(dySQ))+int(1.5*float(LineWy));
 			  // сохранение  координат угла квадрата для дальнейшего использования  в  расчетах коэффициента
 			  // достаточно  только  координаты  по ОУ, по ОХ коэффициент можно  считать
 			  // по расстоянию между вертикальными границами рамки (функция контроля рамки)
@@ -453,7 +454,7 @@ void FormIdScan(void)
 		if(NumSQMax[i] > 0)
 		{	for(j=1;j < NumSQMax[nVoteType]+1;j++)
 			{ MasSQ[nVoteType][j][1][1]=dxR-MasSQ[nVoteType][j][0][1];
-			  MasSQ[nVoteType][j][1][2]=dyR-MasSQ[nVoteType][j][0][2]- int(4*float(dySQ));
+			  MasSQ[nVoteType][j][1][2]=dyR-MasSQ[nVoteType][j][0][2]- int(2*float(dySQ))-40;
 			  MasSQ[nVoteType][j][1][3]=MasSQ[nVoteType][j][0][3];
 			  MasSQ[nVoteType][j][1][4]=MasSQ[nVoteType][j][0][4];
 			  if(j==18)
@@ -523,7 +524,7 @@ int FormRezScanBull(void)
 
 void GashBeforeScan(void)
 {
-  KoefY=0.985; KoefX=1.0;   PrKoefY=0;  PrKoef=0;
+  KoefY=1.0; KoefX=1.0;   PrKoefY=0;  PrKoef=0;
   NstrFrControl=NumDotY+1;
   dyLine1=0; dyLine1M=0;
   NumDotKoefY=0;  // счетчик  числа  расчетов коэффициента сжатия
@@ -746,6 +747,137 @@ void EvChangeColRow(int BlWt,int nstr,int step,int ncL,int dxL,int* nbL,int* xo,
   }// конец поиска левого края листа
 } // PageLeft
 
+void EvChangeColRowSh11(int BlWt,int nstr,int step,int ncL,int dxL,int* xo,int* prL)  // 25.10.2013
+  // BlWt - признак направления смены цвета:
+  //         "0"  - с  черного  на  белый
+  //         "1"  - с  белого на  черный
+  // nstr - текущий номер строки
+  // step - значение  шага  при определении  среднего значения или при поиске
+  //       левой (1) или правой (-1)  границы листа
+  // ncL - номер колонки (столбца) от которой начинается  поиск левой границы листа
+  // dxL - количество  точек в  строке, которые определяют строб для поиска левой
+  //      или правой  границы листа
+  // xo - номер столбца, с  которого  начинается  левая граница бюллетеня
+  // prL - признак того,  что левая  граница  бюллетеня найдена
+  // step - значение  шага  при определении  среднего значения или при поиске
+  //       левой (1) или правой (-1)  границы листа
+{ // определение  начала  верхней (нижней) части страницы
+  int i,ii/*,ij,nw,ur1w,ur1bl,ur2w,ur2bl*/; float dd;
+  int nFoundPoints,nTotalPoints;
+  *prL=0;
+  if (*prL==0) // поиск левой  границы  листа, если она еще не  найдена
+  {  *xo=0;
+	 dd=0;
+	 nFoundPoints=0; 	nTotalPoints=0;
+	 //ur2bl=urbl; ur2w=urw;
+	 if((step) > (int(0)))ii=dxL; else ii=-dxL;
+	 if(step>0)
+	 {  // поиск слева направо
+		//ur1w=0; ur1bl=0; nFoundPoints=0; nw=0;
+		for(i=ncL;i < ncL+ii;i=i+step)
+	   {//---------------Обращение  к  массиву точек---------
+
+			urw_ch=GetXYValue(i,nstr);
+
+		//---------------------------------------------------
+
+
+		dd=urw_ch;
+			// обращение  к функции  принятия решения о наличии  черного  в  точке
+			g0=RecBlack(alfa,beta,urw,surw,urbl,surbl,dd,&p00,&p11);
+
+		   //	dd=urbl+(urw-urbl)/2;
+		 //	if(urw_ch < dd) g0=1; else g0=0;
+
+			if(BlWt==1)
+			{  // при поиске черного на  фоне белого
+				if(nTotalPoints <=0)
+				{ if(g0==0) goto fin11;            }
+				nTotalPoints=nTotalPoints+1;
+				if(g0==1)nFoundPoints=nFoundPoints+1;
+				if (nTotalPoints > LineWy+2)
+				{ float kk= float(nFoundPoints)/ float(nTotalPoints);
+					if(kk > 0.4 )
+					{ // смена  цвета  найдена, вычисление координаты начала линии
+					*prL=1; *xo=i-(nTotalPoints);
+
+					}
+					nFoundPoints=0;  nTotalPoints=0;    goto fin1;
+				}
+			}
+			if(BlWt==0)
+			{  // при поиске белого на  фоне черного
+				if(nTotalPoints <=0)
+				{ if(g0==1) goto fin11;            }
+				nTotalPoints++;
+				if(g0==1)nFoundPoints++;
+				if (nTotalPoints > LineWy+2)
+				{ float kk= float(nFoundPoints)/ float(nTotalPoints);
+					if(kk > 0.4 )
+					{ //смена цвета найдена  найдена, вычисление координаты начала линии
+						*prL=1; *xo=i-(nTotalPoints);
+					}
+					nFoundPoints=0;  nTotalPoints=0; goto fin1;
+				}
+			}
+			fin11:;
+		};
+	 }
+	 if(step < 0)
+	 {  //  поиск справа налево
+		for(i=ncL;i > ncL+ii;i=i+step)
+		{
+//---------------Обращение  к  массиву точек-----------------------------------
+			//Color=Form1->Image2->Picture->Bitmap->Canvas->Pixels[i][nstr];
+			//urw_ch=(GetRValue(Color)*0.3+ GetGValue(Color)*0.59+ GetBValue(Color)*0.11);
+			urw_ch=GetXYValue(i,nstr);
+			//if(urw_ch > 170)urw_ch=170;
+							// обращение  к функции  принятия решения о наличии  черного  в  точке
+			dd=urw_ch;
+			g0=RecBlack(alfa,beta,urw,surw,urbl,surbl,dd,&p00,&p11);
+
+//---------------------------------------------------
+			//dd=urbl+(urw-urbl)/2;
+			//if(urw_ch < dd) g0=1; else g0=0;
+			if(BlWt==1)
+			{  // при поиске черного на  фоне белого
+				if(nTotalPoints <=0)
+				{ if(g0==0) goto fin12;            }
+				nTotalPoints=nTotalPoints+1;
+				if(g0==1)nFoundPoints=nFoundPoints+1;
+				if (nTotalPoints > LineWy+2)
+				{ float kk= float(nFoundPoints)/ float(nTotalPoints);
+					if(kk > 0.4 )
+					{ // смена  цвета  найдена, вычисление координаты начала линии
+					*prL=1; *xo=i+nTotalPoints;
+
+					}
+					nFoundPoints=0;  nTotalPoints=0; goto fin1;
+				}
+			}
+			if(BlWt==0)
+			{  // при поиске белого на  фоне черного
+				if(nTotalPoints <=0)
+				{ if(g0==1) goto fin12;            }
+				nTotalPoints=nTotalPoints+1;
+				if(g0==1)nFoundPoints=nFoundPoints+1;
+				if (nTotalPoints > LineWy+2)
+				{ float kk= float(nFoundPoints)/ float(nTotalPoints);
+					if(kk > 0.4 )
+					{ //смена цвета найдена  найдена, вычисление координаты начала линии
+						*prL=1; *xo=i+(nTotalPoints);
+					}
+					nFoundPoints=0;  nTotalPoints=0;  goto fin1;
+				}
+			fin12:;
+			}
+		}
+	 }
+	 fin1:;
+	 //urbl=ur2bl; urw=ur2w;
+  }// конец поиска левого края листа
+} // ColRowSh 25.10.2013
+
 void EvChangeColRowSh(int BlWt,int nstr,int step,int ncL,int dxL,int* nbL,int* xo,int* prL)
   // BlWt - признак направления смены цвета:
   //         "0"  - с  черного  на  белый
@@ -965,9 +1097,12 @@ int FindFrame(int* PrFrame)
 		// формирование признака  окончания  поиска   начала  листа PrPage=1
 	  if((PrTopR==1)&&(PrRight==1)&&(PrTopL==1)&&(PrLeft==1))
 	  { *PrFrame=1;
-		// уточнение  угла наклона  листа
-		dyALfa=PgYoR-PgYoL; dxALfa=PgXoR-PgXoL;
+		// уточнение угла наклона листа
+		dyALfa=PgYoR-PgYoL; dxALfa=ncTR-ncTL;//26.08.13 dxALfa=PgXoR-PgXoL;
 		AlfaPage=(float(dyALfa)*float(NumDotY))/(float(dxALfa)*float(NumDotX));
+		// 26.08.2013 уточнение координат углов  рамки с  учетом угла наклона листа
+		PgYoL=PgYoL-int(float(ncTL-FrXoL-LMarSize)*sin(AlfaPage)-0.5);
+		PgYoR=PgYoR+int(float(NumStrScan-ncTR-LMarSize)*sin(AlfaPage)+0.5);
 	  }
 	  fin:;
 	return PrErr;
@@ -976,7 +1111,7 @@ int FindFrame(int* PrFrame)
 int FrameControl(void)
 { // контроль наличия  рамки  слева или справа в процессе  сканирования
 	 int PrErr=0,nbK,XoK,PrK;
-	 // контрольлевой границы рамки
+	 // контроль левой границы рамки
 	 LsPr=0; RsPr=0;
 	 if(nstr==1081)
 	 RsPr=0;
@@ -996,10 +1131,10 @@ int FrameControl(void)
 		  { nbK=0;XoK=0;PrK=0;
 			EvChangeColRow(0,nstr,1,LsXo+3,2*NumDotX,&nbK,&XoK,&PrK);
 			if(PrK==0)
-			{  // линия найдена расчет коэффициента
+			{  //  первая линия найдена линия найдена расчет коэффициента
 				PrKoef=1;
 				if(dyLine1>1)
-				{
+				{  // сглаживание  коэффициента  сжатия изображения
 				    float KoefYtek=float(nstr-PgYoL)/float(dyLine1-TMarSize)/CosAlfaPage;
 				    KoefY=(KoefY+KoefYtek)/2;
 				    cout << " Koefficient of Line 1 = " << KoefY << endl;
@@ -1036,7 +1171,6 @@ int FrameControl(void)
 	   */
        //}
 	 }
-
 	return PrErr;
 } //FrameControl
 
@@ -1205,6 +1339,9 @@ int FindNumYchTop(int* PrSt)
 		{ dx=XoSh1 - colStampL;  dxStFindL=dx + 3*NumDotX; 	}
 
 		EvChangeColRowSh(1,nstr,1,colStampL,dxStFindL,&nbShL,&XoL,&PrL);
+		//		EvChangeColRowSh(1,nstr,1,colStampL,dxStFindL,&XoL,&PrL);
+
+
 		PrXoLSh=PrL;
 		if(PrL==1)
 		{  XoLSh=XoL;
@@ -1300,6 +1437,7 @@ int FindNumYchTop(int* PrSt)
 		if(PrFirstR!=0)
 		{ dx=colStampR-XoRSh; dxStFindR=dx+3*NumDotX;  }
 		EvChangeColRowSh(1,nstr,-1,colStampR,dxStFindR,&nbShR,&XoR,&PrR);
+//				EvChangeColRowSh(1,nstr,-1,colStampR,dxStFindR,&XoR,&PrR);
 		PrXoRSh=PrR;
 		if(PrR==1)
 		{   XoRSh=XoR;
@@ -1477,6 +1615,7 @@ int FindNumYchBot(int* PrSt)
 	 if(PrShL==0)  // изначально  задается 1
 	 {  // определение координат левой стороны штампа
 		EvChangeColRowSh(1,nstr,1,colStampL,dxStFindL,&nbShL,&XoL,&PrL);
+				//		EvChangeColRowSh(1,nstr,1,colStampL,dxStFindL,&XoL,&PrL);
 		if(PrL==1) // есть черная линия
 		{ if(colStampL>=XoL) // граница штампа слева сливается с рамкой бюллетеня
 		  { cout << " Left side  Error nstr =  "<<nstr<<endl;
@@ -1554,6 +1693,7 @@ int FindNumYchBot(int* PrSt)
 	 {  // определение координат правой нижней стороны штампа
 		// определение координат левой стороны штампа
 		EvChangeColRowSh(1,nstr,-1,colStampR,dxStFindR,&nbShR,&XoR,&PrR);
+			//			EvChangeColRowSh(1,nstr,-1,colStampR,dxStFindR,&XoR,&PrR);
 		if(PrR==1) // есть черная линия
 		{  if(colStampR<=XoR) // граница штампа слева сливается с рамкой бюллетеня
 			{ cout << " Right side  Error nstr =  "<<nstr<<endl;
@@ -1755,7 +1895,6 @@ void FindVoteMarks(void)
 int ScanBulString(void)
 { //  функция управления  сканированием бюллетеня при поступлении  очередной  строки
   int ErrScan=0;
-
 // ======================обработка  строки ===============================
 /////////////////////////////////////////////////////////////////////////////
 //- PrPage=0 - Н А Х О Ж Д Е Н И Е   Н А Ч А Л А    Л И С Т А  -------------
@@ -1815,6 +1954,7 @@ int ScanBulString(void)
 		 for(i=1;i < NumVoteType+1;i++) if(PrVoteTypeTop[i]==1)nVoteType=i;
 		//  уточнение параметров страницы в зависимости от типа бюллетеня
 		PageHM=PagePar[nVoteType][1];  // float PageHM=148.5; // высота  страницы в  мм
+		MOTORTIME=250*ceil(PageHM/297-0.2);  // ограничение времени работы  двигателя
 		PageH=int(PageHM*float(NumDotY)); // высота  страницы  в  точках
 		PageHM=PagePar[nVoteType][1];    // высота  страницы в  мм
 		PageH=int(PageHM*float(NumDotY));//+0.5); // высота  страницы  в  точках
@@ -2001,7 +2141,6 @@ int ScanBulString(void)
 
 					cout << " Number  UIK   ID =    " << UIKNum[0]    << endl;
 					cout << " Number  UIK   =    " << NumUIKRec << endl;
-
 
 					if(NumUIKRec > 0)
 					{  // преобразование номера участка в  строку

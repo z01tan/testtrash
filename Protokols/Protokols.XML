@@ -1,0 +1,84 @@
+<Protocol name="участковой избирательной комиссии об итогах голосования"
+numberWidth="5" nameWidth="40" valueWidth="15" textValueWidth="40">
+<Lines>
+  <Line num="1" additionalNum="" ID="1" name="число избирателей, внесенных в список на момент окончания голосования" type="Election"/>
+  <Line num="2" additionalNum="" ID="2" name="число избирательных бюллетеней, полученных участковой избирательной комиссией" type="Election"/>
+  <Line num="3" additionalNum="" ID="3" name="число избирательных бюллетеней, выданных избирателям, проголосовавшим досрочно" type="Election"/>
+  <Line num="4" additionalNum="" ID="4" name="число избирательных бюллетеней, выданных участковой избирательной комиссией избирателям в помещении для голосования в день голосования" type="Election"/>
+  <Line num="5" additionalNum="" ID="5" name="число избирательных бюллетеней, выданных избирателям, проголосовавшим вне помещения для голосования в день голосования" type="Election"/>
+  <Line num="6" additionalNum="" ID="6" name="число погашенных избирательных бюллетеней" type="Election"/>
+  <Line num="7" additionalNum="" ID="7" name="число избирательных бюллетеней, содержащихся в переносных ящиках для голосования" type="DontQueryUser" expression="{BlankType=Valid,VotingMode=Portable}+{BlankType=NoMarks,VotingMode=Portable}+{BlankType=TooManyMarks,VotingMode=Portable}"/>
+  <Line num="8" additionalNum="" ID="8" name="число избирательных бюллетеней, содержащихся в стационарных ящиках для голосования" type="DontQueryUser" expression="{BlankType=Valid}+{BlankType=NoMarks}+{BlankType=TooManyMarks}-{BlankType=Valid,VotingMode=Portable}-{BlankType=NoMarks,VotingMode=Portable}-{BlankType=TooManyMarks,VotingMode=Portable}"/>
+  <Line num="9" additionalNum="" ID="9" name="число недействительных избирательных бюллетеней" type="DontQueryUser" expression="{BlankType=NoMarks}+{BlankType=TooManyMarks}"/>
+  <Line num="10" additionalNum="" ID="10" name="число действительных избирательных бюллетеней" type="DontQueryUser" expression="{BlankType=Valid}"/>
+  <Line num="11" additionalNum="" ID="11" name="число открепительных удостоверений, полученных участковой избирательной комиссией" type="Election"/>
+  <Line num="12" additionalNum="" ID="12" name="число открепительных удостоверений, выданных участковой избирательной комиссией избирателям на избирательном участке до дня голосования" type="Election"/>
+  <Line num="13" additionalNum="" ID="13" name="число избирателей, проголосовавших по открепительным удостоверениям на избирательном участке" type="Election"/>
+  <Line num="14" additionalNum="" ID="14" name="число погашенных неиспользованных открепительных удостоверений" type="Election"/>
+  <Line num="15" additionalNum="" ID="15" name="число открепительных удостоверений, выданных избирателям территориальной избирательной комиссией" type="Election"/>
+  <Line num="16" additionalNum="" ID="16" name="число утраченных открепительных удостоверений" type="Election"/>
+  <Line num="17" additionalNum="" ID="17" name="число утраченных избирательных бюллетеней" type="Election"/>
+  <Line num="18" additionalNum="" ID="18" name="число избирательных бюллетеней, не учтенных при получении" type="Election"/>
+</Lines>
+<Checks>
+  <Check enabled="true" expression="S>=[10]"/>
+  <Check enabled="true" expression="[7]+[8]=[9]+[10]"/>
+  <Check enabled="true" expression="[2]=[3]+[4]+[5]+[6]+[17]-[18]"/>
+  <Check enabled="true" expression="[11]=[12]+[14]+[16]"/>
+  <Check enabled="true" expression="[1]>=[3]+[4]+[5]"/>
+</Checks>
+</Protocol>
+
+<Protocol name="участковой избирательной комиссии об итогах голосования по одномандатному избирательному округу №"
+numberWidth="5" nameWidth="40" valueWidth="15" textValueWidth="40">
+<Lines>
+  <Line num="1" additionalNum="" ID="1" name="Число избирателей, внесенных в список избирателей для мажоритарного округа" type="Election"/>
+  <Line num="2" additionalNum="" ID="2" name="Число избирательных бюллетеней, полученных участковыми избирательными комиссиями" type="Election"/>
+  <Line num="3" additionalNum="" ID="3" name="Число избирательных бюллетеней, выданных избирателям, проголосовавшим досрочно" type="Election"/>
+  <Line num="4" additionalNum="" ID="4" name="Число избирательных бюллетеней, выданных избирателям на избирательном участке в день голосования" type="Election"/>
+  <Line num="5" additionalNum="" ID="5" name="Число избирательных бюллетеней, выданных избирателям, проголосовавшим вне помещения для голосования" type="Election"/>
+  <Line num="6" additionalNum="" ID="6" name="Число погашенных избирательных бюллетеней" type="Election"/>
+  <Line num="7" additionalNum="" ID="7" name="Число избирательных бюллетеней, содержащихся в переносных ящиках для голосования" type="DontQueryUser" expression="{BlankType=Valid,VotingMode=Portable}+{BlankType=NoMarks,VotingMode=Portable}+{BlankType=TooManyMarks,VotingMode=Portable}"/>
+  <Line num="8" additionalNum="" ID="8" name="Число избирательных бюллетеней, содержащихся в стационарных ящиках для голосования" type="DontQueryUser" expression="{BlankType=Valid}+{BlankType=NoMarks}+{BlankType=TooManyMarks}-{BlankType=Valid,VotingMode=Portable}-{BlankType=NoMarks,VotingMode=Portable}-{BlankType=TooManyMarks,VotingMode=Portable}"/>
+  <Line num="9" additionalNum="" ID="9" name="Число недействительных избирательных бюллетеней" type="DontQueryUser" expression="{BlankType=NoMarks}+{BlankType=TooManyMarks}"/>
+  <Line num="10" additionalNum="" ID="10" name="Число действительных избирательных бюллетеней" type="DontQueryUser" expression="{BlankType=Valid}"/>
+  <Line num="11" additionalNum="" ID="11" name="число открепительных удостоверений, полученных участковой избирательной комиссией" type="Election"/>
+  <Line num="12" additionalNum="" ID="12" name="Число открепительных удостоверений, выданных участковыми избирательными комиссиями избирателям на избирательном участке до дня голосования" type="Election"/>
+  <Line num="13" additionalNum="" ID="13" name="Число избирателей, проголосовавших по открепительным удостоверениям на избирательном участке" type="Election"/>
+  <Line num="14" additionalNum="" ID="14" name="число погашенных неиспользованных открепительных удостоверений" type="Election"/>
+  <Line num="15" additionalNum="" ID="15" name="число открепительных удостоверений, выданных избирателям территориальной избирательной комиссией" type="Election"/>
+  <Line num="16" additionalNum="" ID="16" name="Число утраченных открепительных удостоверений" type="Election"/>
+  <Line num="17" additionalNum="" ID="17" name="Число утраченных избирательных бюллетеней" type="Election"/>
+  <Line num="18" additionalNum="" ID="18" name="Число избирательных бюллетеней, не учтенных при получении" type="Election"/>
+</Lines>
+<Checks>
+  <Check enabled="true" expression="[10]=S"/>
+  <Check enabled="true" expression="[2]=[3]+[4]+[5]+[6]+[17]-[18]"/>
+  <Check enabled="true" expression="[11]=[12]+[14]+[16]"/>
+  <Check enabled="true" expression="[1]>=[3]+[4]+[5]"/>
+  <Check enabled="true" expression="[7]+[8]=[9]+[10]"/>
+</Checks>
+</Protocol>
+
+<Protocol name="участковой избирательной комиссии об итогах голосования" numberWidth="5" nameWidth="40" valueWidth="15" textValueWidth="40">
+<Lines>
+  <Line num="1" additionalNum="" ID="1" name="Число избирателей, внесенных в список" type="Election"/>
+  <Line num="2" additionalNum="" ID="2" name="Число бюллетеней, полученных комиссией" type="Election"/>
+  <Line num="3" additionalNum="" ID="3" name="Число бюллетеней, выданных досрочно" type="Election"/>
+  <Line num="4" additionalNum="" ID="4" name="Число бюллетеней, выданных на участке" type="Election"/>
+  <Line num="5" additionalNum="" ID="5" name="Число бюллетеней, выданных вне участка" type="Election"/>
+  <Line num="6" additionalNum="" ID="6" name="Число погашенных бюллетеней" type="Election"/>
+  <Line num="7" additionalNum="" ID="7" name="Обнаружено бюллетеней в переносных ящиках" type="DontQueryUser" expression="{BlankType=Valid,VotingMode=Portable}+{BlankType=NoMarks,VotingMode=Portable}+{BlankType=TooManyMarks,VotingMode=Portable}"/>
+  <Line num="8" additionalNum="" ID="8" name="Обнаружено бюллетеней в стационарных ящиках" type="DontQueryUser" expression="{BlankType=Valid}+{BlankType=NoMarks}+{BlankType=TooManyMarks}-{BlankType=Valid,VotingMode=Portable}-{BlankType=NoMarks,VotingMode=Portable}-{BlankType=TooManyMarks,VotingMode=Portable}"/>
+  <Line num="9" additionalNum="" ID="9" name="Недействительных бюллетеней, общее количество" type="DontQueryUser" expression="{BlankType=NoMarks}+{BlankType=TooManyMarks}"/>
+  <Line num="10" additionalNum="" ID="10" name="Число действительных бюллетеней" type="DontQueryUser" expression="{BlankType=Valid}"/>
+  <Line num="11" additionalNum="" ID="11" name="число утраченных избирательных бюллетеней" type="Election"/>
+  <Line num="12" additionalNum="" ID="12" name="число избирательных бюллетеней, не учтенных при получении" type="Election"/>
+</Lines>
+<Checks>
+  <Check enabled="true" expression="[10]=S"/>
+  <Check enabled="true" expression="[7]+[8]=[9]+[10]"/>
+  <Check enabled="true" expression="[2]=[3]+[4]+[5]+[6]+[11]-[12]"/>
+  <Check enabled="true" expression="[1]>=[3]+[4]+[5]"/>
+</Checks>
+</Protocol>

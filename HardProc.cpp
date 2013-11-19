@@ -2,7 +2,7 @@
  * File:   HardProc.cpp
  * Author: andr-u
  *
- * Created on 16 05 2013 г., 10:15
+ * Created on 16 05 2013 г., 10:15 Modified 16 09 2013
  */
 
 
@@ -11,13 +11,15 @@
 #include <stdint.h>
 #include <string.h>
 #include <fcntl.h>
+#include "Ruler.h"
 #include "CreateImage.h"
 #include "InitAltera.h"
+#include "AlteraSocket.h"
 #include "HardProc.h"
-//#include "HeaderMain.h"      // UWAGA!!!! ERASE COMMENT SIGN!!!  
+#include "HeaderMain.h"      // UWAGA!!!! ERASE COMMENT SIGN!!!
 
 //#define OUTPUT_FILE "scan.gr"
-
+//extern int NO_PAPERO[4];
 //******************************************************************************
 // int ScanInProg;     // идет сканирование и третий оптрон сработал!!!
 // bool MotorFuS;      // запущен мотор вперед со сканированием
@@ -25,6 +27,31 @@
 //int getNextScanLine(void) //возвращает номер готовой для обработки строки в массиве скана
 //                           или -1, если читать нечего!
 //******************************************************************************
+/*------ Указатели на все структуры данных HeaderMain -------------------------*/
+int*        ptint;      // typ 01
+TScanOut*   ptScanOut;  // typ 02
+TCandidates*ptCandid;   // typ 03
+TPC*        ptTPC;      //     04
+TVoteLine*  ptVoteLine; //     05
+TProtocolLine* ptProtLine;//    06
+Ttext*      ptText;     //     07
+TChecks*    ptChecks;   //     08
+TLines*     ptLines;    //     09
+TProtocoles* ptProtocol; //     10
+TVopr*      ptVopr;     //     11
+TRef*       ptRef;      //     12
+Tpole*      ptPole;     //     13
+TBlank*     ptBlank;    //     14
+TVotes*     ptVotes;    //     15
+TVop*       ptVop;      //     16
+TBl*        ptTBl;      //     17
+TRezult*    ptRezult;   //     18
+TKoib*      ptKoib;     //     19
+TSnat*      ptSnat;     //     20
+TInd*       ptInd;      //     21
+TVoice*     ptVoice;    //     22
+//-----------------------------------------------------------------------------
+
 int LedR =0;
 int LedG =0;
 int Schift1 = 0;
@@ -39,7 +66,7 @@ void Init_COIB()
     if (Create_Threads()) abort();  // Обязательно!
 }
 //******************************************************************************
- int say_aloud(char*a, char*b, char*c, char*d, char*e)
+ int say_aloud(char*a, char*b, char*c, char*d, char*e)  // так работает СЕЙЧАС!!!!!!
 {  // произнести звуки в файлах a,b,c,d,e или NULL
     char say[100];
     int i;
@@ -47,17 +74,54 @@ void Init_COIB()
     strcpy(say,"aplay   ");
     if(a==NULL)return -1;
     // формирование сообщения из кусочков
-    strcat(say," ");  strcat(say,a);
+    strcat(say," ");
+    strcat(say,a);
     if(b!=NULL) { strcat(say," ");  strcat(say,b);    }
     if(c!=NULL) { strcat(say," ");  strcat(say,c);    }
     if(d!=NULL) { strcat(say," ");  strcat(say,d);    }
     if(e!=NULL) { strcat(say," ");  strcat(say,e);    }
     //  воспроизведение набранного  текста
-    system(say);
+    system(say);  // это было и оаботало!!!!!!
     return 0;
 }
 
+//для ОДНОВРЕМЕННОГО исполнения звука и дальнейшей работы осн. программы
+// say_aloudF() переименовать say_aloud(), а say_aloud() во что-то другое!!!!!!!!!!!!!!!!!!!
+int say_aloudF(char*a, char*b, char*c, char*d, char*e)       //!!!!!!!!!!!FORK!!!!!!!!!!!!!!!!
+{  // произнести звуки в файлах a,b,c,d,e или NULL
+    char say[100];
+    char scom[6]="aplay";
+    int i,S_PID;
+    for(i=0;i<100;i++)say[i]=0x00;
+        //for fork()
+    if(a==NULL)return -1;
+    // формирование сообщения из кусочков
+    strcat(say,a);
+    if(b!=NULL) { strcat(say," ");  strcat(say,b);    }
+    if(c!=NULL) { strcat(say," ");  strcat(say,c);    }
+    if(d!=NULL) { strcat(say," ");  strcat(say,d);    }
+    if(e!=NULL) { strcat(say," ");  strcat(say,e);    }
+    //  воспроизведение набранного  текста
 
+    S_PID = fork(); //добавлено для оновременного звука и работы
+    if (S_PID == 0) {
+        execlp(&scom[0], &say[0], NULL);
+        perror("execvp");
+        return EXIT_FAILURE; // Never get there normally
+    }               // конец добавления
+    return 0;
+}
+// Это реально работает!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ int SayN111(std::string st1)
+{
+    std::string st="aplay";
+    pid_t pid = fork();
+    switch(pid)
+    { case  0: execlp(&st[0],&st[0],&st1[0],NULL); exit(1); break;
+      case -1: std::cout << "error!" << std::endl; break;
+    }
+return 0;
+}
 //******************************************************************************
 void setVoiceVolume(int Vol)
 {
@@ -116,7 +180,7 @@ int Wait_beiden() // ожидание двух оптронов в течени�
 {
     usleep(10000); // 10 msec!
     if(get_Optrons_Imm()==0)return -1;
-    if((Optron[1]<NO_PAPER) && (Optron[2]<NO_PAPER)) return 0;
+    if((Optron[1]<NO_PAPERO[1]) && (Optron[2]<NO_PAPERO[2])) return 0;
     return -1;
 }
 
@@ -126,7 +190,7 @@ void waitBothOpt()
     while(d<0){
         // get_Optrons_Wait();
         get_Optrons_Imm();
-         if ((Optron[1]<NO_PAPER) || (Optron[2]<NO_PAPER)) d = Wait_beiden();
+         if ((Optron[1]<NO_PAPERO[1]) || (Optron[2]<NO_PAPERO[2])) d = Wait_beiden();
     }
 }
 
@@ -136,7 +200,7 @@ void waitAllOpenedOpt()
     while(true){
          usleep(50000); // wait for 50 msec;
          get_Optrons_Imm(); e=0;
-         for(i=0;i<4;i++) if(Optron[i]<NO_PAPER)e++;
+         for(i=0;i<4;i++) if(Optron[i]<NO_PAPERO[i])e++;
          if(!e)return;
 
     }
@@ -160,14 +224,18 @@ int get_Key_Wait(void)  // опрос с ожиданием. возврат ко
    }
    return(get_Key_Imm());
 }
+
 int get_KeyString(char* Input)
 {
     int i,p;
     char c;
     frontLED(5,0);
-    for(i=0;i<32;i++)Input[i] = 0x00;
-    KeyStrPocess = true;
     p=0;
+//    for(i=0;i<32;i++)Input[i] = 0x00; // Было с очисткой буфера
+    for(i=0;i<32;i++)if (Input[i]>0)p++; // теперь Input может содержать некий текст, после которого
+                                         // должны стоять НУЛИ!!!
+    KeyStrPocess = true;
+
     while(p<32){
         i = get_Key_Wait();
                 if(i==KEYBSPCE){if(p>0)p--;
@@ -197,13 +265,52 @@ int get_KeyString(char* Input)
     frontLED(0,5);
     return 32;
 }
+
+
+/*
+int get_KeyString(char* Input)
+{
+    int i,p;
+    char c;
+    frontLED(5,0);
+    p=0;
+//    for(i=0;i<32;i++)Input[i] = 0x00; // Было с очисткой буфера
+    for(i=0;i<32;i++)if (Input[i]>0)p++; // теперь Input может содержать некий текст, после которого
+                                         // должны стоять НУЛИ!!!
+    KeyStrPocess = true;
+
+    while(p<32){
+        i = get_Key_Wait();
+        if(i==KEYBSPCE) { if(p>0)p--; Input[p] = 0x00; }
+        if(i== KEYYES)  { KeyStrPocess=false; frontLED(0,5);c=0x00;setSecline(&c,0);return p;}
+        switch(i){
+            case KEY0: c='0';break;
+            case KEY1: c='1';break;
+            case KEY2: c='2';break;
+            case KEY3: c='3';break;
+            case KEY4: c='4';break;
+            case KEY5: c='5';break;
+            case KEY6: c='6';break;
+            case KEY7: c='7';break;
+            case KEY8: c='8';break;
+            case KEY9: c='9';break;
+            case KEYPUNKT: c='.';break;
+            default:c='x';}
+       if(c!='x'){  memmove(Input+p,&c,1); p++;}
+       setSecline(Input,0);
+    }
+    KeyStrPocess=false;
+    frontLED(0,5);
+    return 32;
+}
+*/
 //==============================================================================
 int get_Buttons_Imm()  // если возврат=1, то в Buttons[] обновленные значения;
 {
-    int s,res;
+    int s;
    sem_getvalue(&semBut,&s);
    if (s>0){
-//       for (res=0;res<5; res++)
+//       for (int res=0;res<5; res++)
 //            {
 //                Buttons[res] = BackBut[res];
 //                BackBut[res]=0;
@@ -228,8 +335,8 @@ int Any_Wait() // ожидание каког-либо события; возв�
 { bool a = true; int pr1=0;
          while(a){
         //if(Wait_beiden() == 0) return 1;
-// UWAGA!!!! ERASE COMMENT SIGN!!!             
- /*       if(PrVoteDay==1)
+// UWAGA!!!! ERASE COMMENT SIGN!!!
+        if(PrVoteDay==1)
         {   TekDateTime();
 
              if(PrVoteTimeStart==0)
@@ -270,11 +377,52 @@ int Any_Wait() // ожидание каког-либо события; возв�
                 {  PrVoteTimeEnd=2; a=false;   }
             }
         }// if(PrVoteDay==1)
-  */
-// UWAGA!!!! ERASE COMMENT SIGN!!!             
-        if (get_Optrons_Imm() == 1) { a=false; pr1=1;}
-        if (get_Buttons_Imm() == 1) { a=false; pr1=2;}
-        if ((Key_B!=Key_E))         { a=false; pr1=3;}
+// UWAGA!!!! ERASE COMMENT SIGN!!!
+        if(KeyisReady)PrKlav=1; else PrKlav=0;
+       // PrKlav=1;
+
+        if (get_Optrons_Imm() == 1) { a=false; pr1=1; return pr1; }
+        if (get_Buttons_Imm() == 1) { a=false; pr1=2; return pr1; }
+        if ((Key_B!=Key_E))         { a=false; pr1=3; return pr1; }
+        //...................!!!!!...........................................................
+  /*     pr1 = ReceivefromAnother();
+       if (pr1!=0) {
+               if(pr1<0) {pr1=4;typB=-1; return pr1; }// Socket error
+               if(pr1==1) {
+               a=false; pr1=4;
+                switch (typB){
+                case 1: { ptint = (int*)&bufR[0];break;   Koib[1].VS=*ptint;        } // typ 01  текущее  состояние  для  подчиненного сканера
+        /*        case 2: ptScanOut=(TScanOut*)&bufR[0];break;    // typ 02
+                case 3: ptCandid=(TCandidates*)&bufR[0];break;  // typ 03
+                case 4: ptTPC=(TPC*)&bufR[0];break;             //     04
+                case 5: ptVoteLine=(TVoteLine*)&bufR[0];break;  //     05
+                case 6: ptProtLine=(TProtocolLine*)&bufR[0];break; //     06
+                case 7: ptText=(Ttext*)&bufR[0];break;          //     07
+                case 8: ptChecks=(TChecks*)&bufR[0];break;      //     08
+                case 9: ptLines=(TLines*)&bufR[0];break;        //     09
+                case 10:ptProtocol=(TProtocoles*)&bufR[0];break;//     10
+                case 11:ptVopr=(TVopr*)&bufR[0];break;          //     11
+                case 12:ptRef=(TRef*)&bufR[0];break;            //     12
+                case 13:ptPole=(Tpole*)&bufR[0];break;          //     13
+                case 14:ptBlank=(TBlank*)&bufR[0];break;        //     14
+    */     //       case 15:{ ptVotes=(TVotes*)&bufR[0];Votes=*ptVotes; }break;        //     15
+      /*          case 16:ptVop=(TVop*)&bufR[0];break;            //     16
+                case 17:ptTBl=(TBl*)&bufR[0];break;             //     17
+                case 18:ptRezult=(TRezult*)&bufR[0];break;      //     18
+    */        /*    case 19: { ptKoib=(TKoib*)&bufR[0];break;  Koib[2]=*ptKoib;  Koibsave(2);  // запись состояния подчиненного КОИБ
+                                            if(Koib[1].VS < 7) // перезапись IP вторго  сканера в  рабочую ячейку
+                                            {      int j=int(Koib[2].IP.length());
+                                                for(int i=0;i<  j ;i++)  Ip_slave[i]=Koib[2].IP[i];
+                                            }
+                                        }   //     19
+     /*           case 20:ptSnat=(TSnat*)&bufR[0];break;          //     20
+                case 21:ptInd=(TInd*)&bufR[0];break;            //     21
+                case 22:ptVoice=(TVoice*)&bufR[0];break;        //     22
+    */       //     default:;}
+     //          }
+    //       }
+
+        //..................!!!!............................................................
         usleep(25000);  //25msec!!
      }
 return pr1;
@@ -315,8 +463,8 @@ void setSecline(char* txt,int shift)
 }
 //==============================================================================
 int getSptr()
-{int ptr,Errno;
- //   Errno = pthread_mutex_lock(&mutx);
+{int ptr;
+ //  int Errno = pthread_mutex_lock(&mutx);
       ptr = Scptr_s;
             //    printf("\rSptr_S = %d",ptr);
  //   Errno = pthread_mutex_unlock(&mutx);

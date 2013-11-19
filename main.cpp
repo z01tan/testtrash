@@ -1,7 +1,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+//#include <string.h>
 
 #include <math.h>
 #include <termios.h>
@@ -22,17 +22,20 @@
 #include "InitAltera.h"
 #include "CreateImage.h"
 #include "HardProc.h"
+#include "printer.h"
+#include "AlteraSocket.h"
 
 using namespace std;
-
 int Pr_Event=0;
 int main()
 {
     Start(true);
     int ch=0, PrBklKoib=0;
-
 //**********************************************
     // гашение управляющих переменных
+    std::string st1;     std::string st2;
+//char *sst1;
+    //char sst1[128],sst2[128];
     PrNoBtnWait=0; // признак пропуска ожидания  кнопки
     Exit=false; // выход
     PrVoteTimeStart=0;      // признак наступления  времени голосования ( в день голосования)
@@ -40,13 +43,15 @@ int main()
     PrVoteDay=0;                    // признак "День голосования"
     Koib[1].VS = 1;                  // установка начального  состояния КОИБ
     PrKlav=0;                             //  признак наличия клавиатуры
-     Lang=1;                                 // установка английского языка ( для  отладки)
+
     Version=0;                           // Номер версии сообщений!
-     PrConnectOK=0;             // признак установки  связи со  вторым  сканером
-     Init_Altera();                     // инициализация  железа
+    PrConnectOK=0;             // признак установки  связи со  вторым  сканером
+    Init_Altera();                    // инициализация  железа
+    ReadSetUpFiles();  // считывание установочных файлов (начальных данных)
     Create_Threads();          //  инициализация потоков
-    LoadInd();                           // загрузка сообщений  и путей голосовых файлов в  массивы
-    //  ввод кодов доступа из файла
+    //Lang=1;// установка английского языка ( для  отладки)
+    LoadInd();// загрузка сообщений  и путей голосовых файлов в  массивы
+
     FILE *fw;
     if ((fw = fopen("./SetUpFiles/CodesOpFile.txt", "r"))!= NULL)
     {  // ввод кодов  операторов  из  файла
@@ -54,26 +59,19 @@ int main()
             fclose(fw);
     } else cout << "Не найден файл CodesOpFile.txt" << endl;
      ReadSetUpFiles(); // считывание  начальных  данных
-
     do
     {   // основной  цикл программы управления
             ch=0;
-            if(KeyisReady)PrKlav=1; else PrKlav=0;
-            /* !!!!*/        PrKlav=1;
+            //if(KeyisReady)PrKlav=1; else PrKlav=0; // перенесено в AnyWait 15.10.2013
+            /* !!!!*/        //PrKlav=1;
             Exit=0;
             if(PrBklKoib==0) goto LabRun; // определение момента  включения КОИБ
-
 //******************НАЧАЛО  СУПЕРВИЗОРА ОБРАБОТКИ СОБЫТИЙ**************
             // гашение кнопок
+        StartCycle:
             for(i=0;i<6;i++) Buttons[i]=0;
-            BtnPushed=-1; pr_btn=-1;   pr_opt=-1; PrUprOpt=-1;
-
+            BtnPushed=-1; pr_btn=-1;   pr_opt=-1; PrUprOpt=-1;Pr_Event=0;
            if (PrNoBtnWait==0) Pr_Event= Any_Wait() ; // ожидание каког-либо события; возврат 1 -оптроны, 2- кнопки, 3- клава           PrNoBtnWait=0;
-           else
-           {  // проверка нажатия  кнопок в  режиме поиска второго  сканера
-               //get_Buttons_Imm();  Pr_Event=2;
-               //if(PrConnectOK==1)Buttons[1]=1;
-           }
            PrNoBtnWait=0;
            switch (Pr_Event)
            { case 1:
@@ -85,8 +83,8 @@ int main()
                    else
                    {  // формирование признаков состояния каждого  оптрона
                         if( Optron[i] < NO_PAPERO[i]) Sost_Optrons[i]=1; else Sost_Optrons[i]=0;
-                        cout << " Optron  N =      "<< i << "     Value =   "<<  Optron[i] <<  "     Sostoyanie =    " << Sost_Optrons[i]<< endl;
                    }
+                    //cout << " Optron  N =      "<< i << "     Value =   "<<  Optron[i] <<  "     Sostoyanie =    " << Sost_Optrons[i]<< endl;
                  }
                  // формирование признака управления PrUprOpt///
                  if((Sost_Optrons[0] ==0)&&(Sost_Optrons[1] ==0)&&(Sost_Optrons[2] ==0)&&(Sost_Optrons[3] ==0))PrUprOpt=0; //  тракт пустой
@@ -107,6 +105,10 @@ int main()
                  if((Sost_Optrons[0] ==1)&&(Sost_Optrons[1] ==1)&&(Sost_Optrons[2] ==0)&&(Sost_Optrons[3] ==1))PrUprOpt=13;    // на оптронах 0  и 1 и  определен  лист,попытка вставить лист, когда не закончена работа с предыдущим
                  if((Sost_Optrons[0] ==1)&&(Sost_Optrons[1] ==1)&&(Sost_Optrons[2] ==1)&&(Sost_Optrons[3] ==0))PrUprOpt=14;    //на оптронах 0  и 1 и 2 определен  лист, попытка вставить лист, когда не закончена работа с предыдущим
                  if((Sost_Optrons[0] ==1)&&(Sost_Optrons[1] ==1)&&(Sost_Optrons[2] ==1)&&(Sost_Optrons[3] ==1))PrUprOpt=15;    //на оптронах 0  и 1 и 2 И 3 определен  лист, лист  в  тракте
+                 if((PrUprOpt==2)||(PrUprOpt==4))
+                 {   //  если засветился только один оптрон, то ожидание засветки обоих оптронов
+                     usleep(25000); goto StartCycle;
+                 }
                  //  для основного режима
                  pr_opt=PrUprOpt;
                  MetEnd:;
@@ -122,7 +124,7 @@ int main()
                  {  // нажата  кн. Меню
                     if(BtnPushed==5) //  нажата кн. МЕНЮ
                     {
-                        PrMenuBtn=1;  KodOp=-1; KodDost=-1;   BtnPushed=-1;
+                       PrMenuBtn=1;  KodOp=-1; KodDost=-1;   BtnPushed=-1;
                     }
                  }
                  pr_btn=BtnPushed;

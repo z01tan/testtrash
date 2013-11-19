@@ -1,0 +1,1 @@
+/usr/local/angstrom/arm/bin/arm-angstrom-linux-gnueabi-g++   -march=armv5te -mtune=arm926ej-s -mthumb-interwork -mno-thumb  --sysroot=/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi  -fpermissive    CMakeFiles/out.dir/main.cpp.o  -o out -rdynamic libLibs.a -lpthread 

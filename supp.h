@@ -1,6 +1,8 @@
 #ifndef SUPPORT
 #define SUPPORT
-#include <string>
+#include <fstream>
+#include <dirent.h>
+
 std::string devFind(const std::string direct,const std::string name);
 
 #endif

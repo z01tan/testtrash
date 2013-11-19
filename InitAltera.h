@@ -16,6 +16,8 @@
 #define CALIBRATION_KOEF "./SetUpFiles/calibration_koef.bin"
 #define CALIBRATION_FILEK "./SetUpFiles/calibration_dataK.bin"
 
+extern int  MOTORTIME;
+
 uint16_t float_to_8_8(double x);
 
 extern int      Optron[4] ;// 0-255

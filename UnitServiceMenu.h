@@ -23,7 +23,6 @@ extern  char InfS1[124];
 extern  char InfS2[124];
 extern  char InfS[124];  // информационные сообщения
 extern  int  CodesOp[3]; //  сохраненные коды  доступа операторов
-//extern  float MasSenValue[NumSensors][3];//массив значений порогов датчиков для листов
 extern  int PrSenYes; // признак получения  данных от  датчиков
 extern  int BtnYesPushed; // сохранение признака нажатия кн. ДА для ожидания поступления данных от датчиков
 extern  unsigned  MasBlUr[NumStrScan]; // массив среднего  уровня  каждой  точки по  уровню черного
@@ -34,7 +33,6 @@ extern  int MasNumPoints[NumStrScan]; //  массив  количества  т
 extern double MasKoefPzs[NumStrScan]; // массив среднего  уровня  каждой  точки по  уровню черного
 
 extern  int PrPageCal,PgXoLCal,PgYoLCal,PgXoRCal,PgYoRCal;
-
 
 
 #endif

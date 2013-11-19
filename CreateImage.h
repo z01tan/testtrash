@@ -30,12 +30,12 @@
 #define PIXEL_DATA_OFFSET 8
 
 #define KEYBUF  21
-#define KEYYES  74
+#define KEYYES  96 //74
 #define KEYNO   78
-#define KEYHELP 96
+#define KEYHELP 74 //96
 #define KEYMENU 55
-#define KEYARROW 98
-#define KEYBSPCE 14
+#define KEYARROW 14 //98
+#define KEYBSPCE 98 //14
 #define KEYPUNKT 83
 #define KEY0     82
 #define KEY1     79
@@ -66,6 +66,8 @@ extern  pthread_mutex_t  mutx;
 extern  pthread_t       PID_Image;
 extern  sem_t          semBut;
 extern  sem_t          semOpt;
+extern  sem_t          semRC;
+extern  sem_t          semSD;
 extern  pthread_t       PID_But;
 extern int Scptr_s,Scptr_r;//указатели на сканированные и обработанные строки
 extern int max_gelesen;    //кол-во записанных в массив строк скана

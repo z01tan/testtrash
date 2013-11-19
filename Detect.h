@@ -11,6 +11,7 @@ extern int X0, Y0;
 
 extern int Ziff;
 //extern int StZ[4];   // All Symbols of Stamp
+extern int SymDIST0;
 extern int Richtung; // 1 - direct, 0 - back
 // ---------------------------------------------------------------------------
 

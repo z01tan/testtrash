@@ -1,0 +1,236 @@
+The target system is: Linux -  - arm
+The host system is: Linux - 3.0.0-32-generic - i686
+Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+Compiler: /usr/local/angstrom/arm/bin/arm-angstrom-linux-gnueabi-gcc 
+Build flags: -march=armv5te;-mtune=arm926ej-s;-mthumb-interwork;-mno-thumb;;--sysroot=/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi;
+Id flags: 
+
+The output was:
+0
+
+
+Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "a.out"
+
+The C compiler identification is GNU, found in "/home/romaz/koib-dev/MainPR/MainPrSh/build/CMakeFiles/CompilerIdC/a.out"
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+Compiler: /usr/local/angstrom/arm/bin/arm-angstrom-linux-gnueabi-g++ 
+Build flags: -march=armv5te;-mtune=arm926ej-s;-mthumb-interwork;-mno-thumb;;--sysroot=/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi;;-fpermissive
+Id flags: 
+
+The output was:
+0
+
+
+Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "a.out"
+
+The CXX compiler identification is GNU, found in "/home/romaz/koib-dev/MainPR/MainPrSh/build/CMakeFiles/CompilerIdCXX/a.out"
+
+Determining if the C compiler works passed with the following output:
+Change Dir: /home/romaz/koib-dev/MainPR/MainPrSh/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec.dir/build.make CMakeFiles/cmTryCompileExec.dir/build
+make[1]: Entering directory `/home/romaz/koib-dev/MainPR/MainPrSh/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/romaz/koib-dev/MainPR/MainPrSh/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building C object CMakeFiles/cmTryCompileExec.dir/testCCompiler.c.o
+/usr/local/angstrom/arm/bin/arm-angstrom-linux-gnueabi-gcc   -march=armv5te -mtune=arm926ej-s -mthumb-interwork -mno-thumb  --sysroot=/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi      -o CMakeFiles/cmTryCompileExec.dir/testCCompiler.c.o   -c /home/romaz/koib-dev/MainPR/MainPrSh/build/CMakeFiles/CMakeTmp/testCCompiler.c
+Linking C executable cmTryCompileExec
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec.dir/link.txt --verbose=1
+/usr/local/angstrom/arm/bin/arm-angstrom-linux-gnueabi-gcc   -march=armv5te -mtune=arm926ej-s -mthumb-interwork -mno-thumb  --sysroot=/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi       CMakeFiles/cmTryCompileExec.dir/testCCompiler.c.o  -o cmTryCompileExec -rdynamic 
+make[1]: Leaving directory `/home/romaz/koib-dev/MainPR/MainPrSh/build/CMakeFiles/CMakeTmp'
+
+
+Detecting C compiler ABI info compiled with the following output:
+Change Dir: /home/romaz/koib-dev/MainPR/MainPrSh/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec.dir/build.make CMakeFiles/cmTryCompileExec.dir/build
+make[1]: Entering directory `/home/romaz/koib-dev/MainPR/MainPrSh/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/romaz/koib-dev/MainPR/MainPrSh/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building C object CMakeFiles/cmTryCompileExec.dir/CMakeCCompilerABI.c.o
+/usr/local/angstrom/arm/bin/arm-angstrom-linux-gnueabi-gcc   -march=armv5te -mtune=arm926ej-s -mthumb-interwork -mno-thumb  --sysroot=/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi      -o CMakeFiles/cmTryCompileExec.dir/CMakeCCompilerABI.c.o   -c /usr/share/cmake-2.8/Modules/CMakeCCompilerABI.c
+Linking C executable cmTryCompileExec
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec.dir/link.txt --verbose=1
+/usr/local/angstrom/arm/bin/arm-angstrom-linux-gnueabi-gcc   -march=armv5te -mtune=arm926ej-s -mthumb-interwork -mno-thumb  --sysroot=/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi     -v CMakeFiles/cmTryCompileExec.dir/CMakeCCompilerABI.c.o  -o cmTryCompileExec -rdynamic  
+Using built-in specs.
+COLLECT_GCC=/usr/local/angstrom/arm/bin/arm-angstrom-linux-gnueabi-gcc
+Target: arm-angstrom-linux-gnueabi
+Configured with: /home/nagos/at91/OE/oetmp/work/i686-armv5te-sdk-angstrom-linux-gnueabi/gcc-cross-sdk-4.5-r38.2+svnr170880/gcc-4_5-branch/configure --build=i686-linux --host=i686-linux --target=arm-angstrom-linux-gnueabi --prefix=/usr/local/angstrom/arm --exec_prefix=/usr/local/angstrom/arm --bindir=/usr/local/angstrom/arm/bin --sbindir=/usr/local/angstrom/arm/bin --libexecdir=/usr/local/angstrom/arm/libexec --datadir=/usr/local/angstrom/arm/share --sysconfdir=/usr/local/angstrom/arm/etc --sharedstatedir=/usr/local/angstrom/arm/share/com --localstatedir=/usr/local/angstrom/arm/var --libdir=/usr/local/angstrom/arm/lib --includedir=/usr/local/angstrom/arm/include --oldincludedir=/usr/local/angstrom/arm/include --infodir=/usr/local/angstrom/arm/share/info --mandir=/usr/local/angstrom/arm/share/man --with-libtool-sysroot --enable-largefile --disable-nls --enable-ipv6 --with-gnu-ld --enable-shared --enable-languages=c,c++,objc,fortran --enable-threads=posix --disable-multilib --enable-c99 --enable-long-long --enable-symvers=gnu --enable-libstdcxx-pch --program-prefix=arm-angstrom-linux-gnueabi- --enable-target-optspace --enable-lto --enable-libssp --disable-bootstrap --disable-libgomp --disable-libmudflap --with-float=soft --with-sysroot=/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi --with-build-time-tools=/home/nagos/at91/OE/oetmp/sysroots/i686-linux/usr/armv5te/arm-angstrom-linux-gnueabi/bin --with-build-sysroot=/home/nagos/at91/OE/oetmp/sysroots/armv5te-angstrom-linux-gnueabi --disable-libunwind-exceptions --with-mpfr=/home/nagos/at91/OE/oetmp/sysroots/i686-linux/usr --with-system-zlib --enable-__cxa_atexit
+Thread model: posix
+gcc version 4.5.3 20110311 (prerelease) (GCC) 
+COMPILER_PATH=/usr/local/angstrom/arm/libexec/gcc/arm-angstrom-linux-gnueabi/4.5.3/:/usr/local/angstrom/arm/libexec/gcc/arm-angstrom-linux-gnueabi/4.5.3/:/usr/local/angstrom/arm/libexec/gcc/arm-angstrom-linux-gnueabi/:/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3/:/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/:/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3/../../../../arm-angstrom-linux-gnueabi/bin/
+LIBRARY_PATH=/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3/:/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3/../../../../arm-angstrom-linux-gnueabi/lib/:/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/lib/:/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/usr/lib/
+COLLECT_GCC_OPTIONS='-march=armv5te' '-mtune=arm926ej-s' '-mthumb-interwork' '-mno-thumb' '-v' '-o' 'cmTryCompileExec' '-rdynamic' '-mfloat-abi=soft'
+ /usr/local/angstrom/arm/libexec/gcc/arm-angstrom-linux-gnueabi/4.5.3/collect2 --sysroot=/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi --eh-frame-hdr -export-dynamic -dynamic-linker /lib/ld-linux.so.3 -X -m armelf_linux_eabi -o cmTryCompileExec /usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/usr/lib/crt1.o /usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/usr/lib/crti.o /usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3/crtbegin.o -L/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3 -L/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3/../../../../arm-angstrom-linux-gnueabi/lib -L/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/lib -L/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/usr/lib CMakeFiles/cmTryCompileExec.dir/CMakeCCompilerABI.c.o -lgcc --as-needed -lgcc_s --no-as-needed -lc -lgcc --as-needed -lgcc_s --no-as-needed /usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3/crtend.o /usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/usr/lib/crtn.o
+make[1]: Leaving directory `/home/romaz/koib-dev/MainPR/MainPrSh/build/CMakeFiles/CMakeTmp'
+
+
+Parsed C implicit link information from above output:
+  link line regex: [^( *|.*[/\])(arm-angstrom-linux-gnueabi-ld|ld|collect2)[^/\]*( |$)]
+  ignore line: [Change Dir: /home/romaz/koib-dev/MainPR/MainPrSh/build/CMakeFiles/CMakeTmp]
+  ignore line: []
+  ignore line: [Run Build Command:/usr/bin/make "cmTryCompileExec/fast"]
+  ignore line: [/usr/bin/make -f CMakeFiles/cmTryCompileExec.dir/build.make CMakeFiles/cmTryCompileExec.dir/build]
+  ignore line: [make[1]: Entering directory `/home/romaz/koib-dev/MainPR/MainPrSh/build/CMakeFiles/CMakeTmp']
+  ignore line: [/usr/bin/cmake -E cmake_progress_report /home/romaz/koib-dev/MainPR/MainPrSh/build/CMakeFiles/CMakeTmp/CMakeFiles 1]
+  ignore line: [Building C object CMakeFiles/cmTryCompileExec.dir/CMakeCCompilerABI.c.o]
+  ignore line: [/usr/local/angstrom/arm/bin/arm-angstrom-linux-gnueabi-gcc   -march=armv5te -mtune=arm926ej-s -mthumb-interwork -mno-thumb  --sysroot=/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi      -o CMakeFiles/cmTryCompileExec.dir/CMakeCCompilerABI.c.o   -c /usr/share/cmake-2.8/Modules/CMakeCCompilerABI.c]
+  ignore line: [Linking C executable cmTryCompileExec]
+  ignore line: [/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec.dir/link.txt --verbose=1]
+  ignore line: [/usr/local/angstrom/arm/bin/arm-angstrom-linux-gnueabi-gcc   -march=armv5te -mtune=arm926ej-s -mthumb-interwork -mno-thumb  --sysroot=/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi     -v CMakeFiles/cmTryCompileExec.dir/CMakeCCompilerABI.c.o  -o cmTryCompileExec -rdynamic  ]
+  ignore line: [Using built-in specs.]
+  ignore line: [COLLECT_GCC=/usr/local/angstrom/arm/bin/arm-angstrom-linux-gnueabi-gcc]
+  ignore line: [Target: arm-angstrom-linux-gnueabi]
+  ignore line: [Configured with: /home/nagos/at91/OE/oetmp/work/i686-armv5te-sdk-angstrom-linux-gnueabi/gcc-cross-sdk-4.5-r38.2+svnr170880/gcc-4_5-branch/configure --build=i686-linux --host=i686-linux --target=arm-angstrom-linux-gnueabi --prefix=/usr/local/angstrom/arm --exec_prefix=/usr/local/angstrom/arm --bindir=/usr/local/angstrom/arm/bin --sbindir=/usr/local/angstrom/arm/bin --libexecdir=/usr/local/angstrom/arm/libexec --datadir=/usr/local/angstrom/arm/share --sysconfdir=/usr/local/angstrom/arm/etc --sharedstatedir=/usr/local/angstrom/arm/share/com --localstatedir=/usr/local/angstrom/arm/var --libdir=/usr/local/angstrom/arm/lib --includedir=/usr/local/angstrom/arm/include --oldincludedir=/usr/local/angstrom/arm/include --infodir=/usr/local/angstrom/arm/share/info --mandir=/usr/local/angstrom/arm/share/man --with-libtool-sysroot --enable-largefile --disable-nls --enable-ipv6 --with-gnu-ld --enable-shared --enable-languages=c,c++,objc,fortran --enable-threads=posix --disable-multilib --enable-c99 --enable-long-long --enable-symvers=gnu --enable-libstdcxx-pch --program-prefix=arm-angstrom-linux-gnueabi- --enable-target-optspace --enable-lto --enable-libssp --disable-bootstrap --disable-libgomp --disable-libmudflap --with-float=soft --with-sysroot=/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi --with-build-time-tools=/home/nagos/at91/OE/oetmp/sysroots/i686-linux/usr/armv5te/arm-angstrom-linux-gnueabi/bin --with-build-sysroot=/home/nagos/at91/OE/oetmp/sysroots/armv5te-angstrom-linux-gnueabi --disable-libunwind-exceptions --with-mpfr=/home/nagos/at91/OE/oetmp/sysroots/i686-linux/usr --with-system-zlib --enable-__cxa_atexit]
+  ignore line: [Thread model: posix]
+  ignore line: [gcc version 4.5.3 20110311 (prerelease) (GCC) ]
+  ignore line: [COMPILER_PATH=/usr/local/angstrom/arm/libexec/gcc/arm-angstrom-linux-gnueabi/4.5.3/:/usr/local/angstrom/arm/libexec/gcc/arm-angstrom-linux-gnueabi/4.5.3/:/usr/local/angstrom/arm/libexec/gcc/arm-angstrom-linux-gnueabi/:/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3/:/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/:/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3/../../../../arm-angstrom-linux-gnueabi/bin/]
+  ignore line: [LIBRARY_PATH=/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3/:/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3/../../../../arm-angstrom-linux-gnueabi/lib/:/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/lib/:/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/usr/lib/]
+  ignore line: [COLLECT_GCC_OPTIONS='-march=armv5te' '-mtune=arm926ej-s' '-mthumb-interwork' '-mno-thumb' '-v' '-o' 'cmTryCompileExec' '-rdynamic' '-mfloat-abi=soft']
+  link line: [ /usr/local/angstrom/arm/libexec/gcc/arm-angstrom-linux-gnueabi/4.5.3/collect2 --sysroot=/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi --eh-frame-hdr -export-dynamic -dynamic-linker /lib/ld-linux.so.3 -X -m armelf_linux_eabi -o cmTryCompileExec /usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/usr/lib/crt1.o /usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/usr/lib/crti.o /usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3/crtbegin.o -L/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3 -L/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3/../../../../arm-angstrom-linux-gnueabi/lib -L/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/lib -L/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/usr/lib CMakeFiles/cmTryCompileExec.dir/CMakeCCompilerABI.c.o -lgcc --as-needed -lgcc_s --no-as-needed -lc -lgcc --as-needed -lgcc_s --no-as-needed /usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3/crtend.o /usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/usr/lib/crtn.o]
+    arg [/usr/local/angstrom/arm/libexec/gcc/arm-angstrom-linux-gnueabi/4.5.3/collect2] ==> ignore
+    arg [--sysroot=/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi] ==> ignore
+    arg [--eh-frame-hdr] ==> ignore
+    arg [-export-dynamic] ==> ignore
+    arg [-dynamic-linker] ==> ignore
+    arg [/lib/ld-linux.so.3] ==> ignore
+    arg [-X] ==> ignore
+    arg [-m] ==> ignore
+    arg [armelf_linux_eabi] ==> ignore
+    arg [-o] ==> ignore
+    arg [cmTryCompileExec] ==> ignore
+    arg [/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/usr/lib/crt1.o] ==> ignore
+    arg [/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/usr/lib/crti.o] ==> ignore
+    arg [/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3/crtbegin.o] ==> ignore
+    arg [-L/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3] ==> dir [/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3]
+    arg [-L/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3/../../../../arm-angstrom-linux-gnueabi/lib] ==> dir [/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3/../../../../arm-angstrom-linux-gnueabi/lib]
+    arg [-L/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/lib] ==> dir [/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/lib]
+    arg [-L/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/usr/lib] ==> dir [/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/usr/lib]
+    arg [CMakeFiles/cmTryCompileExec.dir/CMakeCCompilerABI.c.o] ==> ignore
+    arg [-lgcc] ==> lib [gcc]
+    arg [--as-needed] ==> ignore
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [--no-as-needed] ==> ignore
+    arg [-lc] ==> lib [c]
+    arg [-lgcc] ==> lib [gcc]
+    arg [--as-needed] ==> ignore
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [--no-as-needed] ==> ignore
+    arg [/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3/crtend.o] ==> ignore
+    arg [/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/usr/lib/crtn.o] ==> ignore
+  remove lib [gcc]
+  remove lib [gcc_s]
+  remove lib [gcc]
+  remove lib [gcc_s]
+  collapse dir [/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3] ==> [/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3]
+  collapse dir [/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3/../../../../arm-angstrom-linux-gnueabi/lib] ==> [/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/lib]
+  collapse dir [/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/lib] ==> [/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/lib]
+  collapse dir [/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/usr/lib] ==> [/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/usr/lib]
+  implicit libs: [c]
+  implicit dirs: [/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3;/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/lib;/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/usr/lib]
+
+
+Determining if the CXX compiler works passed with the following output:
+Change Dir: /home/romaz/koib-dev/MainPR/MainPrSh/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec.dir/build.make CMakeFiles/cmTryCompileExec.dir/build
+make[1]: Entering directory `/home/romaz/koib-dev/MainPR/MainPrSh/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/romaz/koib-dev/MainPR/MainPrSh/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec.dir/testCXXCompiler.cxx.o
+/usr/local/angstrom/arm/bin/arm-angstrom-linux-gnueabi-g++    -march=armv5te -mtune=arm926ej-s -mthumb-interwork -mno-thumb  --sysroot=/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi  -fpermissive     -o CMakeFiles/cmTryCompileExec.dir/testCXXCompiler.cxx.o -c /home/romaz/koib-dev/MainPR/MainPrSh/build/CMakeFiles/CMakeTmp/testCXXCompiler.cxx
+Linking CXX executable cmTryCompileExec
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec.dir/link.txt --verbose=1
+/usr/local/angstrom/arm/bin/arm-angstrom-linux-gnueabi-g++    -march=armv5te -mtune=arm926ej-s -mthumb-interwork -mno-thumb  --sysroot=/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi  -fpermissive      CMakeFiles/cmTryCompileExec.dir/testCXXCompiler.cxx.o  -o cmTryCompileExec -rdynamic 
+make[1]: Leaving directory `/home/romaz/koib-dev/MainPR/MainPrSh/build/CMakeFiles/CMakeTmp'
+
+
+Detecting CXX compiler ABI info compiled with the following output:
+Change Dir: /home/romaz/koib-dev/MainPR/MainPrSh/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec.dir/build.make CMakeFiles/cmTryCompileExec.dir/build
+make[1]: Entering directory `/home/romaz/koib-dev/MainPR/MainPrSh/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/romaz/koib-dev/MainPR/MainPrSh/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec.dir/CMakeCXXCompilerABI.cpp.o
+/usr/local/angstrom/arm/bin/arm-angstrom-linux-gnueabi-g++    -march=armv5te -mtune=arm926ej-s -mthumb-interwork -mno-thumb  --sysroot=/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi  -fpermissive     -o CMakeFiles/cmTryCompileExec.dir/CMakeCXXCompilerABI.cpp.o -c /usr/share/cmake-2.8/Modules/CMakeCXXCompilerABI.cpp
+Linking CXX executable cmTryCompileExec
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec.dir/link.txt --verbose=1
+/usr/local/angstrom/arm/bin/arm-angstrom-linux-gnueabi-g++    -march=armv5te -mtune=arm926ej-s -mthumb-interwork -mno-thumb  --sysroot=/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi  -fpermissive    -v CMakeFiles/cmTryCompileExec.dir/CMakeCXXCompilerABI.cpp.o  -o cmTryCompileExec -rdynamic  
+Using built-in specs.
+COLLECT_GCC=/usr/local/angstrom/arm/bin/arm-angstrom-linux-gnueabi-g++
+Target: arm-angstrom-linux-gnueabi
+Configured with: /home/nagos/at91/OE/oetmp/work/i686-armv5te-sdk-angstrom-linux-gnueabi/gcc-cross-sdk-4.5-r38.2+svnr170880/gcc-4_5-branch/configure --build=i686-linux --host=i686-linux --target=arm-angstrom-linux-gnueabi --prefix=/usr/local/angstrom/arm --exec_prefix=/usr/local/angstrom/arm --bindir=/usr/local/angstrom/arm/bin --sbindir=/usr/local/angstrom/arm/bin --libexecdir=/usr/local/angstrom/arm/libexec --datadir=/usr/local/angstrom/arm/share --sysconfdir=/usr/local/angstrom/arm/etc --sharedstatedir=/usr/local/angstrom/arm/share/com --localstatedir=/usr/local/angstrom/arm/var --libdir=/usr/local/angstrom/arm/lib --includedir=/usr/local/angstrom/arm/include --oldincludedir=/usr/local/angstrom/arm/include --infodir=/usr/local/angstrom/arm/share/info --mandir=/usr/local/angstrom/arm/share/man --with-libtool-sysroot --enable-largefile --disable-nls --enable-ipv6 --with-gnu-ld --enable-shared --enable-languages=c,c++,objc,fortran --enable-threads=posix --disable-multilib --enable-c99 --enable-long-long --enable-symvers=gnu --enable-libstdcxx-pch --program-prefix=arm-angstrom-linux-gnueabi- --enable-target-optspace --enable-lto --enable-libssp --disable-bootstrap --disable-libgomp --disable-libmudflap --with-float=soft --with-sysroot=/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi --with-build-time-tools=/home/nagos/at91/OE/oetmp/sysroots/i686-linux/usr/armv5te/arm-angstrom-linux-gnueabi/bin --with-build-sysroot=/home/nagos/at91/OE/oetmp/sysroots/armv5te-angstrom-linux-gnueabi --disable-libunwind-exceptions --with-mpfr=/home/nagos/at91/OE/oetmp/sysroots/i686-linux/usr --with-system-zlib --enable-__cxa_atexit
+Thread model: posix
+gcc version 4.5.3 20110311 (prerelease) (GCC) 
+COMPILER_PATH=/usr/local/angstrom/arm/libexec/gcc/arm-angstrom-linux-gnueabi/4.5.3/:/usr/local/angstrom/arm/libexec/gcc/arm-angstrom-linux-gnueabi/4.5.3/:/usr/local/angstrom/arm/libexec/gcc/arm-angstrom-linux-gnueabi/:/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3/:/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/:/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3/../../../../arm-angstrom-linux-gnueabi/bin/
+LIBRARY_PATH=/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3/:/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3/../../../../arm-angstrom-linux-gnueabi/lib/:/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/lib/:/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/usr/lib/
+COLLECT_GCC_OPTIONS='-march=armv5te' '-mtune=arm926ej-s' '-mthumb-interwork' '-mno-thumb' '-fpermissive' '-v' '-o' 'cmTryCompileExec' '-rdynamic' '-shared-libgcc' '-mfloat-abi=soft'
+ /usr/local/angstrom/arm/libexec/gcc/arm-angstrom-linux-gnueabi/4.5.3/collect2 --sysroot=/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi --eh-frame-hdr -export-dynamic -dynamic-linker /lib/ld-linux.so.3 -X -m armelf_linux_eabi -o cmTryCompileExec /usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/usr/lib/crt1.o /usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/usr/lib/crti.o /usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3/crtbegin.o -L/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3 -L/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3/../../../../arm-angstrom-linux-gnueabi/lib -L/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/lib -L/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/usr/lib CMakeFiles/cmTryCompileExec.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3/crtend.o /usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/usr/lib/crtn.o
+make[1]: Leaving directory `/home/romaz/koib-dev/MainPR/MainPrSh/build/CMakeFiles/CMakeTmp'
+
+
+Parsed CXX implicit link information from above output:
+  link line regex: [^( *|.*[/\])(arm-angstrom-linux-gnueabi-ld|ld|collect2)[^/\]*( |$)]
+  ignore line: [Change Dir: /home/romaz/koib-dev/MainPR/MainPrSh/build/CMakeFiles/CMakeTmp]
+  ignore line: []
+  ignore line: [Run Build Command:/usr/bin/make "cmTryCompileExec/fast"]
+  ignore line: [/usr/bin/make -f CMakeFiles/cmTryCompileExec.dir/build.make CMakeFiles/cmTryCompileExec.dir/build]
+  ignore line: [make[1]: Entering directory `/home/romaz/koib-dev/MainPR/MainPrSh/build/CMakeFiles/CMakeTmp']
+  ignore line: [/usr/bin/cmake -E cmake_progress_report /home/romaz/koib-dev/MainPR/MainPrSh/build/CMakeFiles/CMakeTmp/CMakeFiles 1]
+  ignore line: [Building CXX object CMakeFiles/cmTryCompileExec.dir/CMakeCXXCompilerABI.cpp.o]
+  ignore line: [/usr/local/angstrom/arm/bin/arm-angstrom-linux-gnueabi-g++    -march=armv5te -mtune=arm926ej-s -mthumb-interwork -mno-thumb  --sysroot=/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi  -fpermissive     -o CMakeFiles/cmTryCompileExec.dir/CMakeCXXCompilerABI.cpp.o -c /usr/share/cmake-2.8/Modules/CMakeCXXCompilerABI.cpp]
+  ignore line: [Linking CXX executable cmTryCompileExec]
+  ignore line: [/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec.dir/link.txt --verbose=1]
+  ignore line: [/usr/local/angstrom/arm/bin/arm-angstrom-linux-gnueabi-g++    -march=armv5te -mtune=arm926ej-s -mthumb-interwork -mno-thumb  --sysroot=/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi  -fpermissive    -v CMakeFiles/cmTryCompileExec.dir/CMakeCXXCompilerABI.cpp.o  -o cmTryCompileExec -rdynamic  ]
+  ignore line: [Using built-in specs.]
+  ignore line: [COLLECT_GCC=/usr/local/angstrom/arm/bin/arm-angstrom-linux-gnueabi-g++]
+  ignore line: [Target: arm-angstrom-linux-gnueabi]
+  ignore line: [Configured with: /home/nagos/at91/OE/oetmp/work/i686-armv5te-sdk-angstrom-linux-gnueabi/gcc-cross-sdk-4.5-r38.2+svnr170880/gcc-4_5-branch/configure --build=i686-linux --host=i686-linux --target=arm-angstrom-linux-gnueabi --prefix=/usr/local/angstrom/arm --exec_prefix=/usr/local/angstrom/arm --bindir=/usr/local/angstrom/arm/bin --sbindir=/usr/local/angstrom/arm/bin --libexecdir=/usr/local/angstrom/arm/libexec --datadir=/usr/local/angstrom/arm/share --sysconfdir=/usr/local/angstrom/arm/etc --sharedstatedir=/usr/local/angstrom/arm/share/com --localstatedir=/usr/local/angstrom/arm/var --libdir=/usr/local/angstrom/arm/lib --includedir=/usr/local/angstrom/arm/include --oldincludedir=/usr/local/angstrom/arm/include --infodir=/usr/local/angstrom/arm/share/info --mandir=/usr/local/angstrom/arm/share/man --with-libtool-sysroot --enable-largefile --disable-nls --enable-ipv6 --with-gnu-ld --enable-shared --enable-languages=c,c++,objc,fortran --enable-threads=posix --disable-multilib --enable-c99 --enable-long-long --enable-symvers=gnu --enable-libstdcxx-pch --program-prefix=arm-angstrom-linux-gnueabi- --enable-target-optspace --enable-lto --enable-libssp --disable-bootstrap --disable-libgomp --disable-libmudflap --with-float=soft --with-sysroot=/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi --with-build-time-tools=/home/nagos/at91/OE/oetmp/sysroots/i686-linux/usr/armv5te/arm-angstrom-linux-gnueabi/bin --with-build-sysroot=/home/nagos/at91/OE/oetmp/sysroots/armv5te-angstrom-linux-gnueabi --disable-libunwind-exceptions --with-mpfr=/home/nagos/at91/OE/oetmp/sysroots/i686-linux/usr --with-system-zlib --enable-__cxa_atexit]
+  ignore line: [Thread model: posix]
+  ignore line: [gcc version 4.5.3 20110311 (prerelease) (GCC) ]
+  ignore line: [COMPILER_PATH=/usr/local/angstrom/arm/libexec/gcc/arm-angstrom-linux-gnueabi/4.5.3/:/usr/local/angstrom/arm/libexec/gcc/arm-angstrom-linux-gnueabi/4.5.3/:/usr/local/angstrom/arm/libexec/gcc/arm-angstrom-linux-gnueabi/:/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3/:/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/:/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3/../../../../arm-angstrom-linux-gnueabi/bin/]
+  ignore line: [LIBRARY_PATH=/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3/:/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3/../../../../arm-angstrom-linux-gnueabi/lib/:/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/lib/:/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/usr/lib/]
+  ignore line: [COLLECT_GCC_OPTIONS='-march=armv5te' '-mtune=arm926ej-s' '-mthumb-interwork' '-mno-thumb' '-fpermissive' '-v' '-o' 'cmTryCompileExec' '-rdynamic' '-shared-libgcc' '-mfloat-abi=soft']
+  link line: [ /usr/local/angstrom/arm/libexec/gcc/arm-angstrom-linux-gnueabi/4.5.3/collect2 --sysroot=/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi --eh-frame-hdr -export-dynamic -dynamic-linker /lib/ld-linux.so.3 -X -m armelf_linux_eabi -o cmTryCompileExec /usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/usr/lib/crt1.o /usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/usr/lib/crti.o /usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3/crtbegin.o -L/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3 -L/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3/../../../../arm-angstrom-linux-gnueabi/lib -L/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/lib -L/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/usr/lib CMakeFiles/cmTryCompileExec.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3/crtend.o /usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/usr/lib/crtn.o]
+    arg [/usr/local/angstrom/arm/libexec/gcc/arm-angstrom-linux-gnueabi/4.5.3/collect2] ==> ignore
+    arg [--sysroot=/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi] ==> ignore
+    arg [--eh-frame-hdr] ==> ignore
+    arg [-export-dynamic] ==> ignore
+    arg [-dynamic-linker] ==> ignore
+    arg [/lib/ld-linux.so.3] ==> ignore
+    arg [-X] ==> ignore
+    arg [-m] ==> ignore
+    arg [armelf_linux_eabi] ==> ignore
+    arg [-o] ==> ignore
+    arg [cmTryCompileExec] ==> ignore
+    arg [/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/usr/lib/crt1.o] ==> ignore
+    arg [/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/usr/lib/crti.o] ==> ignore
+    arg [/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3/crtbegin.o] ==> ignore
+    arg [-L/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3] ==> dir [/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3]
+    arg [-L/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3/../../../../arm-angstrom-linux-gnueabi/lib] ==> dir [/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3/../../../../arm-angstrom-linux-gnueabi/lib]
+    arg [-L/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/lib] ==> dir [/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/lib]
+    arg [-L/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/usr/lib] ==> dir [/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/usr/lib]
+    arg [CMakeFiles/cmTryCompileExec.dir/CMakeCXXCompilerABI.cpp.o] ==> ignore
+    arg [-lstdc++] ==> lib [stdc++]
+    arg [-lm] ==> lib [m]
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [-lgcc] ==> lib [gcc]
+    arg [-lc] ==> lib [c]
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [-lgcc] ==> lib [gcc]
+    arg [/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3/crtend.o] ==> ignore
+    arg [/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/usr/lib/crtn.o] ==> ignore
+  remove lib [gcc_s]
+  remove lib [gcc]
+  remove lib [gcc_s]
+  remove lib [gcc]
+  collapse dir [/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3] ==> [/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3]
+  collapse dir [/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3/../../../../arm-angstrom-linux-gnueabi/lib] ==> [/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/lib]
+  collapse dir [/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/lib] ==> [/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/lib]
+  collapse dir [/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/usr/lib] ==> [/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/usr/lib]
+  implicit libs: [stdc++;m;c]
+  implicit dirs: [/usr/local/angstrom/arm/lib/gcc/arm-angstrom-linux-gnueabi/4.5.3;/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/lib;/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/usr/lib]
+
+

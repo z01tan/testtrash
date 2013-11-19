@@ -1,58 +1,58 @@
 The scanner is ready.
 ./Wav/Ind/E/01.wav
-Scanner not ready.
+Scanner is not ready.
 ./Wav/Ind/E/02.wav
 The connection is not established.
 ./Wav/Ind/E/03.wav
 Stop searching?
 ./Wav/Ind/E/04.wav
-The scanner works in standalone mode.
+The scanner works in autonomous mode.
 ./Wav/Ind/E/05.wav
 Connection with the second scanner installed.
 ./Wav/Ind/E/06.wav
 Insert the Flash, press YES.
 ./Wav/Ind/E/07.wav
-Download the source data
+Source data downloading...
 ./Wav/Ind/E/08.wav
-Error loading source data. Repeat reading?
+not today!
 ./Wav/Ind/E/09.wav
-Download the source data made.
+The source data downloaded successfully!
 ./Wav/Ind/E/10.wav
-Election day - today.
+was earlier!
 ./Wav/Ind/E/11.wav
-Voting day is not today.
+Voting day
 ./Wav/Ind/E/12.wav
-Begin work in training mode?
+Start work in training mode?
 ./Wav/Ind/E/13.wav
-Print the initial data?
+Print the source data?
 ./Wav/Ind/E/14.wav
-Print a copy of the original data?
+Print a copy?
 ./Wav/Ind/E/15.wav
-Announce the initial data?
+Read the source data?
 ./Wav/Ind/E/16.wav
-Announce the initial data again?
+Read the source data once more?
 ./Wav/Ind/E/17.wav
-The original data is correct?
+Is the source data correct?
 ./Wav/Ind/E/18.wav
 Before voting time left:
 ./Wav/Ind/E/19.wav
 Check the installation date scanner
 ./Wav/Ind/E/20.wav
-To enter test mode, click Yes. For removal of positions, click No.
+To enter test mode, click Yes. To remove positions, click No.
 ./Wav/Ind/E/21.wav
-Shooting position for election:
+Remove position for election
 ./Wav/Ind/E/22.wav
-Shoot position
+Remove number
 ./Wav/Ind/E/23.wav
 For elections
 ./Wav/Ind/E/24.wav
 Position
 ./Wav/Ind/E/25.wav
-Charged
+Removed!
 ./Wav/Ind/E/26.wav
-List the position taken?
+List the position removed?
 ./Wav/Ind/E/27.wav
-Testing! Check recognition!
+Testing! Check recognition! Time:
 ./Wav/Ind/E/28.wav
 Finish the test?
 ./Wav/Ind/E/29.wav
@@ -60,51 +60,51 @@ Accepted
 ./Wav/Ind/E/30.wav
 Ballots
 ./Wav/Ind/E/31.wav
-Print the testing Protocol?
+Print the test Protocol?
 ./Wav/Ind/E/32.wav
-Print a copy of the testing Protocol?
+Print a copy?
 ./Wav/Ind/E/33.wav
-Read the Protocol testing?
+Read the test Protocol?
 ./Wav/Ind/E/34.wav
-Read the Protocol testing again?
+Read the test Protocol once more?
 ./Wav/Ind/E/35.wav
-For the transition to the stationary regime voting click Yes.
+To start stationary mode click Yes. To  return for source data and test click NO.
 ./Wav/Ind/E/36.wav
 To return to establish baseline data and testing, click No.
 ./Wav/Ind/E/37.wav
 Before stationary voting left:
 ./Wav/Ind/E/38.wav
-The beginning of the stationary ballot.
+Stationary vote. Time:
 ./Wav/Ind/E/39.wav
 Complete stationary voting?
 ./Wav/Ind/E/40.wav
-Patient voting expired.
+Vote  time has been finished!
 ./Wav/Ind/E/41.wav
 To confirm the input of the Bulletin, click Yes.
 ./Wav/Ind/E/42.wav
-Complete stationary voting?
+Finish stationary vote?
 ./Wav/Ind/E/43.wav
-Portable voting.
+Portable vote.
 ./Wav/Ind/E/44.wav
-To complete the portable voting click Yes.
+To finishthe portable vote click Yes.
 ./Wav/Ind/E/45.wav
 To return to the reception of bulletins, press No.
 ./Wav/Ind/E/46.wav
 The end of the portable voting.
 ./Wav/Ind/E/47.wav
-For transition to summarizing the results of voting, click Yes.
+For transition to summ up  results, click Yes.
 ./Wav/Ind/E/48.wav
-To return to the voting click No.
+To return to the vote click No.
 ./Wav/Ind/E/49.wav
 Print a copy of the results of voting on the election:
 ./Wav/Ind/E/50.wav
-Connect the digital keyboard.
+Connect the keyboard.
 ./Wav/Ind/E/51.wav
-To read the results for the election:
+Read the results for the election number
 ./Wav/Ind/E/52.wav
-once again?
+once more?
 ./Wav/Ind/E/53.wav
-Enter additional information for the election:
+Input additional information for the election number
 ./Wav/Ind/E/54.wav
 To continue click Yes.
 ./Wav/Ind/E/55.wav
@@ -122,3 +122,67 @@ Confirm changes in the source data?
 ./Wav/Ind/E/61.wav
 Removing positions not approved
 ./Wav/Ind/E/62.wav
+Control ratio OK!
+./Wav/Ind/E/63.wav
+Control ratio wrong!
+./Wav/Ind/E/64.wav
+Check and sign protocol!
+./Wav/Ind/E/65.wav
+Is protocol signed?
+./Wav/Ind/E/66.wav
+Print protocol copies?
+./Wav/Ind/E/67.wav
+Enter number of copies!
+./Wav/Ind/E/68.wav
+Results are saved!
+./Wav/Ind/E/69.wav
+Push "YES" to return to sum up results. Push "NO" to finish election cycle.
+./Wav/Ind/E/70.wav
+hours
+./Wav/Ind/E/71.wav
+minits
+./Wav/Ind/E/72.wav
+Enter supplementary data for referendum number
+./Wav/Ind/E/73.wav
+Before election end
+./Wav/Ind/E/74.wav
+Push "YES" to start new election cycle. Push "NO" to return to sum up results.
+./Wav/Ind/E/75.wav
+Discoonect keyboard and Flash! Push "YES"!
+./Wav/Ind/E/76.wav
+Election time  started
+./Wav/Ind/E/77.wav
+Push "YES" to confirm bulletin enter!
+./Wav/Ind/E/78.wav
+Repeat supplementary data input?
+./Wav/Ind/E/79.wav
+in training mode?
+./Wav/Ind/E/80.wav
+Repeat reading?
+./Wav/Ind/E/81.wav
+Flash not found?
+./Wav/Ind/E/82.wav
+Archive  Error!
+./Wav/Ind/E/83.wav
+Initial data Error!
+./Wav/Ind/E/84.wav
+Printer not found! Repeat search?
+./Wav/Ind/E/85.wav
+File not found! Repeat reading?
+./Wav/Ind/E/86.wav
+Flash not found! Repeat reading?
+./Wav/Ind/E/87.wav
+Archive  Error! Repeat reading?
+./Wav/Ind/E/88.wav
+Initial data Error! Repeat reading?
+./Wav/Ind/E/89.wav
+Syncronization...
+./Wav/Ind/E/90.wav
+Election number
+./Wav/Ind/E/91.wav
+Number
+./Wav/Ind/E/92.wav
+Time:
+./Wav/Ind/E/93.wav
+Removed positions number
+./Wav/Ind/E/94.wav

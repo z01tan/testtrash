@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   cr_BMP.h
  * Author: andr-u
  *
@@ -16,7 +16,7 @@ typedef unsigned long	DWORD;
 typedef unsigned short  WORD;
 typedef long 		LONG;
 typedef unsigned char   BYTE;
-
+ extern   char FBMP[] ;//       = "/www/pages/Scan.bmp";
 #pragma pack (push,1)
 typedef struct tgBITMAPFILEHEADER
 {

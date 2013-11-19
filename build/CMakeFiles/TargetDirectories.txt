@@ -1,0 +1,2 @@
+/home/romaz/koib-dev/MainPR/MainPrSh/build/CMakeFiles/Libs.dir
+/home/romaz/koib-dev/MainPR/MainPrSh/build/CMakeFiles/out.dir

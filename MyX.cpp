@@ -1,9 +1,16 @@
 //---------------------------------------------------------------------------
-#include<iterator>
-#include <iostream>
+#include <getopt.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <cstdlib>
+#include <termios.h>
+#include <math.h>
+#include <iterator>
 #include <sstream>
 #include <fstream>
-#include <cstdlib>
+#include <iostream>
+#include <sys/ioctl.h>
+#include <fcntl.h>
 #include <string>
 #include <time.h>
 #include <exception>
@@ -11,6 +18,7 @@
 
 #include "MyX.h"
 #include "Ruler.h"
+using namespace std;
 //------------------------------------------------------------------------------
 //---------------------------------Дата, время----------------------------------
 //------------------------------------------------------------------------------
@@ -78,9 +86,19 @@ std::string FiltrStr(std::string str, std::string st1, std::string st2)
 {
   std::string w=str;
   int index=-1;
+  int Nstr=1;
+  bool Poh=false;
+  if (StrVstr(st2,st1,1)) { Poh=true; }
+
   do
   {
-     index = w.find(st1);
+     index=-1;
+     for (int j=1; j<=Nstr; j++)
+     {
+        index = w.find(st1, index+1);
+     }
+     if (Poh) { Nstr++; }
+
      if (index >=0)
      {
         std::string w1(w,0,index);
@@ -92,6 +110,7 @@ std::string FiltrStr(std::string str, std::string st1, std::string st2)
 
 return w;
 }
+
 //-------------------------------------------------_i-int  f_float _d double -> String------------------------------------------
 std::string IntToStr(int pp)
 {
@@ -232,7 +251,10 @@ std::string ReadFile(std::string path)
 //---------------------------------Запись в файл--------------------------------
 void WriteFile(std::string Text, std::string path)
 {
-    //
+  ofstream F;
+  F.open(path.c_str(), ios::out); //Log-файл
+  F<<Text<<'\n';
+  F.close();
 }
 //-----------------------------Возвращение текущего каталога--------------------
 std::string GetCurDir(void)

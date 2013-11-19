@@ -7,6 +7,31 @@
 
 #ifndef HARDPROC_H
 #define	HARDPROC_H
+#include "HeaderMain.h"
+/*------ Указатели на все структуры данных HeaderMain -------------------------*/
+extern int*        ptint;      // typ 01
+extern TScanOut*   ptScanOut;  // typ 02
+extern TCandidates*ptCandid;   // typ 03
+extern TPC*        ptTPC;      //     04
+extern TVoteLine*  ptVoteLine;  //     05
+extern TProtocolLine* ptProtLine;//    06
+extern Ttext*      ptText;     //     07
+extern TChecks*    ptChecks;   //     08
+extern TLines*     ptLines;    //     09
+extern TProtocoles* ptProtocol; //     10
+extern TVopr*      ptVopr;     //     11
+extern TRef*       ptRef;      //     12
+extern Tpole*      ptPole;     //     13
+extern TBlank*     ptBlank;    //     14
+extern TVotes*     ptVotes;    //     15
+extern TVop*       ptVop;      //     16
+extern TBl*        ptTBl;      //     17
+extern TRezult*    ptRezult;   //     18
+extern TKoib*      ptKoib;     //     19
+extern TSnat*      ptSnat;     //     20
+extern TInd*       ptInd;      //     21
+extern TVoice*     ptVoice;    //     22
+//-----------------------------------------------------------------------------
 
 
  void Init_COIB();      // инициализация Альтеры и потоков
@@ -43,11 +68,14 @@ void waitBothOpt();       // ожидание двух оптронов Для �
  void alteraRegCalibr_write(void); // записать калибровку в регисты Альтеры
 
  int say_aloud(char*a,char*b,char*c,char*d,char*e); // произнести звуки в файлах a,b,c,d,e или NULL
+ //int SayN(std::string st1); // параллельное воспроизведение звуков!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  void setVoiceVolume(int Vol); //установить уровень громкости
 
  int MakeBinFile(char* nameF,int W, int H);    //создание бинарного файла образа
 
  void Prov_Line(int ln);// !***************
+
+
 
 #endif	/* HARDPROC_H */
 

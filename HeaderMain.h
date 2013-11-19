@@ -60,7 +60,7 @@ extern  float ScanerWorkTime;
 
  // параметры КОИБ  из UnitKoibScan
 
-extern  	int UIKNum[MaxNumUIK];      //номера штампов, допустимых при выборах
+extern   int UIKNum[MaxNumUIK];      //номера штампов, допустимых при выборах
 extern   int Lang;  // язык интерфейса
 extern   int VolumeUr; // уровень громкости
 extern   int VolumeUrMax; // максималный уровень громкости
@@ -116,6 +116,12 @@ extern   float dyStampAreaM; // высота  зоны  печати в  мм
 extern 	 int nsShArStart,nbShAr,ShArXo,ShArYo,ShArPr,colShAr;
 extern   float dyHeaderM; // высота заголовка  в мм
 extern	int nVoteType;
+
+
+extern int SymWidth ; // ??
+extern int SymHeigt ; // ??
+extern int SymDist[3] ;
+
 struct TScanOut // выходной массив результатов сканирования  листа
 { int MasRecOut[5]; //[0] – код ошибки; [1] - номер типа бланка;
   // [2] - номер распознанного участка   [3] - количество вопросов на бланке
@@ -310,6 +316,7 @@ struct TProtocoles // класс, описывающий протоколы вы
     int M; // Количество мандатов
 	TChecks Checks[NchecksMax+1]; // – массив описания контрольных соотношений
 	Ttext Text;   // - описание шаблона протокола
+	std::string ProtX; //Текст протокола
 };
 
 struct TVopr // Структура, описывающая заданный вопрос
@@ -418,7 +425,7 @@ struct TVop
 {
 	int All; // – общее количество поданных бюллетеней в вопросе
 	int Nuf; //Неустановленной формы
-	int NoValid; // – количество бюллетеней неустановленной формы -//-
+	int NoValid; // – количество бюллетеней недействительных -//-
 	int NoMarks; // – количество бюллетеней без отметок  -//-
 	int ManyMarks; // – количество бюллетеней с превышением количества отметок -//-
 	int Valid; // – количество действительных бюллетеней -//-
@@ -434,8 +441,8 @@ struct TBl
 struct TRezult // - структура, описывающая режим голосования
 {
 	int All; // – общее количество поданных бюллетеней
-	int Nuf; //Неустановленной формы
-	int NoValid; // – количество бюллетеней неустановленной формы -//-
+ 	int Nuf; //Неустановленной формы
+	int NoValid; // – количество бюллетеней недействительных -//-
 	int NoMarks; // – количество бюллетеней без отметок  -//-
 	int ManyMarks; // – количество бюллетеней с превышением количества отметок -//-
 	int Valid; // – количество действительных бюллетеней -//-
@@ -444,7 +451,7 @@ struct TRezult // - структура, описывающая режим гол
 
 struct TKoib // – класс, описывающий работу КОИБов
 {
-	std::string N; // - номер КОИБа
+	std::string N; // - серийный номер КОИБа
 	std::string PO; // - версия ПО КОИБа
 	std::string IP; // - IP адрес КОИБа
 	bool Avar; // Если 1, то КОИБ восстает после аварийного режима
@@ -523,26 +530,6 @@ struct TVoice
    extern TVoice OutV; //Массив голосовых сообщений
    extern bool SayYes; // Говорить ли сообщения
 //-----------------------------------Протоколы (От АИ)--------------------------
-struct RepS // структура одной записи в файле rep.txt
-{
-	int	Typ; 		// тип записи: H-header-1; B-body(table)-2; F-footer-3; P-Pagefooter -4
-	int	Alg; 		// выравнивание: L - лево-1; C -центр-2; R - право-3
-	int	Bold;		// начертание: S slave -0; N: прямо-1; B-bold-2; I-italic-3; T-teletape -4;
-	std::string	Num; 		// номер(если есть) вместе с дополнительным, напр. 12а
-	std::string	NCand; 		// номер кандидата в теге кандидат
-	std::string Txt; 		// текст строки
-	std::string	V_prop; 	// число прописью этого значения
-	int	Value; 			// значение строки(напр. кол-во бюллетеней)
-	int	Size; 			// размер шрифта
-	int	Cols[5];        // ширина колонки таблицы или 0, если колонки нет. Напр: 3,65,4,26,0
-};
-
- extern int Rep_cnt;  // Кол-во строк в протоколе
- extern RepS Rep_st[]; //Массив записей строк протокола
-
- extern int     Translate(char* f);
- extern int     MakeFile(char* NameF);
- extern int     FormLine(int i);
 
 //-----------------------------------------------------------------------------------------------------------
  extern int Version; //Номер версии сообщений!
