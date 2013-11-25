@@ -224,7 +224,7 @@ int get_Key_Wait(void)  // опрос с ожиданием. возврат ко
    }
    return(get_Key_Imm());
 }
-
+/*
 int get_KeyString(char* Input)
 {
     int i,p;
@@ -265,9 +265,9 @@ int get_KeyString(char* Input)
     frontLED(0,5);
     return 32;
 }
+*/
 
 
-/*
 int get_KeyString(char* Input)
 {
     int i,p;
@@ -281,6 +281,7 @@ int get_KeyString(char* Input)
 
     while(p<32){
         i = get_Key_Wait();
+        std::cout << " Pushed Button = " << i << std::endl;
         if(i==KEYBSPCE) { if(p>0)p--; Input[p] = 0x00; }
         if(i== KEYYES)  { KeyStrPocess=false; frontLED(0,5);c=0x00;setSecline(&c,0);return p;}
         switch(i){
@@ -303,7 +304,7 @@ int get_KeyString(char* Input)
     frontLED(0,5);
     return 32;
 }
-*/
+
 //==============================================================================
 int get_Buttons_Imm()  // если возврат=1, то в Buttons[] обновленные значения;
 {

@@ -15,12 +15,14 @@ CMakeFiles/Libs.dir/Detect.cpp.o
  /home/romaz/koib-dev/MainPR/MainPrSh/HeaderMain.h
  /home/romaz/koib-dev/MainPR/MainPrSh/MyX.h
 CMakeFiles/Libs.dir/HardProc.cpp.o
+ /home/romaz/koib-dev/MainPR/MainPrSh/AlteraSocket.h
  /home/romaz/koib-dev/MainPR/MainPrSh/CreateImage.h
  /home/romaz/koib-dev/MainPR/MainPrSh/HardProc.cpp
  /home/romaz/koib-dev/MainPR/MainPrSh/HardProc.h
  /home/romaz/koib-dev/MainPR/MainPrSh/HeaderMain.h
  /home/romaz/koib-dev/MainPR/MainPrSh/InitAltera.h
  /home/romaz/koib-dev/MainPR/MainPrSh/MyX.h
+ /home/romaz/koib-dev/MainPR/MainPrSh/Ruler.h
 CMakeFiles/Libs.dir/InitAltera.cpp.o
  /home/romaz/koib-dev/MainPR/MainPrSh/InitAltera.cpp
  /home/romaz/koib-dev/MainPR/MainPrSh/InitAltera.h

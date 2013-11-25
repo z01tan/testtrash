@@ -2353,7 +2353,16 @@ bool Print(int Type)
   Rep_cnt=0; //  счетчик  номеров  строк
   std::string Font=Votes.Blank[1].Vopr[1].Protocoles[1].Font;
   int FontSize=Votes.Blank[1].Vopr[1].Protocoles[1].Fontsize;
-  if (FontSize==0) {FontSize=10;}
+  if (FontSize==0) {FontSize=8;}
+
+  //Page Footer
+  std::string PF1,PF2,PF3,PF4,PF22,PF222,PF5;
+  PF1="Председатель участковой избирательной комиссии\0";
+  PF2= " (Фамилия, инициалы)\0";
+  PF22= "( подпись либо причина отсутствия,\0";
+  PF222="      отметка об особом мнении)\0";
+  PF3="Замеcтитель председателя комиссии\0";
+  PF4="Секретарь комиссии\0";
 
 	switch (Type)
 	{
@@ -2608,23 +2617,45 @@ bool Print(int Type)
               }
 		   }
 		}
+  //PF2= " (Фамилия, инициалы)\0";
+ // PF22="( подпись либо причина отсутствия, отметка об особом мнении)\0";
+ //  PF3="Заметитель председателя комиссии\0";
+ // PF4="Секретарь комиссии\0";
+ FontSize=8;
+		    // Page Footer текстом
+/*  SumRep(Rep_cnt, 4,1,0,0,0,"","","","",0, FontSize, 1,0,0,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,1,0,0,0,"","",PF1,"",0, FontSize, 1,0,0,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,3,0,0,0,"","", "_____________________   _________________________________\0","",0,2, 1,0,0,0,0);  Rep_cnt++;
+   SumRep(Rep_cnt, 4,3,0,0,0,"","","  Фамилия, инициалы      подпись либо причина отсутствия \0,","",0,4, 1,0,0,0,0);  Rep_cnt++;
+                               SumRep(Rep_cnt, 4,3,0,0,0,"","","отметка об особом мнении     \0","",0,4, 1,0,0,0,0);  Rep_cnt++;
 
-//Page Footer
-  std::string PF1,PF2,PF3,PF4,PF22,PF5;
-  PF1="Председатель участковой избирательной комиссии\0";
-  PF2= " (Фамилия, инициалы)\0";
-  PF22="( подпись либо причина отсутствия, отметка об особом мнении)\0";
-  PF3="Заметитель председателя комиссии\0";
-  PF4="Секретарь комиссии\0";
+  SumRep(Rep_cnt, 4,1,0,0,0,"","",PF3,"",0, FontSize, 1,0,0,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,3,0,0,0,"","", "_____________________   _________________________________\0","",0,2, 1,0,0,0,0);  Rep_cnt++;
 
-  SumRep(Rep_cnt, 4,1,0,0,0,PF1,"","","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
-  SumRep(Rep_cnt, 4,1,0,0,0,"", "_____________________","_________________________________","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
-  SumRep(Rep_cnt, 4,1,0,0,5,"",PF2,PF22,"",1, 4, 70,32,50,0,0);  Rep_cnt++;
-  SumRep(Rep_cnt, 4,1,0,0,5,PF3,"_____________________","_________________________________","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
-  SumRep(Rep_cnt, 4,1,0,0,0,PF4,"_____________________","_________________________________","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
-  SumRep(Rep_cnt, 4,1,0,0,0,"","","","",0, FontSize, 0,0,0,0,0);  Rep_cnt++;
+
+  SumRep(Rep_cnt, 4,1,0,0,0,"","",PF4,"",0, FontSize, 1,0,0,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,3,0,0,0,"","", "_____________________   _________________________________\0","",0,2, 1,0,0,0,0);  Rep_cnt++;
+*/
+  //SumRep(Rep_cnt, 4,1,0,0,5,"","","","",0, FontSize, 1,0,0,0,0);  Rep_cnt++;
+  //SumRep(Rep_cnt, 3,1,0,0,5,"","","","",1, FontSize, 0,0,0,0,0);  Rep_cnt++;
   //SumRep(Rep_cnt, 4,1,0,0,0,"","","\\vspace{10mm}","",0, FontSize, 0,0,0,0,0);  Rep_cnt++;
-  //End Page Footer
+  //End Page Footer текстом
+
+
+    // Page Footer  longtable
+  SumRep(Rep_cnt, 4,1,0,0,0,"","","","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,1,0,0,0,PF1,"","","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,1,0,0,0,"", "____________________\0","________________________________\0","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,2,0,0,0,"",PF2,PF22,"",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,2,0,0,3,"","",PF222,"",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,1,0,0,3,PF3,"____________________\0","________________________________\0","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,1,0,0,0,PF4,"____________________\0","________________________________\0","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,1,0,0,0,"","","","",0, FontSize, 1,0,0,0,0);  Rep_cnt++;
+
+
+    //SumRep(Rep_cnt, 3,1,0,0,5,"","","","",1, FontSize, 0,0,0,0,0);  Rep_cnt++;
+  //SumRep(Rep_cnt, 4,1,0,0,0,"","","\\vspace{10mm}","",0, FontSize, 0,0,0,0,0);  Rep_cnt++;
+  //End Page Footer longtable
 
 	F.close();
     strcpy(sst,"./Tex/Pr_ID.tex");
@@ -2640,7 +2671,7 @@ case 2: //---------------------------------------------------------Протокол тест
 
 		  //1
 		  Printer=Out.PrTest[1]; //Результаты тестирования сканера(ов)
-		  SumRep(Rep_cnt, 3,1,1,0,2,"","",Printer,"",0, FontSize,1,0,0,0,0);
+		  SumRep(Rep_cnt, 3,1,1,0,4,"","",Printer,"",0, FontSize,1,0,0,0,0);
 		  Rep_cnt++;
 		  F<<Printer<<'\n';
 		  //2
@@ -2653,28 +2684,30 @@ case 2: //---------------------------------------------------------Протокол тест
 		  //4
 		  //---  Ns1   Ns2
 
-		  if (!Koib[1].Main)
+         if (!Koib[1].Main)
 		  {
 		    F1=Out.PrTest[4]+Koib[1].N;
 		    F2=Out.PrTest[5]+Koib[2].N;
-		    SumRep(Rep_cnt, 2,1,1,0,10,"",F1,F2,"",0, FontSize,45,15,15,15,0);
+		    F3=Out.PrTest[6];
+		    SumRep(Rep_cnt, 2,1,1,0,0,"",F1,F2,F3,0, FontSize,75,30,30,0,20);
 	  	    Rep_cnt++;
 		    F<<Printer<<'\n';
             F1="("+Koib[1].IP+")";
             F2="("+Koib[2].IP+")";
-		    SumRep(Rep_cnt, 2,1,1,0,10,"",F1,F2,"",0, FontSize,45,15,15,15,0);
+		    SumRep(Rep_cnt, 2,1,1,0,10,"",F1,F2,"",0, FontSize,75,30,30,0,20);
 	  	    Rep_cnt++;
 		    F<<Printer<<'\n';
 
 		  } else {
 		    F1=Out.PrTest[4]+Koib[1].N;
 		    F2=Out.PrTest[5]+Out.PrTest[7];
-		    SumRep(Rep_cnt, 2,1,1,0,10,"",F1,F2,"",0, FontSize,45,15,15,15,0);
+            F3=Out.PrTest[6];
+		    SumRep(Rep_cnt, 2,1,1,0,0,"",F1,F2,F3,0, FontSize,75,30,30,0,20);
 		    Rep_cnt++;
 		    F<<Printer<<'\n';
             F1="("+Koib[1].IP+")";
             F2="()";
-		    SumRep(Rep_cnt, 2,1,1,0,10,"",F1,F2,"",0, FontSize,45,15,15,15,0);
+		    SumRep(Rep_cnt, 2,1,1,0,10,"",F1,F2,"",0, FontSize,75,30,30,0,20);
 	  	    Rep_cnt++;
 		    F<<Printer<<'\n';
 
@@ -2685,7 +2718,7 @@ case 2: //---------------------------------------------------------Протокол тест
 		  F2=IntToStr(Koib[1].Rezult[0].All);
 		  F3=IntToStr(Koib[2].Rezult[0].All);
 		  F4=IntToStr(Koib[1].Rezult[0].All+Koib[2].Rezult[0].All);
-		  SumRep(Rep_cnt,2,1,1,0,2, F1,F2,F3,F4, 0, FontSize,-45,-15,-15,15,0);
+		  SumRep(Rep_cnt,2,1,1,0,2, F1,F2,F3,F4, 0, FontSize,-75,-30,-30,0,20);
 		  Rep_cnt++;
 		  F<<Printer<<'\n';
 		   //НЕДЕЙСТВИТЕЛЬНЫХ
@@ -2693,26 +2726,27 @@ case 2: //---------------------------------------------------------Протокол тест
 		  F2=IntToStr(Koib[1].Rezult[0].NoValid);
 		  F3=IntToStr(Koib[2].Rezult[0].NoValid);
 		  F4=IntToStr(Koib[1].Rezult[0].NoValid+Koib[2].Rezult[0].NoValid);
-		  SumRep(Rep_cnt,2,1,1,0,2, F1,F2,F3,F4, 0, FontSize,-45,-15,-15,15,0);
+		  SumRep(Rep_cnt,2,1,1,0,2, F1,F2,F3,F4, 0,FontSize,-75,-30,-30,0,20);
 		  Rep_cnt++;
 		  F<<Printer<<'\n';
 
 		  //11
 		  //БЕЗ МЕТОК
-          F1=Out.PrTest[13];
+          F1="    "+Out.PrTest[13];
           F2=IntToStr(Koib[1].Rezult[0].NoMarks);
           F3=IntToStr(Koib[2].Rezult[0].NoMarks);
           F4=IntToStr(Koib[1].Rezult[0].NoMarks+Koib[2].Rezult[0].NoMarks);
-		  SumRep(Rep_cnt,2,1,1,0,2, F1,F2,F3,F4, 0, FontSize,-45,-15,-15,15,0);
+		  SumRep(Rep_cnt,2,1,1,0,2, F1,F2,F3,F4, 0, FontSize,-75,-30,-30,0,20);
+
 		  Rep_cnt++;
 		  F<<Printer<<'\n';
 		  //12
 		  //ПРЕВЫШЕНИЕ ЧИСЛА МЕТОК
-		  F1=Out.PrTest[14];
+		  F1="    "+Out.PrTest[14];
 		  F2=IntToStr(Koib[1].Rezult[0].ManyMarks);
 		  F3=IntToStr(Koib[2].Rezult[0].ManyMarks);
 		  F4=IntToStr(Koib[1].Rezult[0].ManyMarks+Koib[2].Rezult[0].ManyMarks);
-		  SumRep(Rep_cnt,2,1,1,0,10, F1,F2,F3,F4, 0, FontSize,-45,-15,-15,15,0);
+		  SumRep(Rep_cnt,2,1,1,0,2, F1,F2,F3,F4, 0, FontSize,-75,-30,-30,0,20);
 		  Rep_cnt++;
 		  F<<Printer<<'\n';
 		  //12
@@ -2721,7 +2755,7 @@ case 2: //---------------------------------------------------------Протокол тест
 		  F2=IntToStr(Koib[1].Rezult[0].Valid);
 		  F3=IntToStr(Koib[2].Rezult[0].Valid);
 		  F4=IntToStr(Koib[1].Rezult[0].Valid+Koib[2].Rezult[0].Valid);
-		  SumRep(Rep_cnt,2,1,1,0,10, F1,F2,F3,F4, 0, FontSize,-45,-15,-15,15,0);
+		  SumRep(Rep_cnt,2,1,1,0,2, F1,F2,F3,F4, 0, FontSize,-75,-30,-30,0,20);
 		  Rep_cnt++;
 		  F<<Printer<<'\n';
 
@@ -2738,9 +2772,9 @@ case 2: //---------------------------------------------------------Протокол тест
 		  //ПРИНЯТО
 		  F1=Out.PrTest[16];
 		  F2=IntToStr(Koib[1].Rezult[0].Bl[i].Vop[1].All);
-		  F3=IntToStr(Koib[2].Rezult[0].Bl[i].Vop[1].All);
+        F3=IntToStr(Koib[2].Rezult[0].Bl[i].Vop[1].All);
 		  F4=IntToStr(Koib[1].Rezult[0].Bl[i].Vop[1].All+Koib[2].Rezult[0].Bl[i].Vop[1].All);
-		  SumRep(Rep_cnt,2,1,1,0,10, F1,F2,F3,F4, 0, FontSize,-45,-15,-15,15,0);
+		  SumRep(Rep_cnt,2,1,1,0,2, F1,F2,F3,F4, 0, FontSize,-75,-30,-30,0,20);
 		  Rep_cnt++;
 		  F<<Printer<<'\n';
 		  //16
@@ -2750,26 +2784,26 @@ case 2: //---------------------------------------------------------Протокол тест
 		  F2=IntToStr(Koib[1].Rezult[0].Bl[i].Vop[1].NoValid);
 		  F3=IntToStr(Koib[2].Rezult[0].Bl[i].Vop[1].NoValid);
 		  F4=IntToStr(Koib[1].Rezult[0].Bl[i].Vop[1].NoValid+Koib[2].Rezult[0].Bl[i].Vop[1].NoValid);
-		  SumRep(Rep_cnt,2,1,1,0,10, F1,F2,F3,F4, 0, FontSize,-45,-15,-15,15,0);
+		  SumRep(Rep_cnt,2,1,1,0,2, F1,F2,F3,F4, 0,FontSize,-75,-30,-30,0,20);
 		  Rep_cnt++;
 		  F<<Printer<<'\n';
 
 		  //19
 		  //БЕЗ МЕТОК
-		  F1=Out.PrTest[20];
+		  F1="    "+Out.PrTest[20];
 		  F2=IntToStr(Koib[1].Rezult[0].Bl[i].Vop[1].NoMarks);
 		  F3=IntToStr(Koib[2].Rezult[0].Bl[i].Vop[1].NoMarks);
 		  F4=IntToStr(Koib[1].Rezult[0].Bl[i].Vop[1].NoMarks+Koib[2].Rezult[0].Bl[i].Vop[1].NoMarks);
-		  SumRep(Rep_cnt,2,1,1,0,10, F1,F2,F3,F4, 0, FontSize,-45,-15,-15,15,0);
+		  SumRep(Rep_cnt,2,1,1,0,2, F1,F2,F3,F4, 0, FontSize,-75,-30,-30,0,20);
 		  Rep_cnt++;
 		  F<<Printer<<'\n';
 		  //20
 		  //ПРЕВЫШЕНИЕ ЧИСЛА МЕТОК
-		  F1=Out.PrTest[21];
+		  F1="    "+Out.PrTest[21];
 		  F2=IntToStr(Koib[1].Rezult[0].Bl[i].Vop[1].ManyMarks);
 		  F3=IntToStr(Koib[2].Rezult[0].Bl[i].Vop[1].ManyMarks);
 		  F4=IntToStr(Koib[1].Rezult[0].Bl[i].Vop[1].ManyMarks+Koib[2].Rezult[0].Bl[i].Vop[1].ManyMarks);
-		  SumRep(Rep_cnt,2,1,1,0,10, F1,F2,F3,F4, 0, FontSize,-45,-15,-15,15,0);
+		  SumRep(Rep_cnt,2,1,1,0,2, F1,F2,F3,F4, 0,FontSize,-75,-30,-30,0,20);
 		  Rep_cnt++;
 		  F<<Printer<<'\n';
 		  //ДЕЙСТВИТЕЛЬНЫХ
@@ -2777,7 +2811,7 @@ case 2: //---------------------------------------------------------Протокол тест
 		  F2=IntToStr(Koib[1].Rezult[0].Bl[i].Vop[1].Valid);
 		  F3=IntToStr(Koib[2].Rezult[0].Bl[i].Vop[1].Valid);
 		  F4=IntToStr(Koib[1].Rezult[0].Bl[i].Vop[1].Valid+Koib[2].Rezult[0].Bl[i].Vop[1].Valid);
-		  SumRep(Rep_cnt,2,1,1,0,10, F1,F2,F3,F4, 0, FontSize,-45,-15,-15,15,0);
+		  SumRep(Rep_cnt,2,1,1,0,2, F1,F2,F3,F4, 0, FontSize,-75,-30,-30,0,20);
 		  Rep_cnt++;
 		  F<<Printer<<'\n';
 
@@ -2792,7 +2826,7 @@ case 2: //---------------------------------------------------------Протокол тест
 		  F2=IntToStr(Koib[1].Rezult[0].Bl[i].Vop[1].Can[j]);
 		  F3=IntToStr(Koib[2].Rezult[0].Bl[i].Vop[1].Can[j]);
 		  F4=IntToStr(Koib[1].Rezult[0].Bl[i].Vop[1].Can[j]+Koib[2].Rezult[0].Bl[i].Vop[1].Can[j]);
-		  SumRep(Rep_cnt,2,1,1,0,10, F1,F2,F3,F4, 0, FontSize,-45,-15,-15,15,0);
+		  SumRep(Rep_cnt,2,1,1,0,2, F1,F2,F3,F4, 0, FontSize,-75,-30,-30,0,20);
 				Rep_cnt++;
                 F<<Printer<<'\n';
 				}
@@ -2800,21 +2834,15 @@ case 2: //---------------------------------------------------------Протокол тест
 
 		  }
 	   }
-
- std::string PF1,PF2,PF3,PF4,PF22;
-  PF1="Председатель участковой избирательной комиссии\0";
-  PF2= " (Фамилия, инициалы)\0";
-  PF22="( подпись либо причина отсутствия, отметка об особом мнении)\0";
-  PF3="Заметитель председателя комиссии\0";
-  PF4="Секретарь комиссии\0";
-
+   //Begin Page Footer
+  SumRep(Rep_cnt, 4,1,0,0,0,"","","","",1, FontSize, 70,32,50,-20,-15);  Rep_cnt++;
   SumRep(Rep_cnt, 4,1,0,0,0,PF1,"","","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
-  SumRep(Rep_cnt, 4,1,0,0,0,"", "_____________________","_________________________________","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
-  SumRep(Rep_cnt, 4,1,0,0,5,"",PF2,PF22,"",1, 4, 70,32,50,0,0);  Rep_cnt++;
-  SumRep(Rep_cnt, 4,1,0,0,5,PF3,"_____________________","_________________________________","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
-  SumRep(Rep_cnt, 4,1,0,0,0,PF4,"_____________________","_________________________________","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,1,0,0,0,"", "____________________\0","________________________________\0","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,2,0,0,5,"",PF2,PF22,"",1, 4, 70,32,50,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,1,0,0,5,PF3,"____________________\0","________________________________\0","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,1,0,0,0,PF4,"____________________\0","________________________________\0","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,1,0,0,5,"","","","",0, FontSize, 1,0,0,0,0);  Rep_cnt++;
   //End Page Footer
-
 	  F.close();
 	  strcpy(sst,"./Tex/Pr_Test.tex");
 	  strcpy(st5,"Pr_Test.pdf");
@@ -2828,20 +2856,21 @@ case 2: //---------------------------------------------------------Протокол тест
             st="./Log/Protokol_VR"+IntToStr(XVote)+".log";
             F.open(st.c_str(), ios::out); //Log-файл
 
-            //1
+           //1
             Printer=Out.PrRezult[1]; // РЕЗУЛЬТАТЫ ГОЛОСОВАНИЯ
             SumRep(Rep_cnt,1,2,1,0,2, "","",Printer,"", 0, FontSize,1,0,0,0,0);
             //Centr
             Rep_cnt++;
             F<<Printer<<'\n';
             //2
-            Printer=Out.PrRezult[2]+IntToStr(XVote)+": "+Votes.Blank[XVote].Name; //Выборы N
+            Printer=Out.PrRezult[2]+IntToStr(XVote)+": "+Votes.Blank[XVote].Vopr[XVopr].Name;
+            //Выборы N
             SumRep(Rep_cnt,1,2,1,0,2, "","",Printer,"", 0, FontSize,1,0,0,0,0);
             Rep_cnt++;
             F<<Printer<<'\n';
             //3
             TekDateTime();
-            Printer=Out.PrRezult[3]+DateToString(TekDT.year,TekDT.month,TekDT.day,Lang); //Дата
+            Printer=DateToString(TekDT.year,TekDT.month,TekDT.day,Lang); //Дата
             SumRep(Rep_cnt,1,2,1,0,2, "","",Printer,"", 0, FontSize,1,0,0,0,0);
             Rep_cnt++;
             F<<Printer<<'\n';
@@ -2866,75 +2895,84 @@ case 2: //---------------------------------------------------------Протокол тест
 
                     F3=IntToStr(sum);
                     F4=" ("+CisloToStringOrVoice(sum,true) +")";
-                    SumRep(Rep_cnt,2,1,1,0,2, F1,F2,F3,F4, 0, FontSize,4,60,20,0,20);
+                    SumRep(Rep_cnt,2,1,1,0,2, F1,F2,F3,F4, 0, FontSize,4,60,5,0,40);
                     Rep_cnt++;
                     F<<Printer<<'\n';
                 }
 
                     F1="";
                     F2=Out.PrRezult[5]; //Всего принято бюллетеней
-                    F3="0";
-                    F4=" (ноль)";
-                    SumRep(Rep_cnt,2,1,1,0,2, F1,F2,F3,F4, 0, FontSize,4,60,20,0,20);
+                    int sum=Koib[1].Rezult[1].Bl[XVote].Vop[XVopr].All+
+                            Koib[2].Rezult[1].Bl[XVote].Vop[XVopr].All+
+                            Koib[1].Rezult[2].Bl[XVote].Vop[XVopr].All+
+                            Koib[2].Rezult[2].Bl[XVote].Vop[XVopr].All;
+                    F3=IntToStr(sum);
+                    F4=" ("+CisloToStringOrVoice(sum,true) +")";
+                    SumRep(Rep_cnt,2,1,1,0,2, F1,F2,F3,F4, 0, FontSize,4,60,5,0,40);
                     Rep_cnt++;
                     F<<Printer<<'\n';
 
                     F1="";
                     F2=Out.PrRezult[6]; //Число действительных бюллетеней
-                    F3="0";
-                    F4=" (ноль)";
-                    SumRep(Rep_cnt,2,1,1,0,2, F1,F2,F3,F4, 0, FontSize,4,60,20,0,20);
+                    sum=Koib[1].Rezult[1].Bl[XVote].Vop[XVopr].Valid+
+                            Koib[2].Rezult[1].Bl[XVote].Vop[XVopr].Valid+
+                            Koib[1].Rezult[2].Bl[XVote].Vop[XVopr].Valid+
+                            Koib[2].Rezult[2].Bl[XVote].Vop[XVopr].Valid;
+                    F3=IntToStr(sum);
+                    F4=" ("+CisloToStringOrVoice(sum,true) +")";
+                    SumRep(Rep_cnt,2,1,1,0,2, F1,F2,F3,F4, 0, FontSize,4,60,5,0,40);
                     Rep_cnt++;
                     F<<Printer<<'\n';
-
                     F1="";
                     F2=Out.PrRezult[7]; //Число недействительных бюллетеней
-                    F3="0";
-                    F4=" (ноль)";
-                    SumRep(Rep_cnt,2,1,1,0,2, F1,F2,F3,F4, 0, FontSize,4,60,20,0,20);
+                    sum=Koib[1].Rezult[1].Bl[XVote].Vop[XVopr].NoValid+
+                            Koib[2].Rezult[1].Bl[XVote].Vop[XVopr].NoValid+
+                            Koib[1].Rezult[2].Bl[XVote].Vop[XVopr].NoValid+
+                            Koib[2].Rezult[2].Bl[XVote].Vop[XVopr].NoValid;
+                    F3=IntToStr(sum);
+                    F4=" ("+CisloToStringOrVoice(sum,true) +")";
+                    SumRep(Rep_cnt,2,1,1,0,2, F1,F2,F3,F4, 0, FontSize,4,60,5,0,40);
                     Rep_cnt++;
                     F<<Printer<<'\n';
-
                     F1="";
                     F2=Out.PrRezult[8]; //Обнаружено в стационарных ящиках
-                    F3="0";
-                    F4=" (ноль)";
-                    SumRep(Rep_cnt,2,1,1,0,2, F1,F2,F3,F4, 0, FontSize,4,60,20,0,20);
+                    sum=Koib[1].Rezult[1].Bl[XVote].Vop[XVopr].All+
+                            Koib[2].Rezult[1].Bl[XVote].Vop[XVopr].All;
+                    F3=IntToStr(sum);
+                    F4=" ("+CisloToStringOrVoice(sum,true) +")";
+                    SumRep(Rep_cnt,2,1,1,0,2, F1,F2,F3,F4, 0, FontSize,4,60,5,0,40);
                     Rep_cnt++;
                     F<<Printer<<'\n';
 
                     F1="";
                     F2=Out.PrRezult[9]; //Обнаружено в переносных ящиках
-                    F3="0";
-                    F4=" (ноль)";
-                    SumRep(Rep_cnt,2,1,1,0,2, F1,F2,F3,F4, 0, FontSize,4,60,20,0,20);
+                    sum=Koib[1].Rezult[2].Bl[XVote].Vop[XVopr].All+
+                            Koib[2].Rezult[2].Bl[XVote].Vop[XVopr].All;
+                    F3=IntToStr(sum);
+                    F4=" ("+CisloToStringOrVoice(sum,true) +")";
+                    SumRep(Rep_cnt,2,1,1,0,2, F1,F2,F3,F4, 0, FontSize,4,60,5,0,40);
                     Rep_cnt++;
                     F<<Printer<<'\n';
 
             }
- std::string PF1,PF2,PF3,PF4,PF22;
-  PF1="Председатель участковой избирательной комиссии\0";
-  PF2= " (Фамилия, инициалы)\0";
-  PF22="( подпись либо причина отсутствия, отметка об особом мнении)\0";
-  PF3="Заметитель председателя комиссии\0";
-  PF4="Секретарь комиссии\0";
-
+  //Begin Page Footer
+  SumRep(Rep_cnt, 4,1,0,0,0,"","","","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
   SumRep(Rep_cnt, 4,1,0,0,0,PF1,"","","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
-  SumRep(Rep_cnt, 4,1,0,0,0,"", "_____________________","_________________________________","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
-  SumRep(Rep_cnt, 4,1,0,0,5,"",PF2,PF22,"",1, 4, 70,32,50,0,0);  Rep_cnt++;
-  SumRep(Rep_cnt, 4,1,0,0,5,PF3,"_____________________","_________________________________","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
-  SumRep(Rep_cnt, 4,1,0,0,5,PF4,"_____________________","_________________________________","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
-  //End Page Footer
+  SumRep(Rep_cnt, 4,1,0,0,0,"", "____________________\0","________________________________\0","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,2,0,0,5,"",PF2,PF22,"",1, 4, 70,32,50,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,1,0,0,5,PF3,"____________________\0","________________________________\0","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,1,0,0,5,PF4,"____________________\0","________________________________\0","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
+    //SumRep(Rep_cnt, 4,0,0,0,5,"","","","",0, FontSize, 0,0,0,0,0);  Rep_cnt++;
+    SumRep(Rep_cnt, 4,1,0,0,5,"","","","",0, FontSize, 1,0,0,0,0);  Rep_cnt++;
 
-  PF1="";
-  PF2="";
-  PF3="МП     подписано \"___\"__________20___года в ____ часов ____минут";
-  PF4="       Распечатано:";
+  PF3="МП     подписано \"___\"__________20___года в ____ часов ____минут\0";
+  PF4="     Распечатано:\"___\"__________20___года в ____ часов ____минут\0";
 
-  SumRep(Rep_cnt, 4,1,1,0,2,"","",PF1,"",0, FontSize, 1,0,0,0,0);  Rep_cnt++;
-  SumRep(Rep_cnt, 4,1,1,0,2,"","",PF2,"",0, 8,1,0,0,0,0);  Rep_cnt++;
-  SumRep(Rep_cnt, 4,1,1,0,2,"","",PF3,"",0, FontSize, 1,0,0,0,0);  Rep_cnt++;
-  SumRep(Rep_cnt, 4,1,1,0,2,"","",PF4,"",0, FontSize, 1,0,0,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,1,1,0,2,"","","","",0, FontSize, 0,0,0,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,1,1,0,2,"","","","",0, 8,0,0,0,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,1,1,0,2,"","",PF3,"",0, FontSize, 0,0,0,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,1,1,0,2,"","",PF4,"",0, FontSize, 0,0,0,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,1,0,0,5,"","","","",0, FontSize, 0,0,0,0,0);  Rep_cnt++;
 
 
 
@@ -3212,30 +3250,37 @@ case 2: //---------------------------------------------------------Протокол тест
   PF3="Заметитель председателя комиссии\0";
   PF4="Секретарь комиссии\0";
   PF5="Члены  комиссии\0";
-
+  SumRep(Rep_cnt, 4,1,0,0,0,"","","","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
   SumRep(Rep_cnt, 4,1,0,0,0,PF1,"","","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
-  SumRep(Rep_cnt, 4,1,0,0,0,"", "_____________________","_________________________________","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
-  SumRep(Rep_cnt, 4,1,0,0,5,"",PF2,PF22,"",1, 4, 70,32,50,0,0);  Rep_cnt++;
-  SumRep(Rep_cnt, 4,1,0,0,5,PF3,"_____________________","_________________________________","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
-  SumRep(Rep_cnt, 4,1,0,0,0,PF4,"_____________________","_________________________________","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
-  SumRep(Rep_cnt, 4,1,0,0,0,PF5,"_____________________","_________________________________","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
-  SumRep(Rep_cnt, 4,1,0,0,0,"","_____________________","_________________________________","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
-  SumRep(Rep_cnt, 4,1,0,0,0,"","_____________________","_________________________________","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
-  SumRep(Rep_cnt, 4,1,0,0,0,"","_____________________","_________________________________","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
-  SumRep(Rep_cnt, 4,1,0,0,0,"","_____________________","_________________________________","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
-  SumRep(Rep_cnt, 4,1,0,0,0,"","_____________________","_________________________________","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
-  SumRep(Rep_cnt, 4,1,0,0,0,"","_____________________","_________________________________","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
-  SumRep(Rep_cnt, 4,1,0,0,0,"","_____________________","_________________________________","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
-  SumRep(Rep_cnt, 4,1,0,0,0,"","_____________________","_________________________________","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
-  SumRep(Rep_cnt, 4,1,0,0,0,"","_____________________","_________________________________","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
-  SumRep(Rep_cnt, 4,1,0,0,0,"","_____________________","_________________________________","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
-  SumRep(Rep_cnt, 4,1,0,0,0,"","_____________________","_________________________________","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
-  SumRep(Rep_cnt, 4,1,0,0,0,"","_____________________","_________________________________","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
-  SumRep(Rep_cnt, 4,1,0,0,0,"","_____________________","_________________________________","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
-  SumRep(Rep_cnt, 4,1,0,0,0,"","_____________________","_________________________________","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
-  SumRep(Rep_cnt, 4,1,0,0,0,"","_____________________","_________________________________","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,1,0,0,0,"", "____________________\0","________________________________\0","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,2,0,0,0,"",PF2,PF22,"",1, 4, 70,32,50,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,1,0,0,0,PF3,"____________________\0","________________________________\0","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,1,0,0,0,PF4,"____________________\0","________________________________\0","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,1,0,0,0,PF5,"____________________\0","________________________________\0","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,1,0,0,0,"","____________________\0","________________________________\0","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,1,0,0,0,"","____________________\0","________________________________\0","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,1,0,0,0,"","____________________\0","________________________________\0","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,1,0,0,0,"","____________________\0","________________________________\0","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,1,0,0,0,"","____________________\0","________________________________\0","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,1,0,0,0,"","____________________\0","________________________________\0","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,1,0,0,0,"","____________________\0","________________________________\0","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,1,0,0,0,"","____________________\0","________________________________\0","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,1,0,0,0,"","____________________\0","________________________________\0","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,1,0,0,0,"","____________________\0","________________________________\0","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,1,0,0,0,"","____________________\0","________________________________\0","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,1,0,0,0,"","____________________\0","________________________________\0","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,1,0,0,0,"","____________________\0","________________________________\0","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,1,0,0,0,"","____________________\0","________________________________\0","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
+  SumRep(Rep_cnt, 4,1,0,0,10,"","____________________\0","________________________________\0","",1, FontSize, 70,32,50,0,0);  Rep_cnt++;
+    //SumRep(Rep_cnt, 3,1,0,0,5,"","","","",1, FontSize, 0,0,0,0,0);  Rep_cnt++;
   //End Page Footer
+  PF1="";
+  PF3="МП     подписано \"___\"__________20___года в ____ часов ____минут\0";
 
+
+  SumRep(Rep_cnt, 4,1,1,0,2,"","",PF1,"",0, FontSize, 1,0,0,0,0);  Rep_cnt++;
+
+  SumRep(Rep_cnt, 4,1,1,0,2,"","",PF3,"",0, FontSize, 1,0,0,0,0);  Rep_cnt++;
                     F.close();
                     st="./Tex/Pr_Itog"+IntToStr(XVote)+".tex";   strcpy(sst,st.c_str());
                     st="Pr_Itog"+IntToStr(XVote)+".pdf";         strcpy(st5,st.c_str());
@@ -3681,9 +3726,9 @@ std::string  SpeakElectionDate(void)
         char FirstDig,SecDig;
         switch(Votes.DBday)
         {  // подключение файла дня
-            case 1:  st1= OutV.NumPath[94];      break;     case 2:  st1= OutV.NumPath[95]; break;          case 3:  st1= OutV.NumPath[96]; break;
-            case 4:  st1= OutV.NumPath[97];      break;     case 5:  st1= OutV.NumPath[98]; break;          case 6:  st1= OutV.NumPath[99]; break;
-            case 7:  st1= OutV.NumPath[100];   break;     case 8:  st1= OutV.NumPath[101]; break;       case 9:  st1= OutV.NumPath[102]; break;
+            case 1:  st1= OutV.NumPath[94];   break;     case 2:  st1= OutV.NumPath[95]; break;          case 3:  st1= OutV.NumPath[96]; break;
+            case 4:  st1= OutV.NumPath[97];   break;     case 5:  st1= OutV.NumPath[98]; break;          case 6:  st1= OutV.NumPath[99]; break;
+            case 7:  st1= OutV.NumPath[100];  break;     case 8:  st1= OutV.NumPath[101]; break;       case 9:  st1= OutV.NumPath[102]; break;
             case 10:  st1= OutV.NumPath[103]; break;    case 11:  st1= OutV.NumPath[104]; break;     case 12:  st1= OutV.NumPath[105]; break;
             case 13:  st1= OutV.NumPath[106]; break;    case 14:  st1= OutV.NumPath[107]; break;     case 15:  st1= OutV.NumPath[108]; break;
             case 16:  st1= OutV.NumPath[109]; break;    case 17:  st1= OutV.NumPath[110]; break;     case 18:  st1= OutV.NumPath[111]; break;
@@ -3892,7 +3937,6 @@ void Sos_14(void)
                   {  // дня
                       st2=Out.Main[82];  jj=23;
                   }
-
               }
                st1=IntToStr(Days)+"  "+st2 +" "+Out.Main[28];
                Ind(st1," "); // DD  дней до начала голосования
@@ -3929,7 +3973,7 @@ void Sos_17(void)
       // снятие позиций
       Ind("",st2); //Снимать позицию N...для выборов N...? ДА/НЕТ
       Golos="";
-     Golos=OutV.MainPath[23]+" "+CisloToStringOrVoice(Xcand,false)+" "+OutV.MainPath[24]+" "+CisloToStringOrVoice(Xblank,false) ; // номер выборов
+     Golos=OutV.MainPath[23]+" "+CisloToStringOrVoice(Xcand,false);//+" "+OutV.MainPath[24]+" "+CisloToStringOrVoice(Xblank,false) ; // номер выборов
     SayNSys(Golos);
 }
 void Sos_18(void)
@@ -3938,9 +3982,9 @@ void Sos_18(void)
       st2=Out.Main[38]+" "+IntToStr(Xcand)+" "/*+Out.Main[37]+" "+IntToStr(Xblank)+" "*/+Out.Main[39];
       // снятие позиций
       Ind("",st2); // № ##  снята!
-      Golos=OutV.MainPath[25]+CisloToStringOrVoice(Xcand,false)+  // номер позиции
-                            OutV.MainPath[24]+CisloToStringOrVoice(Xblank,false) +
-                            OutV.MainPath[26]; // номер выборов
+      Golos=OutV.MainPath[25]+" "+CisloToStringOrVoice(Xcand,false)+ " "+ // номер позиции
+                            //OutV.MainPath[24]+" "+CisloToStringOrVoice(Xblank,false) +" "+ // для выборов номер *
+                            OutV.MainPath[26]; // снята!
     SayNSys(Golos);
 }
 void Sos_19(void)
@@ -4085,7 +4129,6 @@ void Sos_23(void)
     //sleep(1);
     SaySys(28);
     ReadTime(1,h,m);
-
     //st1=Out.Main[47] + " 0";  Ind(st1," "); // 15.10.2013//st1=Out.Main[46] ;  st2=Out.Main[47] + " 0";  Ind(st1,st2);
     Sos_50();
 }
@@ -4277,7 +4320,7 @@ void Sos_34(void)
 {  //  переносное  голосование
 	  std::string st1;
 	  std::string st2;
-	   Say(44); //Переносное голосование. Время :
+	   SaySys(44); //Переносное голосование. Время :
        TekDateTime();      int h =TekDT.hour;     int m=TekDT.minit;
        	  st1=Out.Main[62]+" "+TimeS; //Переносное_голосование!_Время:_
       int All=Koib[1].Rezult[XVote].All;
@@ -4459,8 +4502,7 @@ int Golosovanie(void)
                         }
                         Koib[1].Rezult[0].All=NumBullAll;
                         // предача  данных  в  другой  КОИБ
-
-    /*!Сеть!!!!*/                  //  отправка  результатов  обработки бюллетеней в  другой  КОИБ
+/*!Сеть!!!!*/                  //  отправка  результатов  обработки бюллетеней в  другой  КОИБ
                         char *ptrSend;
                         ptrSend=(char *)&Koib[1];
                         SendtoAnother(19,ptrSend,sizeof(Koib[1]));
@@ -4506,9 +4548,9 @@ int Sostoanie(void)
           }
           else
           {  if(pr_btn==1) // Yes  продолжить  работу
-            {       //  продолжение работы
-                  Koib[1].VS = 2;
-                  PrNoBtnWait=1;
+            {   //  продолжение работы
+                Koib[1].VS = 2;
+                PrNoBtnWait=1;
 			} else
 			{     st=Out.Main[4]+" "+SerNumKoib; st1=Out.Main[7]; Ind(st,st1); // Сканер N  // не  готов
                   SaySys(2); //Сканер не готов
@@ -5390,7 +5432,9 @@ int Sostoanie(void)
 			    Sos_31();
 			    PrNoBtnWait=1;
 /* ! !!*/                 // передача второму сканеру  состояния стационарного  голосования(31) Koib[1].VS;
-
+ //              char *ptrSend;
+ //               ptrSend=(char *)&Koib[1].VS;
+   //             SendtoAnother(1,ptrSend,sizeof(Koib[1].VS));
 
 			 }
 		  }
@@ -5545,7 +5589,6 @@ int Sostoanie(void)
                 char *ptrSend;
                 ptrSend=(char *)&Koib[1].VS;
                 SendtoAnother(1,ptrSend,sizeof(Koib[1].VS));
-
 			}
 			if(pr_btn==0) //No
   	        {
@@ -5676,6 +5719,8 @@ int Sostoanie(void)
                 for (int i=1; i<=Votes.Nblank; i++)
                 {
                  XVote=i; Print(3);
+
+
                 }
                 Sos_37();
                 PrNoBtnWait=1;

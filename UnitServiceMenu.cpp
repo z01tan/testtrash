@@ -7,9 +7,15 @@
 
 #include <getopt.h>
 
+#include <cstdlib>
+#include <string>
+
+
+
 #include <string.h>
 #include <stdlib.h>
 #include <stdint.h>
+
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
@@ -328,8 +334,8 @@ void GashId(void)
 }//IdClear
 
 float ReadParFromTablo2(void)  // считывание  параметра  с  табло
-{ float zz;
-   zz=atof(NUMBER);
+{ float zz=-1;
+  if(strlen(NUMBER)!=0)   zz=atof(NUMBER);
    return zz;
 }
 
@@ -608,32 +614,32 @@ void SendInfToTablo2()
           sst=sst+InfS2;//strcat(InfS,InfS2);
           strcpy(InfS1,InfS);
         } break;
-     case 4:  {	sprintf(InfS2,"%03.0f",urbl); sst=sst+InfS2;strcpy(InfS1,InfS); strcpy(NUMBER,InfS2); strcpy(NUMBER,"\0");   } break;
-     case 5:  { sprintf(InfS2,"%03.0f",urw);sst=sst+InfS2;strcpy(InfS1,InfS);strcpy(NUMBER,InfS2); strcpy(NUMBER,"\0");  } break;
-     case 6:  { sprintf(InfS2,"%03.0f",UrBlSh);sst=sst+InfS2;strcpy(InfS1,InfS);strcpy(NUMBER,InfS2); strcpy(NUMBER,"\0"); } break;
-     case 7:  { sprintf(InfS2,"%03.0f",UrWtSh);sst=sst+InfS2;strcpy(InfS1,InfS);strcpy(NUMBER,InfS2);strcpy(NUMBER,"\0"); } break;
-     case 8:  { sprintf(InfS2,"%03d",MaxLight);sst=sst+InfS2;strcpy(InfS1,InfS);strcpy(NUMBER,InfS2); strcpy(NUMBER,"\0"); } break;
-     case 9:  { sprintf(InfS2,"%03.0f",MaxAngle*57.3);sst=sst+InfS2;strcpy(InfS1,InfS);strcpy(NUMBER,InfS2); strcpy(NUMBER,"\0"); } break;
-     case 10: { sprintf(InfS2,"%02d",PrCheckSh);sst=sst+InfS2;strcpy(InfS1,InfS);strcpy(NUMBER,InfS2); strcpy(NUMBER,"\0"); } break;
-     case 11: { sprintf(InfS2,"%02d",PrCheckBr);sst=sst+InfS2;strcpy(InfS1,InfS);strcpy(NUMBER,InfS2); strcpy(NUMBER,"\0"); } break;
-     case 12: { sprintf(InfS2,"%02d",PrCheckEx);sst=sst+InfS2;strcpy(InfS1,InfS);strcpy(NUMBER,InfS2); strcpy(NUMBER,"\0"); } break;
+     case 4:  {	sprintf(InfS2,"%03.0f",urbl); sst=sst+InfS2;strcpy(InfS1,InfS); strcpy(NUMBER,InfS2); strcat(NUMBER,"\0");   } break;
+     case 5:  { sprintf(InfS2,"%03.0f",urw);sst=sst+InfS2;strcpy(InfS1,InfS);strcpy(NUMBER,InfS2); strcat(NUMBER,"\0");  } break;
+     case 6:  { sprintf(InfS2,"%03.0f",UrBlSh);sst=sst+InfS2;strcpy(InfS1,InfS);strcpy(NUMBER,InfS2); strcat(NUMBER,"\0"); } break;
+     case 7:  { sprintf(InfS2,"%03.0f",UrWtSh);sst=sst+InfS2;strcpy(InfS1,InfS);strcpy(NUMBER,InfS2);strcat(NUMBER,"\0"); } break;
+     case 8:  { sprintf(InfS2,"%03d",MaxLight);sst=sst+InfS2;strcpy(InfS1,InfS);strcpy(NUMBER,InfS2); strcat(NUMBER,"\0"); } break;
+     case 9:  { sprintf(InfS2,"%03.0f",MaxAngle*57.3);sst=sst+InfS2;strcpy(InfS1,InfS);strcpy(NUMBER,InfS2); strcat(NUMBER,"\0"); } break;
+     case 10: { sprintf(InfS2,"%02d",PrCheckSh);sst=sst+InfS2;strcpy(InfS1,InfS);strcpy(NUMBER,InfS2); strcat(NUMBER,"\0"); } break;
+     case 11: { sprintf(InfS2,"%02d",PrCheckBr);sst=sst+InfS2;strcpy(InfS1,InfS);strcpy(NUMBER,InfS2); strcat(NUMBER,"\0"); } break;
+     case 12: { sprintf(InfS2,"%02d",PrCheckEx);sst=sst+InfS2;strcpy(InfS1,InfS);strcpy(NUMBER,InfS2); strcat(NUMBER,"\0"); } break;
      case 13: { sprintf(InfS2,"%02d:%02d:%04d  %02d.%02d.%02d ",MyTime.tm_mday,MyTime.tm_mon,MyTime.tm_year,MyTime.tm_hour,MyTime.tm_min,MyTime.tm_sec);
                 sst=sst+InfS2;strcpy(InfS1,InfS);} break;
-     case 14: { sprintf(InfS2,"%02d",MyTime.tm_mday); sst=sst+InfS2;strcpy(InfS1,InfS);strcpy(NUMBER,InfS2); strcpy(NUMBER,"\0"); } break;
-     case 15: { sprintf(InfS2,"%02d",MyTime.tm_mon);sst=sst+InfS2;strcpy(InfS1,InfS);strcpy(NUMBER,InfS2);strcpy(NUMBER,"\0");  } break;
-     case 16: { sprintf(InfS2,"%02d",MyTime.tm_year);sst=sst+InfS2;strcpy(InfS1,InfS);strcpy(NUMBER,InfS2); strcpy(NUMBER,"\0"); } break;
-     case 17: { sprintf(InfS2,"%02d",MyTime.tm_hour); sst=sst+InfS2;strcpy(InfS1,InfS);strcpy(NUMBER,InfS2); strcpy(NUMBER,"\0"); } break;
-     case 18: { sprintf(InfS2,"%02d",MyTime.tm_min);sst=sst+InfS2;strcpy(InfS1,InfS);strcpy(NUMBER,InfS2); strcpy(NUMBER,"\0"); } break;
-     case 19: { sprintf(InfS2,"%s",SerNumKoib);sst=sst+InfS2;strcpy(InfS1,InfS); strcpy(NUMBER,InfS2); strcpy(NUMBER,"\0"); /*cерийный номер КОИБ*/} break;
-     case 20: { sprintf(InfS2,"%s",Ip_master);sst=sst+InfS2;strcpy(InfS1,InfS);strcpy(NUMBER,InfS2);strcpy(NUMBER,"\0");  } break;
-     case 21: { sprintf(InfS2,"%s",Ip_slave);sst=sst+InfS2;strcpy(InfS1,InfS);strcpy(NUMBER,InfS2); strcpy(NUMBER,"\0"); } break;
-     case 22: { sprintf(InfS2,"%02d",VolumeUr); sst=sst+InfS2;strcpy(InfS1,InfS);strcpy(NUMBER,InfS2);strcpy(NUMBER,"\0");  } break;
-     case 23: { sprintf(InfS2,"%s",SerNumKoib);sst=sst+InfS2; strcpy(InfS1,InfS);strcpy(NUMBER,InfS2); strcpy(NUMBER,"\0"); /* данные по cканеру - серийный номер  */} break;
-     case 24: { sprintf(InfS2,"%s",SerNumKoib1);sst=sst+InfS2;strcpy(InfS1,InfS);strcpy(NUMBER,InfS2); strcpy(NUMBER,"\0"); /*данные по сканеру - соседу - серийный номер*/} break;
-     case 25: { sprintf(InfS2,"%10.1f",ScanerWorkTime);sst=sst+InfS2;strcpy(InfS1,InfS);strcpy(NUMBER,InfS2);strcpy(NUMBER,"\0"); /*  время работы  сканера*/} break;
-    case 46: { sprintf(InfS2,"%d",CodesOp[0]);sst=sst+InfS2;   strcpy(InfS1,InfS);strcpy(NUMBER,InfS2);strcpy(NUMBER,"\0");/*  код администратора*/} break;
-    case 47: { sprintf(InfS2,"%df",CodesOp[1]);sst=sst+InfS2;  strcpy(InfS1,InfS);strcpy(NUMBER,InfS2);strcpy(NUMBER,"\0");/*  код техн. специалиста*/} break;
-    case 48: { sprintf(InfS2,"%d",CodesOp[2]);sst=sst+InfS2;   strcpy(InfS1,InfS);strcpy(NUMBER,InfS2);strcpy(NUMBER,"\0");/* код оператора УИК*/} break;
+     case 14: { sprintf(InfS2,"%02d",MyTime.tm_mday); sst=sst+InfS2;strcpy(InfS1,InfS);strcpy(NUMBER,InfS2); strcat(NUMBER,"\0"); } break;
+     case 15: { sprintf(InfS2,"%02d",MyTime.tm_mon);sst=sst+InfS2;strcpy(InfS1,InfS);strcpy(NUMBER,InfS2);strcat(NUMBER,"\0");  } break;
+     case 16: { sprintf(InfS2,"%02d",MyTime.tm_year);sst=sst+InfS2;strcpy(InfS1,InfS);strcpy(NUMBER,InfS2); strcat(NUMBER,"\0"); } break;
+     case 17: { sprintf(InfS2,"%02d",MyTime.tm_hour); sst=sst+InfS2;strcpy(InfS1,InfS);strcpy(NUMBER,InfS2); strcat(NUMBER,"\0"); } break;
+     case 18: { sprintf(InfS2,"%02d",MyTime.tm_min);sst=sst+InfS2;strcpy(InfS1,InfS);strcpy(NUMBER,InfS2); strcat(NUMBER,"\0"); } break;
+     case 19: { sprintf(InfS2,"%s",SerNumKoib);sst=sst+InfS2;strcpy(InfS1,InfS); strcpy(NUMBER,InfS2); strcat(NUMBER,"\0"); /*cерийный номер КОИБ*/} break;
+     case 20: { sprintf(InfS2,"%s",Ip_master);sst=sst+InfS2;strcpy(InfS1,InfS);strcpy(NUMBER,InfS2);strcat(NUMBER,"\0");  } break;
+     case 21: { sprintf(InfS2,"%s",Ip_slave);sst=sst+InfS2;strcpy(InfS1,InfS);strcpy(NUMBER,InfS2); strcat(NUMBER,"\0"); } break;
+     case 22: { sprintf(InfS2,"%02d",VolumeUr); sst=sst+InfS2;strcpy(InfS1,InfS);strcpy(NUMBER,InfS2);strcat(NUMBER,"\0");  } break;
+     case 23: { sprintf(InfS2,"%s",SerNumKoib);sst=sst+InfS2; strcpy(InfS1,InfS);strcpy(NUMBER,InfS2); strcat(NUMBER,"\0"); /* данные по cканеру - серийный номер  */} break;
+     case 24: { sprintf(InfS2,"%s",SerNumKoib1);sst=sst+InfS2;strcpy(InfS1,InfS);strcpy(NUMBER,InfS2); strcat(NUMBER,"\0"); /*данные по сканеру - соседу - серийный номер*/} break;
+     case 25: { sprintf(InfS2,"%10.1f",ScanerWorkTime);sst=sst+InfS2;strcpy(InfS1,InfS);strcpy(NUMBER,InfS2);strcat(NUMBER,"\0"); /*  время работы  сканера*/} break;
+    case 46: { sprintf(InfS2,"%d",CodesOp[0]);sst=sst+InfS2;   strcpy(InfS1,InfS);strcpy(NUMBER,InfS2);strcat(NUMBER,"\0");/*  код администратора*/} break;
+    case 47: { sprintf(InfS2,"%df",CodesOp[1]);sst=sst+InfS2;  strcpy(InfS1,InfS);strcpy(NUMBER,InfS2);strcat(NUMBER,"\0");/*  код техн. специалиста*/} break;
+    case 48: { sprintf(InfS2,"%d",CodesOp[2]);sst=sst+InfS2;   strcpy(InfS1,InfS);strcpy(NUMBER,InfS2);strcat(NUMBER,"\0");/* код оператора УИК*/} break;
     case 49: { sprintf(InfS2,"%02d",Lang);sst=sst+InfS2;strcpy(InfS1,InfS);} break;
    }
    for(int i=0;i<124;i++)InfS[i]=sst[i];
@@ -652,7 +658,7 @@ int ServMenu()
        PrNoBtnWait=0;
       if((KodDost < 1)&&(PrMenuBtn==1))
       {  InfSTablo1=2; SendInfToTablo1();
-         strcpy(NUMBER,"0\0");
+         strcpy(NUMBER,"*\0");   setSecline(NUMBER,0);
          get_KeyString(NUMBER);
          KodDost=int(ReadParFromTablo2());
          BtnPushed=1;// чтобы не подтверждать еще в одном цикле опроса кнопкой ДА
@@ -673,9 +679,7 @@ int ServMenu()
 			KodOp=KodDostAn(KodDost);
 			if(KodOp==-1)
 			{ InfSTablo1=3; SendInfToTablo1();
-                KodDost=-1;
-                sleep(1);
-                PrNoBtnWait=1;
+                KodDost=-1;                sleep(1);                PrNoBtnWait=1;
 			}
 			else
 			{  PrMenuBtn=2;

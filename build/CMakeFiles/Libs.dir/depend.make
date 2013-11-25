@@ -14,12 +14,14 @@ CMakeFiles/Libs.dir/Detect.cpp.o: ../Detect.h
 CMakeFiles/Libs.dir/Detect.cpp.o: ../HeaderMain.h
 CMakeFiles/Libs.dir/Detect.cpp.o: ../MyX.h
 
+CMakeFiles/Libs.dir/HardProc.cpp.o: ../AlteraSocket.h
 CMakeFiles/Libs.dir/HardProc.cpp.o: ../CreateImage.h
 CMakeFiles/Libs.dir/HardProc.cpp.o: ../HardProc.cpp
 CMakeFiles/Libs.dir/HardProc.cpp.o: ../HardProc.h
 CMakeFiles/Libs.dir/HardProc.cpp.o: ../HeaderMain.h
 CMakeFiles/Libs.dir/HardProc.cpp.o: ../InitAltera.h
 CMakeFiles/Libs.dir/HardProc.cpp.o: ../MyX.h
+CMakeFiles/Libs.dir/HardProc.cpp.o: ../Ruler.h
 
 CMakeFiles/Libs.dir/InitAltera.cpp.o: ../InitAltera.cpp
 CMakeFiles/Libs.dir/InitAltera.cpp.o: ../InitAltera.h

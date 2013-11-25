@@ -433,10 +433,10 @@ while (true){
         if(tmp<0){close_Key();KeyisReady = false;} //???????????????????????????????????????????????????????????
         if (tmp>0) {
           // printf("KeyPressed %d\n",tmp);
-           if(tmp==KEYYES){Buttons[0] = 1;changeV=1;tmp=0;}
+           if(!KeyStrPocess) if(tmp==KEYYES){Buttons[0] = 1;changeV=1;tmp=0;}
            if(tmp==KEYNO){Buttons[1] = 1;changeV=1;tmp=0;}
            if(tmp==KEYMENU){Buttons[5] = 1;changeV=1;tmp=0;}
-          if(!KeyStrPocess) if(tmp==KEYHELP){Buttons[2] = 1;changeV=1;tmp=0;}
+           if(tmp==KEYHELP){Buttons[2] = 1;changeV=1;tmp=0;}
 //     //      if((tmp==KEYBSPCE) && (Key_E>Key_B)){Key_E--;tmp=0;}
            if(tmp>0){
                  K_buff = tmp;
